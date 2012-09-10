@@ -1,76 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#3b3b3b" >
- 
-    <LinearLayout
+    android:background="#FFFFFF" >
+ 
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:padding="10dip" >
-        <!--  View Title Label -->
+
+        <!-- View Title Label -->
+		<ImageView
+           android:id="@+id/imageView1"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+            android:background="#000000"
+           android:src="@drawable/stand_logo" />
         <TextView
+            android:id="@+id/login_error"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dip"
-            android:text="LOGIN"
+            android:padding="10dip"
             android:textColor="#FFFFFF"
-            android:textSize="25dip"
             android:textStyle="bold" />
-        <!--  Email Label -->
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:text="Email" />
-        <!--  Email TextField -->
+
+        <!-- Login Button -->
+
+
         <EditText
             android:id="@+id/loginEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
- 
-        <!--  Password Label -->
-        <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="250dp"
+            android:text="Login"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="15dip"
-            android:text="Password" />
-        <!--  Password TextField -->
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="130dp"
+            android:ems="10" />
+
+      
+
         <EditText
             android:id="@+id/loginPassword"
-            android:layout_width="fill_parent"
+            android:clickable="true" 
+            android:cursorVisible="true" 
+            android:focusable="true" 
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:password="true" />
- 
-        <!--  Error message -->
-        <TextView android:id="@+id/login_error"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    
-                    android:padding="10dip"
-                    android:textStyle="bold"/>
- 
-        <!--  Login Button -->
+            android:text="@string/Password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="210dp"
+            android:ems="10" />
+        
+        <CheckBox
+            android:id="@+id/checkSigned"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/loginPassword"
+            android:layout_below="@+id/loginPassword"
+            android:layout_marginLeft="30dp"
+            android:text="Sign me in when AE starts"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/btnProceed"
+            android:layout_width="250dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="310dip"
+            android:text="Proceed" />
+        
+        <Button
+            android:id="@+id/btnRestore"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="390dip"
+            android:text="Forgot Password?" />
+
+        <!-- Link to Registration Screen -->
+
         <Button
             android:id="@+id/btnLogin"
-            android:layout_width="fill_parent"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:text="Login" />
- 
-        <!--  Link to Registration Screen -->
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/login_error"
+            android:background="#007FFF"
+            android:text="Login"
+            android:gravity="left|center_horizontal" 
+            android:textColor="#FFFFFF"
+            android:textSize="25dp"
+            android:textStyle="bold" 
+            android:layout_marginTop="23dp"
+            
+           />
+
         <Button
             android:id="@+id/btnLinkToRegisterScreen"
-            android:layout_width="fill_parent"
+            android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
-            android:background="@null"
-            android:text="I don&apos;t have account. Register Me!"
-            android:textColor="#21dbd4"
+            android:layout_alignBaseline="@+id/btnLogin"
+            android:layout_alignBottom="@+id/btnLogin"
+            android:layout_marginLeft="75dp"
+            
+            
+            android:background="#838B83"
+            android:text="Register"
+            android:textColor="#FFFFFF"
+            android:textSize="25dp"
             android:textStyle="bold" />
-    </LinearLayout>
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btnLinkToRegisterScreen"
+            android:layout_alignBottom="@+id/btnLinkToRegisterScreen"
+            android:layout_marginLeft="150dp"
+            android:gravity="center_vertical|center_horizontal" 
+            android:layout_alignParentRight="true"
+            android:background="#CD0000"
+            android:text="Close"
+            android:textColor="#FFFFFF"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
  
 </ScrollView>

@@ -8,5 +8,10 @@
 	<classpathentry kind="lib" path="libs/gson-2.2.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-android-4.41.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-core-4.41.jar"/>
+	<classpathentry kind="lib" path="libs/android-async-http-1.4.1.jar"/>
+	<classpathentry kind="lib" path="D:/Java_ext/org.apache.axis.wsdl2java.eclipse_1.1.0.1/wsdl2javawizard.jar"/>
+	<classpathentry kind="lib" path="D:/Java_ext/org.apache.axis_1.1"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

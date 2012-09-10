@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ <RelativeLayout
+     
+     		  xmlns:android="http://schemas.android.com/apk/res/android"
+     	  	  android:id="@+id/fileManager"
+        	  android:layout_width="fill_parent"
+       	      android:layout_height="wrap_content"
+              android:orientation="vertical">
+       		   
+    <ListView
+        
+            android:background="#000000"
+         	android:focusable="false"
+         	
+            android:id="@+id/fileManagerList"
+            android:layout_width="fill_parent" 
+            android:layout_above="@+id/closecalmlayout"      
+            android:layout_height="wrap_content" >
+    </ListView>
+
+
+         <LinearLayout
+            android:id="@+id/closecalmlayout"
+            android:layout_alignParentBottom="true"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:weightSum="1.0" >
+
+              <Button
+                  android:id="@+id/btnAttach"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent" 
+                  android:layout_marginLeft="5dip"
+                  android:layout_marginTop="5dip"
+                  android:layout_weight=".50"
+                  android:text="Attach files"
+                  />
+
+              <Button
+                  android:id="@+id/btnCancelAttach"
+                    android:layout_width="fill_parent"
+                  android:layout_height="fill_parent" 
+                  android:layout_marginLeft="5dip"
+                  android:layout_marginRight="5dip"
+                  android:layout_marginTop="5dip"
+                  android:layout_weight=".50"
+                  android:text="Do not attach"
+                   />
+         </LinearLayout>
+</RelativeLayout>
