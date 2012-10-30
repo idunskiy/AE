@@ -1,12 +1,15 @@
 package com.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "process_status")
-public class ProcessStatus {
+public class ProcessStatus implements Parcelable{
 	public static final String STATUS_ID = "id";
 	public static final String STATUS_TITLE = "title";
 	@SerializedName("id")
@@ -28,6 +31,9 @@ public class ProcessStatus {
         this.title = title;
         
     }
+	public ProcessStatus(Parcel in) {
+		readFromParcel(in);
+	}
 	public int getProccessStatusId() 
 	{
 		
@@ -59,4 +65,30 @@ public class ProcessStatus {
 	{		
 	return "{title="+title +" "+"id="+id+" "+"identificator="+" " +identificator+"}";	
 	}
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeString(title);
+		dest.writeString(identificator);
+		
+	}
+	private void readFromParcel(Parcel in) {
+		id = in.readInt();
+		title = in.readString();
+		identificator = in.readString();
+		
+	}
+	public static final Parcelable.Creator CREATOR =
+	    	new Parcelable.Creator() {
+	            public ProcessStatus createFromParcel(Parcel in) {
+	                return new ProcessStatus(in);
+	            }
+	 
+	            public ProcessStatus[] newArray(int size) {
+	                return new ProcessStatus[size];
+	            }
+	        };
 }

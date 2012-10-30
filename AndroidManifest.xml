@@ -12,6 +12,7 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_CALENDAR"> </uses-permission>
 <uses-permission android:name="android.permission.WRITE_CALENDAR"> </uses-permission>
+<uses-permission android:name="android.permission.GET_TASKS"> </uses-permission>
     <application
        android:name="com.assignmentexpert.ApplicationMemory"
         android:icon="@drawable/ic_launcher"
@@ -21,20 +22,17 @@
             
             android:name="com.assignmentexpert.LoginActivity"
              android:windowSoftInputMode="stateAlwaysHidden" >
-          <intent-filter>
+             
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-          </intent-filter>
+             </intent-filter>
             
         </activity>
         <activity
             android:name="com.assignmentexpert.RegisterActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:label="Register" >
-        </activity>
-         <activity
-            android:name="com.assignmentexpert.DashboardActivity"
-            android:label="Dashboard" >
         </activity>
         <activity
             android:name="com.assignmentexpert.RestoreActivity"
@@ -43,9 +41,11 @@
         </activity>
         
           <activity
+           
             android:name="com.assignmentexpert.NewOrderActivity"
             android:label="NewOrder"
             android:windowSoftInputMode="stateAlwaysHidden" >
+            
             
              
         </activity>
@@ -55,6 +55,41 @@
             android:label="File Manager"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
+        <activity
+            android:name="com.assignmentexpert.DashboardActivityAlt"
+            android:label="DashboardAlt"
+            android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
+           
+        </activity>
+        <activity
+            android:name="com.assignmentexpert.InteractionsActivity"
+            android:label="InteractionsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
+            android:name=".OrderInfoActivityAA"
+            android:label="OrderInfoActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
+            android:name="com.assignmentexpert.InteractionsActivityAlt"
+            android:label="InteractionsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
+            android:name="com.assignmentexpert.InteractionsActivityViewPager"
+            android:label="InteractionsActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
+            android:name="com.assignmentexpert.NewMessageActivity"
+            android:label="NewMessageActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+             
+        </activity>
+        <service android:name="com.library.ServiceMessages">
+        </service>
       
     </application>
 

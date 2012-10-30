@@ -3,13 +3,16 @@ package com.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "categories")
-public class Category {
+public class Category  implements Parcelable{
 	public final static String CATEGORY_TITLE_FIELD_NAME = "title";
 	public static final String SUBJECT_ID = "subject_id";
 	@SerializedName("id")
@@ -59,7 +62,50 @@ public class Category {
 
 	@Override
 	public String toString() {
-		return "{title=" + title + " " + "id=" + id + "subject=" + subject+ "}";
+		return title;//"{title=" + title + " " + "id=" + id + "subject=" + subject+ "}";
 	}
+	
+	public String display() {
+		return title;
+	}
+
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeString(title);
+		dest.writeParcelable(subject, flags);
+		
+		
+	}
+	 private Category(Parcel in) {
+		 readFromParcel(in);
+     }
+
+	public Category(String string ,int parseInt) {
+		this.id = parseInt;
+		this.title = string;
+	}
+
+	private void readFromParcel(Parcel in) {
+		
+		id = in.readInt();
+		title = in.readString();
+		subject = in.readParcelable(Subject.class.getClassLoader());
+		
+	}
+	public static final Parcelable.Creator CREATOR =
+	    	new Parcelable.Creator() {
+	            public Category createFromParcel(Parcel in) {
+	                return new Category(in);
+	            }
+	 
+	            public Category[] newArray(int size) {
+	                return new Category[size];
+	            }
+	        };
 
 }

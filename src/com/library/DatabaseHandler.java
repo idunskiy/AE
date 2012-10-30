@@ -306,6 +306,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     @Override
     public void close(){
         super.close();
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.close();
+      //  helper.close();
         Log.i("database closing", "All DAO's might be destroyed");
         simpleCategoryDao = null;
         simpleLevelDao = null;

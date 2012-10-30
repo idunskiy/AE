@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +18,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,28 +26,28 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datamodel.Category;
 import com.datamodel.Level;
 import com.datamodel.Order;
-import com.datamodel.OrderList;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.library.ContentRepository;
 import com.library.DataParsing;
 import com.library.DatabaseHandler;
-import com.library.JSONParser;
+import com.library.NoInternetException;
+import com.library.RestClient;
 import com.library.UserFunctions;
 
 public class LoginActivity extends Activity implements Runnable {
@@ -59,16 +61,22 @@ public class LoginActivity extends Activity implements Runnable {
     EditText inputEmail;
     EditText inputPassword;
     TextView loginErrorMsg;
-    CheckBox checkbox;
+    CheckBox checkboxSignMe;
+    
+    static boolean newUser = false;
+    
+   
+    static boolean loginError = false;
     
     private Dialog progDailog;
     
 	public DatabaseHandler databaseHandler=null;
-	 private Context _context;
+	 private static Context _context;
 	
  
     // JSON Response node names
     private static String KEY_STATUS = "status";
+    private static String KEY_ID = "id";
     private static String KEY_MESSAGE = "message";
     private static String KEY_CATEGORIES = "categories";
     private static String KEY_LEVELS = "levels";
@@ -77,12 +85,14 @@ public class LoginActivity extends Activity implements Runnable {
     private static String KEY_NAME = "name";
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
+    public static String passUserId = null;
+    SharedPreferences.Editor editor;
     static List<Order> orders;
     JSONObject json;
     
     boolean signMe = false;
-	
-
+    SharedPreferences sharedPreferences;
+    boolean value = false;
    
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,14 +107,25 @@ public class LoginActivity extends Activity implements Runnable {
         btnClose = (Button) findViewById(R.id.btnClose);
         loginErrorMsg = (TextView) findViewById(R.id.login_error);
         btnRestore = (Button) findViewById(R.id.btnRestore);
-        checkbox = (CheckBox) findViewById(R.id.checkSigned);
-        
-     
+        checkboxSignMe = (CheckBox) findViewById(R.id.checkSigned);
+        RestClient helper = new RestClient(getBaseContext());
+        sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
+        _context = this;
+        editor = sharedPreferences.edit();
+    	Log.d("user while login",sharedPreferences.getString("username", ""));
+    	Log.d("password while login",sharedPreferences.getString("password", ""));
+    	Log.d("password while login",Boolean.toString(sharedPreferences.contains("logout")));
+    	Bundle bundle = getIntent().getExtras();
+        if (bundle != null)
+          if (getIntent().getExtras().getBoolean("relogin") == true)
+            	reLogin();
     	inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
-				inputPassword.setText(" ");
-				inputPassword.setHint("Password"); inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				inputPassword.setText("");
+				inputPassword.setHint("Password");
+				inputPassword.setHint("Password"); 
+				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				inputPassword.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -112,7 +133,9 @@ public class LoginActivity extends Activity implements Runnable {
     	});
     	inputEmail.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputEmail.setText(" ");
+				if (inputEmail.getText().toString().equals("Login (E-mail)") |inputEmail.getText().toString().equals("Wrong E-mail"))
+				inputEmail.setText("");
+				inputEmail.setHint("E-mail");
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
 				inputEmail.setTextColor(Color.BLACK);
@@ -128,27 +151,26 @@ public class LoginActivity extends Activity implements Runnable {
             } 
     	});
     	
-    	checkbox.setOnClickListener(new OnClickListener() {
-    		 
-    		  public void onClick(View v) {
-    	             
-    			if (((CheckBox) v).isChecked()) {
-    				if (signMe == true)
-    				{
-    					
-    				}
-    				
-//    				Toast.makeText(LoginActivity.this,
-//    			 	   "Bro, try Android :)", Toast.LENGTH_LONG).show();
-    			}
-    	 
-    		  }
-    		});
+    	checkboxSignMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
+            {           
+            	if (isChecked == true)
+            	{
+	            	editor.putString("username",inputEmail.getText().toString());
+			        editor.putString("password",inputPassword.getText().toString());
+			        editor.putBoolean("isChecked", checkboxSignMe.isChecked());
+			        editor.commit();
+            	}
+            }
+            });
     	
-    	
-    	 
-        inputEmail.setText("shurko@ukr.net");
-        inputPassword.setText("123456");
+    	inputEmail.setText("shurko@ukr.net");
+    	inputPassword.setText("123456");
+
+        if(sharedPreferences.getBoolean("isChecked", signMe)) 
+        {
+        	new LoginTask().execute(sharedPreferences.getString("username", ""),sharedPreferences.getString("password", ""));
+        }
 
     	// Login button Click Event
         btnProceed.setOnClickListener(new View.OnClickListener() {
@@ -187,14 +209,37 @@ public class LoginActivity extends Activity implements Runnable {
 			     {
 			    	    inputEmail.setText(" ");
 	                	inputEmail.setTextColor(Color.RED);
-	                	inputEmail.setText("Wrong email");
+	                	inputEmail.setText("Wrong E-mail");
 	                	errorFlag = true;
 			    	 
 			     }
 			     
 			     if(errorFlag == false)
-				  {	signMe = true;
+				  {	
+			    	 signMe = true;
+			    	 
+			    	 if (!sharedPreferences.getString("username", "").equals(email))
+			    	 {
+			    	   newUser = true;
+			    	   editor.remove("username");
+			    	   editor.commit();
+			    	   Log.i("new User action","LoginActivity");
+			    	 }
+			    	 else 
+			    	 {
+			    			 newUser = false;
+			    			 Log.i("old User action","LoginActivity");
+			    	 }
+			    	 Log.i("new user boolean", Boolean.toString(newUser));
+			    	 
+			    	 Log.i("email String", email);
 			    	 new LoginTask().execute(email,password);
+			    	 Log.i("shared Prefs before", sharedPreferences.getString("username", ""));
+			    	 editor.putString("username", email);
+			    	 editor.putString("password", password);
+			    	 //editor.putString("oldUser", email);
+			    	 editor.commit();
+			    	 Log.i("shared Prefs afeter", sharedPreferences.getString("username", ""));
 				  }
 
 			}
@@ -217,7 +262,6 @@ public class LoginActivity extends Activity implements Runnable {
        btnRestore.setOnClickListener(new View.OnClickListener() {
     	   
            public void onClick(View view) {
-           	
                Intent i = new Intent(getApplicationContext(),
                        RestoreActivity.class);
                startActivity(i);
@@ -232,6 +276,23 @@ public class LoginActivity extends Activity implements Runnable {
 		}
 		return (DatabaseHandler) databaseHandler;
 	}
+    
+    public  void reLogin()
+    {
+    	
+    	
+//    	editor.remove("isChecked");
+//    	editor.commit();
+    	signMe = false;
+    	checkboxSignMe.setChecked(false);
+    	inputEmail.setText(sharedPreferences.getString("username", ""));
+    	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+    	inputPassword.setText(sharedPreferences.getString("password", ""));
+    	Toast toast = Toast.makeText(_context, "Sorry but we have some problems at our server." +  "\r\n" +
+     "You should to re-login", Toast.LENGTH_LONG);
+    	toast.show();
+    	
+    }
    
     class LoginTask extends AsyncTask<String, String, Void> {
 
@@ -241,28 +302,34 @@ public class LoginActivity extends Activity implements Runnable {
         	progDailog = ProgressDialog.show(LoginActivity.this,"Please wait...", "Retrieving data ...", true);
         }
 
-        protected Void doInBackground(String... param) {
+        protected Void doInBackground(String... param)  {
         	 ContentRepository _contactRepo;
         	 ContentRepository _contactRepo2;
         
         	UserFunctions userFunction = new UserFunctions();
         	try {
 				json = userFunction.loginUser(param[0], param[1]);
+				
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
         	
             // check for login response
             try {
+//            	if (RestClient.inetError == true)
+//            	{throw new NoInternetException();}
             	if ((json.getString(KEY_STATUS) != null) & json.getString(KEY_MESSAGE).equals((String)"Success"))
             	{
-                    
+            		
                     String res = json.getString(KEY_STATUS);
                     if(Integer.parseInt(res) == 1)
                     {	
                        	appendLog(json.toString());
                     	DataParsing u = new DataParsing();
+                    	editor.putString("user_id",u.wrapUserId(json));
+                		editor.commit();
+                		passUserId = u.wrapUserId(json);
                 		List<Category> catlist = u.wrapCategories(json);
                 		List<ProcessStatus> status = u.wrapStatuses(json);
                 		List<Level> level = u.wrapLevels(json);
@@ -307,7 +374,7 @@ public class LoginActivity extends Activity implements Runnable {
                 			e.printStackTrace();
                 			
                 		}
-                		
+                		Log.i("Rest client error flag", Boolean.toString(RestClient.inetError));
                 		Dao<ProcessStatus, Integer> daoStatus=dbHelper.getDao(ProcessStatus.class);
                 		QueryBuilder<ProcessStatus,Integer> Statusquery = daoStatus.queryBuilder();
                 		try{
@@ -323,7 +390,9 @@ public class LoginActivity extends Activity implements Runnable {
 
                 		Dao<Level, Integer> daoLevel=dbHelper.getDao(Level.class);
                 		QueryBuilder<Level,Integer> levelquery = daoLevel.queryBuilder();
-                		try{
+                		try
+                		{
+                			
                 			if (levelquery.query().isEmpty())
                 				_contactRepo.saveLevels(level);
                 		}
@@ -333,23 +402,13 @@ public class LoginActivity extends Activity implements Runnable {
                 			e.printStackTrace();
                 			
                 		}
-
-                		JSONObject k= userFunction.getOrders("1" , "10");
-                		String order_res = k.getString(KEY_STATUS);
-                		orders = u.wrapOrders(k);
-                		if (Integer.parseInt(order_res)==1)	
-                		{	
-             
-                			OrderList b= new OrderList();
-                			b.setOrders(orders);
-               
-                		}
                      }
             
           	}
             	else
             	{
-            		final String wrong = "Wrong password"; 
+            		final String wrong = "Incorrect login or password"; 
+            		
             		publishProgress(wrong);
             	}
          }
@@ -358,22 +417,42 @@ public class LoginActivity extends Activity implements Runnable {
         } catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  
+		} 
+//           catch(NoInternetException  e)
+//           {
+//            	this.cancel(true);
+//    			editor.clear();
+//    			editor.commit();
+//    			((LoginActivity)_context).finish();
+//    			_context.startActivity(getIntent());
+//    			 Toast.makeText(LoginActivity.this, "You've lost internet connection. You should try later.",Toast.LENGTH_LONG)
+//        		   .show();
+//    			e.printStackTrace();
+//            }
+//        catch (HttpHostConnectException e) {
+//        	
+//		}
+             
             return(null);
         }
         protected void onProgressUpdate(String ... progress) {
-        	inputEmail.setText(progress[0]);
-        	inputPassword.setText(progress[0]);
+//        	inputEmail.setText(progress[0]);
+//        	inputPassword.setText(progress[0]);
+        	this.cancel(true);
+        	Toast toast = Toast.makeText(LoginActivity.this, progress[0], Toast.LENGTH_LONG);
+        	toast.show();
+        	
+        	Intent intent = getIntent();
+        	finish();
+        	startActivity(intent);
+        	
+        	
 		}
 
         protected void onPostExecute(Void unused) {
         	
            Intent i = new Intent(getApplicationContext(),
-                   DashboardActivity.class);
-           
+                   DashboardActivityAlt.class);
                    startActivity(i);
                    progDailog.dismiss();
           

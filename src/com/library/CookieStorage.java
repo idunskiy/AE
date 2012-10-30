@@ -9,18 +9,22 @@ public class CookieStorage {
 
 		private static CookieStorage instance;
 
-		private CookieStorage(){
+		private CookieStorage()
+		{
+			
 		    arrayList = new ArrayList<Object>();
 		}
 
 		public static CookieStorage getInstance(){
-		    if (instance == null){
+		    if (instance == null)
+		    {
 		        instance = new CookieStorage();
 		    }
 		    return instance;
 		}
 
-		public ArrayList<Object> getArrayList() {
+		public ArrayList<Object> getArrayList()
+		{
 		    return arrayList;
 		}
 		

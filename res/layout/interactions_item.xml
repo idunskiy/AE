@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/messagesInteractions"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:layout_below="@+id/panelInteractions"
+	    android:background="#FFFFFF"
+	    android:orientation="horizontal" >
+	            
+	             <TextView
+	            android:id="@+id/interactionId"
+	            android:text="Interaction"
+	            android:layout_width="150dp"
+	            android:layout_below="@+id/interactionAbove"
+                android:gravity="center_vertical|center_horizontal"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:textColor="#545454"
+	            android:textStyle="bold" />
+	            <TextView
+	            android:id="@+id/interactionDate"
+	            android:text="Date"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_toRightOf="@+id/interactionId" 
+	            android:layout_below="@+id/interactionAbove"
+	            android:gravity="center_vertical|center_horizontal"
+	            
+	            android:padding="10dip"
+	            android:textColor="#545454"
+	            android:textStyle="bold" />
+	            <TextView
+	            android:id="@+id/interactionMessage"
+	            android:text="Message"
+	            android:layout_width="fill_parent"
+	            android:layout_height="250dp"
+	            android:layout_below="@+id/interactionId"
+	           
+	            android:gravity="center_vertical|center_horizontal"
+	            
+	            android:padding="10dip"
+	            android:textColor="#545454"
+	            android:textStyle="bold" />
+	              <LinearLayout
+               android:id="@+id/interactionFilesPanel"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:orientation="vertical"
+               android:layout_below="@+id/interactionMessage"
+               >
+
+	           </LinearLayout>
+	  
+     </RelativeLayout>

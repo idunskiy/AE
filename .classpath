@@ -13,5 +13,9 @@
 	<classpathentry kind="lib" path="libs/android-async-http-1.4.1.jar"/>
 	<classpathentry kind="lib" path="D:/Java_ext/org.apache.axis.wsdl2java.eclipse_1.1.0.1/wsdl2javawizard.jar"/>
 	<classpathentry kind="lib" path="D:/Java_ext/org.apache.axis_1.1"/>
+	<classpathentry kind="lib" path="libs/apache-mime4j-0.5.jar"/>
+	<classpathentry kind="lib" path="libs/httpclient-4.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/httpcore-4.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/httpmime-4.2.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

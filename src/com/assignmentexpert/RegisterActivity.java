@@ -8,9 +8,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -23,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.library.UserFunctions;
 
@@ -38,7 +42,7 @@ public class RegisterActivity extends Activity {
     ImageView captcha;
     EditText captchaEdit;
 	boolean errorFlag = false;
-	
+	private ProgressDialog pd = null;
  
     // JSON Response node names
     private static String KEY_SUCCESS = "status";
@@ -63,28 +67,15 @@ public class RegisterActivity extends Activity {
         btnProceed = (Button) findViewById(R.id.btnProceed);
         btnLinkToLogin = (Button) findViewById(R.id.btnLogin);
         btnClose = (Button) findViewById(R.id.btnClose);
-        ImageView captcha = (ImageView) findViewById(R.id.captchaView);
-       
-        // test editboxed
-       
-      
-        UserFunctions a = new UserFunctions();
-        String b = null;
-        try {
-			
-			captcha.setImageBitmap(a.getCaptcha());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+             
+        // downloading the image
+        this.pd = ProgressDialog.show(this, "Please wait..", "Downloading Data...", true, false); 
+        new DownloadTask().execute();
 
         inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
-				inputPassword.setText(" ");
+				inputPassword.setText("");
 				inputPassword.setHint("Password"); inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				inputPassword.setTextColor(Color.BLACK);
 				return false;
@@ -94,8 +85,9 @@ public class RegisterActivity extends Activity {
         confPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
-				confPassword.setText(" ");
-				confPassword.setHint("Password");confPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				confPassword.setText("");
+				confPassword.setHint("Password confirmation");
+				confPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				confPassword.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -103,7 +95,8 @@ public class RegisterActivity extends Activity {
     	});
     	inputEmail.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputEmail.setText(" ");
+				inputEmail.setText("");
+				inputEmail.setHint("E-mail (Login in future)");
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
 				inputEmail.setTextColor(Color.BLACK);
@@ -112,7 +105,8 @@ public class RegisterActivity extends Activity {
     	});
     	inputFullName.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputFullName.setText(" ");
+				inputFullName.setText("");
+				inputFullName.setHint("FirstName");
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputFullName, 0); 
 				inputFullName.setTextColor(Color.BLACK);
@@ -121,7 +115,7 @@ public class RegisterActivity extends Activity {
     	});
     	captchaEdit.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				captchaEdit.setText(" ");
+				captchaEdit.setText("");
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(captchaEdit, 0); 
 				captchaEdit.setTextColor(Color.BLACK);
@@ -136,8 +130,6 @@ public class RegisterActivity extends Activity {
                String password = inputPassword.getText().toString();
                String confpassword = confPassword.getText().toString();
                String captcha = captchaEdit.getText().toString();
-               Context context = getApplicationContext();
-              
                if(inputFullName.getText().toString().equals("FirstName") )
             	   {
             	   inputFullName.getText().clear();
@@ -240,8 +232,8 @@ public class RegisterActivity extends Activity {
 						b = a.get(KEY_STATUS).toString();
 						if (Integer.parseInt(b)==1)
 						{
-							String message = "A message has been send to"+"\r\n"+ name+ 
-									"\r\n"+"Follow the link within message to restore password";
+							String message = "Registration confirmation message was send to"+"\r\n"+ name+ 
+									"\r\n"+"Congratulations!";
 							Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
 							toast.show();
 							
@@ -282,6 +274,35 @@ public class RegisterActivity extends Activity {
             }
         });
     }
+    private class DownloadTask extends AsyncTask<String, Void, Bitmap> {
+        protected Bitmap doInBackground(String... args) {
+           
+       	 UserFunctions a = new UserFunctions();
+       	 Bitmap bitmap = null;
+       	 try {
+				  bitmap = a.getCaptcha();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+       	
+			
+			return bitmap;
+
+           
+        }
+
+        protected void onPostExecute(Bitmap bitmap) {
+            // Pass the result data back to the main activity
+            //RestoreActivity.this.data = result;
+       	 RegisterActivity.this.captcha  = (ImageView) findViewById(R.id.captchaView);
+       	 captcha.setImageBitmap(bitmap);
+            if (RegisterActivity.this.pd != null) {
+            	RegisterActivity.this.pd.dismiss();
+            }
+            
+        }
+   }    
     boolean EmailValidate(String email)
     {
         

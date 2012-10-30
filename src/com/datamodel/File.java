@@ -1,12 +1,14 @@
 package com.datamodel;
 
+import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 
-public class File {
+public class File implements Parcelable{
 	@SerializedName("id")
 	int id;
 	@SerializedName("extension")
@@ -34,6 +36,10 @@ public class File {
         this.size = size;
         this.md5_checksum = md5_checksum;
     }
+	public File(Parcel in) {
+		readFromParcel(in);// TODO Auto-generated constructor stub
+	}
+	
 	public int getFileId() 
 	{
 		
@@ -113,4 +119,39 @@ public class File {
 	{		
 	return "{ "+"id="+id+ " " + "name"+ name + " "+ "full_path" + full_path + " " + "mime path" + mime_path + " " + "extension" + extension +" "+ "size " + size + "}";	
 	}
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public void writeToParcel(Parcel dest, int flags) {
+		
+		dest.writeInt(id);
+		dest.writeInt(size);
+		dest.writeString(extension);
+		dest.writeString(full_path);
+		dest.writeString(md5_checksum);
+		dest.writeString(mime_path);
+		dest.writeString(name);
+		
+	}
+	private void readFromParcel(Parcel in) {
+		id = in.readInt();
+		name = in.readString();
+		full_path = in.readString();
+		mime_path = in.readString();
+		extension = in.readString();
+		size = in.readInt();
+		md5_checksum = in.readString();
+		
+	}
+	public static final Parcelable.Creator CREATOR =
+	    	new Parcelable.Creator() {
+	            public File createFromParcel(Parcel in) {
+	                return new File(in);
+	            }
+	 
+	            public File[] newArray(int size) {
+	                return new File[size];
+	            }
+	        };
 }

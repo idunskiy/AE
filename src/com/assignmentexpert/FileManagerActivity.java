@@ -33,7 +33,7 @@ public class FileManagerActivity extends Activity {
 	// Stores names of traversed directories
 	ArrayList<String> str = new ArrayList<String>();
 	ArrayList<File> resFiles = new ArrayList<File>();
-	static ArrayList<File> finalAttachFiles = new ArrayList<File>();
+	private static ArrayList<File> finalAttachFiles = new ArrayList<File>();
 	// Check if the first level of the directory structure is the one showing
 	private Boolean firstLvl = true;
 	Dialog dialog = null;
@@ -175,19 +175,28 @@ public class FileManagerActivity extends Activity {
 		 btnAttach.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
 	        	
-	        	   if (finalAttachFiles.isEmpty())
+	        	   if (getFinalAttachFiles().isEmpty())
 	        		   {
-	        		   		finalAttachFiles = resFiles;
+	        		   		setFinalAttachFiles(resFiles);
 	        		   }
 	        	   else 
 	        	   {
 	        		   for (File it: resFiles)
-	        		   finalAttachFiles.add(it);
+	        		   getFinalAttachFiles().add(it);
 	        	   }
 	        	   if (!resFiles.isEmpty())
-	        	   {  Intent i = new Intent(getApplicationContext(),
+	        	   {  
+	        		   String value = getIntent().getExtras().getString("FileManager");
+	        		   if (value.equals("NewOrder"))
+	        		   {	        		   Intent i = new Intent(getApplicationContext(),
 	                       NewOrderActivity.class);
 	               		startActivity(i);
+	                 	}
+	        		   else if(value.equals("NewMessage"))
+	        		   {	        		   Intent i = new Intent(getApplicationContext(),
+		                       NewMessageActivity.class);
+		               		startActivity(i);
+		               	}
 	               }
 	        	   else
 	        	   {
@@ -200,11 +209,18 @@ public class FileManagerActivity extends Activity {
 		 btnCancel.setOnClickListener(new View.OnClickListener() {
 	    	   
 	           public void onClick(View view) {
-	           	
-	               Intent i = new Intent(getApplicationContext(),
-	                       NewOrderActivity.class);
-	               startActivity(i);
-	               
+	        	   
+	        	   String value = getIntent().getExtras().getString("FileManager");
+        		   if (value.equals("NewOrder"))
+        		   {	        		   Intent i = new Intent(getApplicationContext(),
+                       NewOrderActivity.class);
+               		startActivity(i);
+                 	}
+        		   else if(value.equals("NewMessage"))
+        		   {	        		   Intent i = new Intent(getApplicationContext(),
+	                       NewMessageActivity.class);
+	               		startActivity(i);
+	               	}
 	           }
 	       });
 	
@@ -327,6 +343,14 @@ public class FileManagerActivity extends Activity {
 		};
 				
 
+	}
+
+	public static ArrayList<File> getFinalAttachFiles() {
+		return finalAttachFiles;
+	}
+
+	public static void setFinalAttachFiles(ArrayList<File> finalAttachFiles) {
+		FileManagerActivity.finalAttachFiles = finalAttachFiles;
 	}
 
 	

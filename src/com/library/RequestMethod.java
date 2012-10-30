@@ -2,5 +2,9 @@ package com.library;
 
 public enum RequestMethod {
 	GET,
-    POST
+    POST,
+    PUT,
+    DELETE,
+    POST_UPLOAD
+    
 }

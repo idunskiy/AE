@@ -1,6 +1,7 @@
 package com.library;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -17,8 +18,11 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
+import com.assignmentexpert.R;
 
-	 	//SSLContext sslContext = SSLContext.getInstance("BKS");
+//public class MySSLSocketFactory
+//{
+//	 	SSLContext sslContext = SSLContext.getInstance("BKS");
 //	 	private static Context context;
 //
 //		protected static org.apache.http.conn.ssl.SSLSocketFactory createAdditionalCertsSSLSocketFactory() {
@@ -27,14 +31,14 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 //	 	    	
 //	 	        final KeyStore ks = KeyStore.getInstance("BKS");
 //
-////	 	        // the bks file we generated above
-////	 	        final InputStream in = context.getResources().openRawResource( R.raw);  
-////	 	        try {
-////	 	            // don't forget to put the password used above in strings.xml/mystore_password
-////	 	            ks.load(in, context.getString( R.string.mystore_password ).toCharArray());
-////	 	        } finally {
-////	 	            in.close();
-////	 	        }
+//	 	        // the bks file we generated above
+//	 	        final InputStream in = context.getResources().openRawResource( com.assignmentexpert.R.raw);  
+//	 	        try {
+//	 	            // don't forget to put the password used above in strings.xml/mystore_password
+//	 	            ks.load(in, context.getString( R.string.mystore_password ).toCharArray());
+//	 	        } finally {
+//	 	            in.close();
+//	 	        }
 //
 //	 	        return new AdditionalKeyStoreSSLSocketFactory(ks);
 //
@@ -42,8 +46,8 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 //	 	        throw new RuntimeException(e);
 //	 	    }
 //		}
+//
 //}
-	 	
 	     public class MySSLSocketFactory extends SSLSocketFactory {
 	    	    SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -75,5 +79,4 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 	    	        return sslContext.getSocketFactory().createSocket();
 	    	    }
 	    	}
-	
 

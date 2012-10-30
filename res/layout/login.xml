@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#FFFFFF" >
- 
+ 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -28,17 +28,14 @@
 
         <!-- Login Button -->
 
-
         <EditText
             android:id="@+id/loginEmail"
             android:layout_width="250dp"
-            android:text="Login"
+            android:text="Login (E-mail)"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="130dp"
             android:ems="10" />
-
-      
 
         <EditText
             android:id="@+id/loginPassword"
@@ -51,7 +48,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="210dp"
             android:ems="10" />
-        
+
         <CheckBox
             android:id="@+id/checkSigned"
             android:layout_width="300dp"
@@ -80,50 +77,53 @@
 
         <!-- Link to Registration Screen -->
 
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:layout_below="@+id/imageView1"
+    android:orientation="horizontal"
+    android:weightSum="1.0" >
+
         <Button
             android:id="@+id/btnLogin"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/login_error"
             android:background="#007FFF"
             android:text="Login"
-            android:gravity="left|center_horizontal" 
+            android:gravity="center|center_horizontal" 
             android:textColor="#FFFFFF"
             android:textSize="25dp"
             android:textStyle="bold" 
-            android:layout_marginTop="23dp"
-            
+            android:layout_weight=".33"      
            />
 
         <Button
             android:id="@+id/btnLinkToRegisterScreen"
-            android:layout_width="130dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/btnLogin"
-            android:layout_alignBottom="@+id/btnLogin"
-            android:layout_marginLeft="75dp"
-            
-            
             android:background="#838B83"
             android:text="Register"
             android:textColor="#FFFFFF"
             android:textSize="25dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+             android:layout_weight=".33" />
         <Button
             android:id="@+id/btnClose"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/btnLinkToRegisterScreen"
             android:layout_alignBottom="@+id/btnLinkToRegisterScreen"
-            android:layout_marginLeft="150dp"
             android:gravity="center_vertical|center_horizontal" 
             android:layout_alignParentRight="true"
             android:background="#CD0000"
             android:text="Close"
             android:textColor="#FFFFFF"
             android:textSize="25dp"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+            android:layout_weight=".34"/>
+        </LinearLayout>
 
     </RelativeLayout>
  

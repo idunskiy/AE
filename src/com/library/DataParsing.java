@@ -26,6 +26,9 @@ public class DataParsing {
 	private static String KEY_STATUS = "status";
     private static String KEY_MESSAGE = "message";
     private static String KEY_CATEGORIES = "categories";
+    private static String KEY_CUSTOMER = "customer";
+    private static String KEY_ID = "id";
+    private static String KEY_USER = "user";
     private static String KEY_DATA = "data";
     private static String KEY_ORDERS= "orders";
     private static String KEY_LEVELS= "levels";
@@ -71,6 +74,20 @@ public class DataParsing {
 		
 		return obj_statuses;
 	}
+	public String wrapUserId(JSONObject json) throws JSONException
+	{
+		String id=null;
+		JSONObject data = json.getJSONObject(KEY_DATA);
+    	JSONObject customer = new JSONObject();
+    	JSONObject user = new JSONObject();
+    	customer = data.getJSONObject(KEY_CUSTOMER);
+    	user = customer.getJSONObject(KEY_USER);
+    	id = user.getString(KEY_ID);
+    	
+    	 Log.i("id", id);
+		Log.i("customer json while login",customer.toString());
+    	return id;
+	}
 	
 	public List<Category> wrapCategories(JSONObject json) throws JSONException, SQLException
 	{
@@ -89,7 +106,8 @@ public class DataParsing {
 	
 	public List<Order> wrapOrders(JSONObject k) throws JSONException
 	{
-		JSONArray data= k.getJSONArray(KEY_ORDERS);
+		if (k != null)
+		{JSONArray data= k.getJSONArray(KEY_ORDERS);
 		JsonParser parser = new JsonParser();
 		JsonArray array = parser.parse(data.toString()).getAsJsonArray();
 		Gson gson = new Gson();
@@ -99,7 +117,9 @@ public class DataParsing {
 	    orders = gson.fromJson(array.toString(), listType);
 	    Order a = new Order();
 	    a.setOrders(orders);
-		return orders;
+		return orders;}
+		else 
+			return null;
 	
 	}
 	

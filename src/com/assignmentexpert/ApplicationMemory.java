@@ -1,14 +1,16 @@
 package com.assignmentexpert;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.library.HelperFactory;
 
-import android.app.Application;
-
 public class ApplicationMemory extends Application{
-
+	static ApplicationMemory instance;
 	   @Override
 	   public void onCreate() {
 	       super.onCreate();
+	       instance = this;
 	       HelperFactory.SetHelper(getApplicationContext());
 	   }
 	   @Override
@@ -16,4 +18,7 @@ public class ApplicationMemory extends Application{
 	       HelperFactory.ReleaseHelper();
 	       super.onTerminate();
 	   }
+	   public static ApplicationMemory getInstance(){
+	        return instance;
+	    }
 	}

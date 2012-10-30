@@ -1,12 +1,13 @@
 package com.datamodel;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Order {
+public class Order implements Parcelable{
 
 	@SerializedName("files")
 	List<File> files;
@@ -48,7 +49,7 @@ public class Order {
 	ProcessStatus process_status;
 	@SerializedName("created_at")
 	DateTime created_at;
-	@SerializedName("customer_thread")
+	@SerializedName("owc_thread")
 	CustomerThread cus_thread;
 	@SerializedName("dtl_expl")
 	boolean den;
@@ -90,6 +91,9 @@ public class Order {
 		this.deadline = deadline;
 	}
 
+	public Order(Parcel in) {
+		readFromParcel(in);
+	}
 	public List<File> getOrderFiles() {
 		return this.files;
 	}
@@ -287,8 +291,83 @@ public class Order {
 	@Override
 	public String toString() {
 		return "id=" + id + " " + "title=" + title
-				+ " " + "price=" + price + " " + "title= "+process_status.title
-				+ "}";
+				+ " " + "price=" + price + " " 
+				+ timezone+level+"}";
 	}
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	private void readFromParcel(Parcel in) {
+		boolean[] myBooleanArr = new boolean[6];
+		
+		
+		files = in.readArrayList(File.class.getClassLoader());
+		
+		checkpoint_deadline_sent = myBooleanArr[0];
+		customer_deadline_sent =  myBooleanArr[1];
+		payed = myBooleanArr[2];
+		payment_failed = myBooleanArr[3];
+		not_payed_sent = myBooleanArr[4];
+		den = myBooleanArr[5];
+		h_notified = myBooleanArr[6];
+		in.readBooleanArray(myBooleanArr);
+		special_info = in.readString();
+		title = in.readString();
+		timezone = in.readString();
+		info = in.readString();
+		id = in.readInt();
+		category = in.readParcelable(Category.class.getClassLoader());
+		level = in.readParcelable(Level.class.getClassLoader());
+		updated_at =  in.readParcelable(DateTime.class.getClassLoader());
+		deadline =  in.readParcelable(DateTime.class.getClassLoader());
+		checkpoint_deadline =  in.readParcelable(DateTime.class.getClassLoader());
+		created_at =  in.readParcelable(DateTime.class.getClassLoader());
+		process_status =  in.readParcelable(ProcessStatus.class.getClassLoader());
+		cus_thread =  in.readParcelable(CustomerThread.class.getClassLoader());
+		price = in.readFloat();
+		refund = in.readFloat();
+		
+	}
+	public void writeToParcel(Parcel par, int arg1) {
+		par.writeList(files);
+		par.writeBooleanArray(new boolean[] {checkpoint_deadline_sent});
+		par.writeBooleanArray(new boolean[] {customer_deadline_sent});
+		par.writeBooleanArray(new boolean[] {payed});
+		par.writeBooleanArray(new boolean[] {payment_failed});
+		par.writeBooleanArray(new boolean[] {not_payed_sent});
+		par.writeBooleanArray(new boolean[] {den});
+		par.writeBooleanArray(new boolean[] {h_notified});
+		par.writeString(special_info);
+		par.writeString(info);
+		par.writeString(timezone);
+		par.writeString(title);
+		par.writeInt(id);
+		par.writeParcelable(category, arg1);
+		par.writeParcelable(level, arg1);
+		par.writeParcelable(checkpoint_deadline, arg1);
+		par.writeParcelable(created_at, arg1);
+		par.writeParcelable(deadline, arg1);
+		par.writeParcelable(updated_at, arg1);
+		par.writeParcelable(cus_thread, arg1);
+		par.writeParcelable(process_status, arg1);
+		par.writeFloat(price);
+		par.writeFloat(refund);
+
+		
+	}
+
+	
+	public static final Parcelable.Creator<Order> CREATOR =
+	    	new Parcelable.Creator<Order>() {
+	            public Order createFromParcel(Parcel in) {
+	                return new Order(in);
+	            }
+	 
+	            public Order[] newArray(int size) {
+	            	throw new UnsupportedOperationException();
+	            }
+	        };
+	
 
 }
