@@ -2,6 +2,14 @@ package com.assignmentexpert;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -76,7 +84,11 @@ public class FileManagerActivity extends Activity {
 		      
 		    	myView.setFocusable(false);
 		    	chosenFile = fileList[myItemInt].file;
-				File sel = new File(path + "/" + chosenFile);
+				File sel;
+				
+					
+					sel = new File(path + "/" +  chosenFile);
+				
 				Log.i("path",sel.toString());
 		        if (sel.isDirectory()) {
 		        	
@@ -127,6 +139,7 @@ public class FileManagerActivity extends Activity {
 				        		 
 				        		 if (select.isFile())
 				        			 {		 	
+				        			 	
 					        			 resFiles.add(select);
 					        			 resFiles.remove(all);
 					        			 
@@ -141,21 +154,22 @@ public class FileManagerActivity extends Activity {
 				    	for(int i =0;i<fileList.length;i++)
 						{
 				    		chosenFile = fileList[i].file;
-							File select = new File(path + "/" + chosenFile);
+							File select = new File(path + "/" +chosenFile);
+							
 				    		fileList[i].setItemCheck(false);
 				    		if (select.isFile())
 		        			 {		 	
 			        			 resFiles.remove(select);
 			        			 //resFiles.remove(all);
-			        			 
 		        			 }
 				    		
 						}
-				    	 adapter.notifyDataSetChanged();
+				    	adapter.notifyDataSetChanged();
 				    }
 				    if (fileList[myItemInt].check == true)
 				    	{
 				    	resFiles.add(sel);
+				    	
 				    	 if(fileList[myItemInt].file.equalsIgnoreCase("select all"))
 				    			 {
 				    		    	String selectAllFile = fileList[myItemInt].file;
@@ -168,8 +182,9 @@ public class FileManagerActivity extends Activity {
 					adapter.notifyDataSetChanged();
 					Log.i(fileList[myItemInt].file,Boolean.toString(fileList[myItemInt].check));
 		        }   
-		}
-
+		
+		      
+		      }
 	});
 		
 		 btnAttach.setOnClickListener(new View.OnClickListener() {
@@ -188,13 +203,20 @@ public class FileManagerActivity extends Activity {
 	        	   {  
 	        		   String value = getIntent().getExtras().getString("FileManager");
 	        		   if (value.equals("NewOrder"))
-	        		   {	        		   Intent i = new Intent(getApplicationContext(),
+	        		   {	        		
+	        			   Intent i = new Intent(getApplicationContext(),
 	                       NewOrderActivity.class);
 	               		startActivity(i);
 	                 	}
 	        		   else if(value.equals("NewMessage"))
-	        		   {	        		   Intent i = new Intent(getApplicationContext(),
+	        		   {	        		  
+	        			   Intent i = new Intent(getApplicationContext(),
 		                       NewMessageActivity.class);
+		               		startActivity(i);
+		               	}
+	        		   else if(value.equals("NewEssay"))
+	        		   {	        		   Intent i = new Intent(getApplicationContext(),
+		                       NewEssayActivity.class);
 		               		startActivity(i);
 		               	}
 	               }
@@ -221,12 +243,18 @@ public class FileManagerActivity extends Activity {
 	                       NewMessageActivity.class);
 	               		startActivity(i);
 	               	}
+        		   else if(value.equals("NewEssay"))
+        		   {	        		   Intent i = new Intent(getApplicationContext(),
+	                       NewEssayActivity.class);
+	               		startActivity(i);
+	               	}
 	           }
 	       });
 	
 
 	
 	}
+	
 
 	private void loadFileList() {
 		
@@ -237,24 +265,30 @@ public class FileManagerActivity extends Activity {
 		}
 
 		// Checks whether path exists
+		try{
 		if (path.exists()) {
 			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
 					File sel = new File(dir, filename);
-					// Filters based on whether the file is hidden or not
+										// Filters based on whether the file is hidden or not
 					return (sel.isFile() || sel.isDirectory())
 							&& !sel.isHidden();
 				}
 			};
 
 			String[] fList = path.list(filter);
-			fileList = new Item[fList.length];
+			
+				fileList = new Item[fList.length];
+			
 			for (int i = 0; i < fList.length; i++) {
-				 	
-				fileList[i] = new Item(fList[i], R.drawable.file_icon, false);
+				File sel = null;
+				
+					fileList[i] = new Item(fList[i], R.drawable.file_icon, false);
+					sel = new File(path, fList[i]);
+				
 				// Convert into file path
 				
-				File sel = new File(path, fList[i]);
+				
 				hasFile = true;
 			
 				// Set drawables
@@ -303,7 +337,11 @@ public class FileManagerActivity extends Activity {
 				
 		}
 			
-
+		}
+		catch (NullPointerException e)
+		{
+			e.printStackTrace();
+		}
 		adapter = new ArrayAdapter<Item>(this,
 				R.layout.file_manager, R.id.checkedTextItem,
 				fileList) 

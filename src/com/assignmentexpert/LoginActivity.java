@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.conn.HttpHostConnectException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,9 +35,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datamodel.Category;
+import com.datamodel.Customer;
+import com.datamodel.EssayCreationStyle;
+import com.datamodel.EssayType;
 import com.datamodel.Level;
 import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
+import com.datamodel.ProductType;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -46,7 +49,6 @@ import com.j256.ormlite.support.DatabaseConnection;
 import com.library.ContentRepository;
 import com.library.DataParsing;
 import com.library.DatabaseHandler;
-import com.library.NoInternetException;
 import com.library.RestClient;
 import com.library.UserFunctions;
 
@@ -85,6 +87,7 @@ public class LoginActivity extends Activity implements Runnable {
     private static String KEY_NAME = "name";
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
+    static Customer getUser;
     public static String passUserId = null;
     SharedPreferences.Editor editor;
     static List<Order> orders;
@@ -102,7 +105,10 @@ public class LoginActivity extends Activity implements Runnable {
         inputEmail = (EditText) findViewById(R.id.loginEmail);
         inputPassword = (EditText) findViewById(R.id.loginPassword);
         btnProceed= (Button) findViewById(R.id.btnProceed);
+
         btnLogin = (Button) findViewById(R.id.btnLogin);
+        
+       
         btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
         btnClose = (Button) findViewById(R.id.btnClose);
         loginErrorMsg = (TextView) findViewById(R.id.login_error);
@@ -334,6 +340,12 @@ public class LoginActivity extends Activity implements Runnable {
                 		List<ProcessStatus> status = u.wrapStatuses(json);
                 		List<Level> level = u.wrapLevels(json);
                 		List<Subject> subject = u.wrapSubjects(json);
+                		List<EssayType> essayTypes = u.wrapEssayType(json);
+                		List<EssayCreationStyle> essayCreatStyle = u.wrapEssayCreationStyle(json);
+                		Log.i("essayTypes", essayTypes.toString());
+                		Log.i("essayCreationStyles", essayCreatStyle.toString());
+                		getUser = u.wrapUser(json);
+                		Log.i("get user from", getUser.toString());
                 		
                 		_contactRepo=new ContentRepository(getContentResolver(),getApplicationContext());
 
@@ -359,6 +371,7 @@ public class LoginActivity extends Activity implements Runnable {
                 			
                 		}
                 		Log.i("subjects",daoSubject.queryForAll().toString());
+                		
                 		Dao<Category, Integer> daoCat=dbHelper.getDao(Category.class);
                 		QueryBuilder<Category,Integer> catquery = daoCat.queryBuilder();
                 		try{
@@ -402,6 +415,39 @@ public class LoginActivity extends Activity implements Runnable {
                 			e.printStackTrace();
                 			
                 		}
+                		
+                		Dao<EssayType, Integer> daoEssayType=dbHelper.getDao(EssayType.class);
+                		QueryBuilder<EssayType,Integer> essayTypequery = daoEssayType.queryBuilder();
+                		try
+                		{
+                			
+                			if (essayTypequery.query().isEmpty())
+                				_contactRepo.saveEssayTypes(essayTypes);
+                		}
+                		catch (IllegalStateException e)
+                		{
+                			getHelper1().open();			
+                			e.printStackTrace();
+                			
+                		}
+                		Log.i("essayType in database",daoEssayType.queryForAll().toString());
+                		
+                		Dao<EssayType, Integer> daoEssayCreationStyle=dbHelper.getDao(EssayCreationStyle.class);
+                		QueryBuilder<EssayType,Integer> essayCrStyleQuery= daoEssayCreationStyle.queryBuilder();
+                		try
+                		{
+                			
+                			if (essayCrStyleQuery.query().isEmpty())
+                				_contactRepo.saveEssayCreationStyles(essayCreatStyle);
+                		}
+                		catch (IllegalStateException e)
+                		{
+                			getHelper1().open();			
+                			e.printStackTrace();
+                			
+                		}
+                		Log.i("essayCreationStyles in database",daoEssayCreationStyle.queryForAll().toString());
+                		
                      }
             
           	}
@@ -463,7 +509,7 @@ public class LoginActivity extends Activity implements Runnable {
     
     public void appendLog(String text)
     {       
-       File logFile = new File("sdcard/log.file");
+       File logFile = new File("sdcard/log.txt");
        if (!logFile.exists())
        {
           try

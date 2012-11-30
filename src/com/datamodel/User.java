@@ -2,13 +2,21 @@ package com.datamodel;
 
 import java.util.Date;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
+  @SerializedName("id")
   int id;
+  @SerializedName("first_name")
   String first_name;
+  @SerializedName("last_name")
   String last_name;
+  @SerializedName("email")
   String email;
+  @SerializedName("timezone")
   String timezone;
-  Date created_at;
+  @SerializedName("created_at")
+  DateTime created_at;
  
    public int getUserId() 
    {
@@ -32,7 +40,7 @@ public class User {
 	{
 		 return this.timezone;
    }
-	public Date getDate() 
+	public DateTime getDate() 
 	{
 		 return this.created_at;
     }
@@ -56,10 +64,16 @@ public class User {
 	{
 		 this.timezone = timeZone;
 	}
-	public void setUserDate(Date date)
+	public void setUserDate(DateTime date)
 	{
 		 this.created_at = date;
 	}
-  
+	@Override
+	public String toString()
+	{		
+		return "id=" + id + " " + "first name=" + first_name
+				
+				+ "timezone = "+ timezone +"}";
+	}
   
 }

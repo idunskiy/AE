@@ -11,11 +11,11 @@ public class CustomerThread implements Parcelable{
 		@SerializedName("id")
 		int id;
 		@SerializedName("messages")
-		ArrayList<Message> messages;
+		ArrayList<Messages> messages;
 		// need for ORMlite
 		public CustomerThread()
 		{}
-		public CustomerThread (int id, ArrayList<Message> messlist)
+		public CustomerThread (int id, ArrayList<Messages> messlist)
 	    {
 	        this.id = id;
 	        this.messages = messlist;
@@ -29,7 +29,7 @@ public class CustomerThread implements Parcelable{
 			 return this.id;
 	    }
 			 
-		public ArrayList<Message> getMessages() 
+		public ArrayList<Messages> getMessages() 
 		{
 			 return this.messages;
 	    }
@@ -39,11 +39,11 @@ public class CustomerThread implements Parcelable{
 			 this.id = id;
 		}
 
-		public void setMessages(ArrayList<Message> messages)
+		public void setMessages(ArrayList<Messages> messages)
 		{
 			 this.messages = messages;
 		}
-		public void addMessage(Message message)
+		public void addMessage(Messages message)
 		{
 			messages.add(message);
 		}
@@ -64,7 +64,7 @@ public class CustomerThread implements Parcelable{
 		}
 		private void readFromParcel(Parcel in) {
 			id = in.readInt();
-			messages = in.readArrayList(Message.class.getClassLoader());
+			messages = in.readArrayList(Messages.class.getClassLoader());
 			
 		}
 		public static final Parcelable.Creator CREATOR =

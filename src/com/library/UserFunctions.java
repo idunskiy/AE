@@ -5,13 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
@@ -21,8 +19,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
@@ -35,15 +35,19 @@ public class UserFunctions {
 	 
     // Testing in localhost using wamp or xampp
     // use http://10.0.2.2/ to connect to your localhost ie http://localhost/
-    private static String loginURL = "https://192.168.0.250/app_dev.php/api/login_check";
-    private static String ordersURL = "https://192.168.0.250/app_dev.php/api/client/orderList/";
+    private static String loginURL = "http://192.168.0.250/app_dev.php/api/login_check";
+    private static String ordersURL = "http://192.168.0.250/app_dev.php/api/client/orderList/";
     private static String registerURL = "http://192.168.0.250/app_dev.php/api/client/register/";
     private static String captchaURL = "http://192.168.0.250/app_dev.php/captcha/regenerate/";
     private static String restoreURL = "http://192.168.0.250/app_dev.php/api/client/request/resetting/";
     private static String attachURL = "http://192.168.0.250/app_dev.php/api/client/request/resetting/";
    
     private static String sendOrderURL = "http://192.168.0.250/app_dev.php/api/client/createOrder/";
-    private static String sendMessageURL = "http://192.168.0.250//app_dev.php/api/client/createMessage/";
+    private static String sendMessageURL = "http://192.168.0.250/app_dev.php/api/client/createMessage/";
+    private static String deleteOrderURL = "http://192.168.0.250/app_dev.php/api/client/order/";
+    private static String payURL = "https://www.paypal.com/cgi-bin/webscr";
+    
+    
     private static String login_tag = "login";
     private static String register_tag = "register";
     int flag =0;
@@ -109,7 +113,7 @@ public class UserFunctions {
     public Bitmap getCaptcha() throws Exception
     { 
     	List<NameValuePair> params = new ArrayList<NameValuePair>();
-     	String obj  = jsonParser.getStringCaptcha(captchaURL, params);
+     	String obj  = jsonParser.getStringFromUrl(captchaURL, params);
         String b= obj.toString();
      	b = b.substring(23, b.length()-1);
     	byte [] encodeByte=Base64.decode(b,Base64.NO_PADDING);
@@ -166,13 +170,13 @@ public class UserFunctions {
    	
     	RestClient restClient = new RestClient(sendOrderURL);
     	
-    	restClient.AddEntity("title", new StringBody(title));
+    	restClient.AddEntity("title", new StringBody(title,Charset.forName("UTF-8")));
     	restClient.AddEntity("category", new StringBody(category));
     	restClient.AddEntity("level", new StringBody(level));
     	restClient.AddEntity("deadline", new StringBody(deadline));
-    	restClient.AddEntity("info", new StringBody(info));
+    	restClient.AddEntity("info", new StringBody(info,Charset.forName("UTF-8")));
     	restClient.AddEntity("dtl_expl",new StringBody(explanation));
-    	restClient.AddEntity("specInfo", new StringBody(specInfo));
+    	restClient.AddEntity("specInfo", new StringBody(specInfo,Charset.forName("UTF-8")));
     	restClient.AddEntity("timezone", new StringBody(timezone));
     	for (File file : files)
     	{
@@ -250,6 +254,7 @@ public class UserFunctions {
     	{
     		Log.i("files to upload", file.toString());
     		ContentBody fbody = new FileBody(( File )file, "application/octet-stream","UTF-8");
+    		Log.i("file body", fbody.getFilename().toString());
     		restClient.AddEntity("files[]", fbody);
     		
     	}
@@ -310,6 +315,17 @@ public class UserFunctions {
 
         
     }
+    public JSONObject deleteOrder(String orderId) throws Exception
+    { 
+    	List<NameValuePair> params = new ArrayList<NameValuePair>();
+       // params.add(new BasicNameValuePair("id", orderId));
+     //   params.add(new BasicNameValuePair("captcha", captcha));
+    	Log.i("delete uri", deleteOrderURL+orderId+"/");
+        JSONObject json = jsonParser.getJSONFromUrl(deleteOrderURL+orderId+"/", params,RequestMethod.DELETE);
+        return json;
+        
+    }
+ 
     
     /**
      * Function get Login status

@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<ScrollView 
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
   <LinearLayout
-       xmlns:android="http://schemas.android.com/apk/res/android"
+      
         android:id="@+id/headerList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-         android:gravity="center|center"  >
+         android:gravity="top|center"  >
 
         <Spinner
             android:id="@+id/productSpin"
             android:layout_width="250dp"
+            android:prompt="@string/preOrder"
             android:layout_height="wrap_content"
-            android:layout_marginTop="120dp"
-            
+            android:layout_marginTop="60dp"
             android:gravity="center_vertical|center_horizontal"
             android:text="Product" />
 		
@@ -32,6 +36,7 @@
 		    android:layout_height="wrap_content"
 		    android:layout_below="@+id/subjectSpin"
 		    android:layout_marginTop="30dp"
+		    android:prompt="@string/category"
 		    android:text="Category"
 		    android:gravity="center_vertical|center_horizontal" />
 		
@@ -42,6 +47,7 @@
 		    android:layout_below="@+id/categorySpin"
 		    android:layout_marginTop="30dp"
 		    android:text="Level"
+		    android:prompt="@string/level"
 		    android:gravity="center_vertical|center_horizontal" />
 		
 		<EditText
@@ -129,5 +135,7 @@
 		  	android:textColor="#000000"
 		    android:imeOptions="actionDone"
 		    />
+       
         
   		</LinearLayout>
+  		</ScrollView>

@@ -56,7 +56,6 @@ public class DateTime implements Parcelable{
 		
 		str = in.readString();
 		ts = in.readString();
-		
 	}
 	public static final Parcelable.Creator CREATOR =
 	    	new Parcelable.Creator() {

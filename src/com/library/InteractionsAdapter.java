@@ -12,19 +12,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.assignmentexpert.R;
-import com.datamodel.Message;
+import com.datamodel.Messages;
 
 
-public class InteractionsAdapter extends  ArrayAdapter<Message>{
+public class InteractionsAdapter extends  ArrayAdapter<Messages>{
 
 
     Context context; 
     int layoutResourceId;
     int position;
     //List<Message> messages = null;
-    List<Message> messages;
+    List<Messages> messages;
     private Activity activity;
-    public InteractionsAdapter(Context context,  int layoutResourceId,List<Message> messages, int position) {
+    public InteractionsAdapter(Context context,  int layoutResourceId,List<Messages> messages, int position) {
         super(context, layoutResourceId, messages);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -66,7 +66,7 @@ public class InteractionsAdapter extends  ArrayAdapter<Message>{
             holder = (InteractionHolder)row.getTag();
         }
         
-            Message message = messages.get(position);
+            Messages message = messages.get(position);
         	Log.i("position",Integer.toString(position));
 	   
 	        holder.interactionId.setText(Integer.toString(message.getMessageId()));

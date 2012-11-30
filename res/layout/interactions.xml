@@ -89,7 +89,6 @@
 	               android:id="@+id/deadlineLabel"
 	               android:layout_width="fill_parent"
 	               android:layout_height="fill_parent"
-	               android:layout_marginRight="10dp"
 	               android:layout_weight=".50"
 	               android:gravity="left|center_horizontal"
 	               android:padding="10dip"

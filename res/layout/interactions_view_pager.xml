@@ -100,7 +100,7 @@
 				      android:layout_centerVertical="true"
 	                android:layout_marginLeft="5dp"
 	                android:layout_marginRight="30dp"
-	               
+	               	android:visibility="gone"
 	                android:layout_toRightOf="@+id/deadlineLayout"
 	                android:gravity="center_vertical|center_horizontal"
 	                android:text="Pay"
@@ -113,8 +113,8 @@
 	            android:layout_height="fill_parent"
 	            android:layout_width="75dp"
 	            android:layout_alignParentRight="true"
+	            android:paddingLeft="10dp"
 	            android:gravity="center_vertical|center_horizontal"
-	            android:padding="10dip"
 	            android:textColor="#545454"
 	            android:textStyle="bold" />
 	           

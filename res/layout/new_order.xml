@@ -85,6 +85,5 @@
 	            android:padding="10dip"
 	            android:textColor="#545454"
 	            android:textStyle="bold" />
-	           
-   
+
    </RelativeLayout>

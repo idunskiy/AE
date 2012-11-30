@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.datamodel.Category;
+import com.datamodel.EssayCreationStyle;
+import com.datamodel.EssayType;
 import com.datamodel.Level;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
@@ -33,6 +35,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     private Dao<Level, Integer> simpleLevelDao;
     private Dao<ProcessStatus, Integer> simpleStatusDao;
     private Dao<Subject, Integer> simpleSubjectDao;
+    private Dao<EssayType, Integer> simpleEssayTypetDao;
+    private Dao<EssayCreationStyle, Integer> simpleEssayCreationStyleDao;
     // Login table name
     private static final String TABLE_LOGIN = "login";
     private static final AtomicInteger usageCounter = new AtomicInteger(0);
@@ -41,6 +45,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     private RuntimeExceptionDao<Level, Integer> levelRuntimeDao = null;
     private RuntimeExceptionDao<ProcessStatus, Integer> statusRuntimeDao = null;
     private RuntimeExceptionDao<Subject, Integer> subjectRuntimeDao = null;
+    private RuntimeExceptionDao<EssayType, Integer> essayTypetRuntimeDao = null;
+    private RuntimeExceptionDao<EssayCreationStyle, Integer> essayCreationStyleRuntimeDao = null;
     //private Dao<Category, Integer> categoryDao;
     // Categories table name
    // private CategoryDAO categoryDao = null;
@@ -89,6 +95,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
             TableUtils.createTable(connectionSource, Level.class);
             TableUtils.createTable(connectionSource, ProcessStatus.class);
             TableUtils.createTable(connectionSource, Subject.class);
+            TableUtils.createTable(connectionSource, EssayType.class);
+            TableUtils.createTable(connectionSource, EssayCreationStyle.class);
  			Log.i(DatabaseHandler.class.getName(), "created new entries in onCreate: " );
          }
          catch (SQLException e){
@@ -108,6 +116,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	           TableUtils.dropTable(connectionSource, Level.class, true);
 	           TableUtils.dropTable(connectionSource, ProcessStatus.class, true);
 	           TableUtils.dropTable(connectionSource, Subject.class,true);
+	           TableUtils.dropTable(connectionSource, EssayType.class,true);
+	           TableUtils.dropTable(connectionSource, EssayCreationStyle.class,true);
 	           onCreate(db, connectionSource);
 	       	}
 	       catch (SQLException e){
@@ -149,6 +159,20 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleSubjectDao;
 		}
+	  public Dao<EssayType, Integer> getEssayTypeDao() throws SQLException 
+	    {
+			if (simpleEssayTypetDao == null) {
+				simpleEssayTypetDao = getDao(EssayType.class);
+			}
+			return simpleEssayTypetDao;
+		}
+	  public Dao<EssayCreationStyle, Integer> getEssayCreationStyleDao() throws SQLException 
+	    {
+			if (simpleEssayCreationStyleDao == null) {
+				simpleEssayCreationStyleDao = getDao(EssayCreationStyle.class);
+			}
+			return simpleEssayCreationStyleDao;
+		}
 	  
 //		/**
 //		 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
@@ -181,6 +205,18 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 				statusRuntimeDao = getRuntimeExceptionDao(ProcessStatus.class);
 			}
 			return statusRuntimeDao;
+		}
+		public RuntimeExceptionDao<EssayType, Integer> getSimpleEssayTypeDao() {
+			if (essayTypetRuntimeDao == null) {
+				essayTypetRuntimeDao = getRuntimeExceptionDao(EssayType.class);
+			}
+			return essayTypetRuntimeDao;
+		}
+		public RuntimeExceptionDao<EssayCreationStyle, Integer> getSimpleEssayCrStyleDao() {
+			if (essayCreationStyleRuntimeDao == null) {
+				essayCreationStyleRuntimeDao = getRuntimeExceptionDao(EssayCreationStyle.class);
+			}
+			return essayCreationStyleRuntimeDao;
 		}
 		
 		
@@ -314,11 +350,15 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
         simpleLevelDao = null;
         simpleStatusDao = null;
         simpleSubjectDao = null;
+        simpleEssayTypetDao= null;
+        simpleEssayCreationStyleDao = null;
         
         categoryRuntimeDao = null;
         levelRuntimeDao = null;
         statusRuntimeDao = null;
         subjectRuntimeDao  = null;
+        essayTypetRuntimeDao = null;
+        essayCreationStyleRuntimeDao = null;
     }
 	
  

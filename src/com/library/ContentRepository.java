@@ -8,6 +8,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.datamodel.Category;
+import com.datamodel.EssayCreationStyle;
+import com.datamodel.EssayType;
 import com.datamodel.Level;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
@@ -94,6 +96,31 @@ public class ContentRepository {
 	        for (Level level : levels) {
 	        	
 	            HelperFactory.GetHelper().getLevelDao().create(level);
+	        }
+	        dbHelper.close();
+	    }
+	    
+	    public void saveEssayTypes(List<EssayType> esssayTypes) throws SQLException
+	    {
+	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
+	    	Dao<EssayType, Integer> daoContact=dbHelper.getDao(EssayType.class);
+	      
+	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
+	        for (EssayType essayType : esssayTypes) {
+	        	
+	            HelperFactory.GetHelper().getEssayTypeDao().create(essayType);
+	        }
+	        dbHelper.close();
+	    }
+	    public void saveEssayCreationStyles(List<EssayCreationStyle> esssayTypes) throws SQLException
+	    {
+	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
+	    	Dao<EssayCreationStyle, Integer> daoContact=dbHelper.getDao(EssayCreationStyle.class);
+	      
+	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
+	        for (EssayCreationStyle essayType : esssayTypes) {
+	        	
+	            HelperFactory.GetHelper().getEssayCreationStyleDao().create(essayType);
 	        }
 	        dbHelper.close();
 	    }

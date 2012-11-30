@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/new_order"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF"
+    >
            <LinearLayout
             
 		    android:layout_width="fill_parent"
@@ -57,37 +59,25 @@
 		    android:id="@+id/panelInteractions"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:layout_below="@+id/panelButtons"
 		    android:background="#FFFFFF"
 		    android:orientation="horizontal" >
   
-	         <TextView
-	             android:id="@+id/textLabel"
-	             android:layout_width="fill_parent"
-	             android:layout_height="wrap_content"
-	             android:layout_alignParentLeft="true"
-	             android:layout_alignParentTop="true"
-	             android:gravity="center_vertical|center_horizontal"
-	             android:padding="10dip"
-	             android:text="Непонятный испано - циганский диалект "
-	             android:textColor="#007FFF"
-	             android:textStyle="bold" />
+	     
 	         <LinearLayout
 	        android:id="@+id/productPriceLayout"
 		    android:layout_width="fill_parent"
 		    android:layout_height="60dp"
 		    android:baselineAligned="false"
-		    android:layout_below="@+id/textLabel"
 		    android:orientation="horizontal"
 		    android:weightSum="1.0" >
 		      <LinearLayout
 	        android:id="@+id/productLayout"
 		    android:layout_width="fill_parent"
 		    android:layout_height="75dp"
-		    android:layout_below="@+id/textLabel"
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
-		     >
+		     >
+
 	     <TextView
 	         android:id="@+id/productLabel"
 	         
@@ -98,7 +88,7 @@
 	         android:text="Product"
 	         android:textColor="#555555"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     <TextView
 	         android:id="@+id/productTextView"
 	         android:layout_width="fill_parent"
@@ -108,10 +98,10 @@
 			 android:text=""        
 	         android:textColor="#787878"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     </LinearLayout>
 	       <LinearLayout
-	        android:id="@+id/priceLayout"
+	        android:id="@+id/citationLayout"
 		    android:layout_width="fill_parent"
 		    android:layout_height="75dp"
 		    android:orientation="vertical"
@@ -126,22 +116,18 @@
 	         android:text="Price"
 	         android:textColor="#555555"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         
 	         />
 	       <TextView
 	         android:id="@+id/priceTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
-	         android:paddingRight="10dp"	
-			 android:text="123"  
-	       
 	         android:gravity="right|top"
-	         
-	         
+	         android:paddingRight="10dp"	
 	         android:textColor="#555555"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         />
 	       </LinearLayout>
 	       
@@ -179,6 +165,7 @@
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
+	         android:paddingLeft="10dp"
 	         android:text=""
 	         android:textColor="#787878"
 	         android:textStyle="bold"
@@ -209,7 +196,7 @@
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
-	         
+	          android:paddingRight="10dp"	
 	         android:text=""
 	         android:textColor="#787878"
 	         android:textStyle="bold" 
@@ -251,6 +238,7 @@
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
+	          android:paddingLeft="10dp"
 	         android:text=""
 	         android:textColor="#787878"
 	         android:textStyle="bold"
@@ -281,7 +269,7 @@
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
-	         
+	          android:paddingRight="10dp"	
 	         android:text=""
 	         android:textColor="#787878"
 	         android:textStyle="bold" 
@@ -324,6 +312,7 @@
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
 	         android:text=""
+	          android:paddingLeft="10dp"
 	         android:textColor="#787878"
 	         android:textStyle="bold"
 	         android:textSize="15dp" />
@@ -353,7 +342,7 @@
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
-	         
+	         android:paddingRight="10dp"	
 	         android:text=""
 	         android:textColor="#787878"
 	         android:textStyle="bold" 
@@ -380,7 +369,7 @@
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
 	         android:text=""
-	         android:padding="10dip"
+	          android:paddingLeft="10dp"
 	         android:layout_below="@+id/requireLabel"
 	         android:textColor="#787878"
 	         android:textStyle="bold"
@@ -403,12 +392,29 @@
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
 	         android:text=""
-	         android:padding="10dip"
+	         android:paddingLeft="10dp"
 	         android:layout_below="@+id/tasklabel"
 	         android:textColor="#787878"
 	         android:textStyle="bold"
 	         android:textSize="15dp" />
+	 <HorizontalScrollView 
+	        android:layout_width="fill_parent"
+		    android:layout_height="75dp"
+		    android:layout_below="@+id/taskTextView"
+		    android:background="#FFFFFF"
+		     >	   
+	        <LinearLayout
+	        android:id="@+id/infoMessageListLayout"
+		    android:layout_width="wrap_content"
+		    android:layout_height="75dp"
+		    
+		    android:orientation="horizontal">
+		    </LinearLayout>
+		    </HorizontalScrollView>
 	     </RelativeLayout>
 	    </ScrollView>
+	    
+	    
+	    
 
  </RelativeLayout>

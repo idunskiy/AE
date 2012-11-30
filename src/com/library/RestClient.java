@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -54,7 +56,7 @@ import com.assignmentexpert.LoginActivity;
 public class RestClient {
 	private ArrayList <NameValuePair> params;
     private ArrayList <NameValuePair> headers;
-    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,Charset.forName("UTF-8"));
     static InputStream instream = null;
     Context context;
     private String url;
@@ -92,7 +94,6 @@ public class RestClient {
         params.add(new BasicNameValuePair(name, value));
     }
 
-  
     public void AddHeader(String name, String value)
     {
         headers.add(new BasicNameValuePair(name, value));
@@ -104,177 +105,211 @@ public class RestClient {
 
     public InputStream Execute(RequestMethod method) throws Exception
     {   
-    	AsyncExecute mt = new AsyncExecute();
-    	mt.execute(method);
-    	InputStream stream  = mt.get();
-    	return stream;
-//    	HttpUriRequest request;
-//    	HttpResponse httpResponse;
-//    	DefaultHttpClient client = getNewHttpClient();
-//    	
-//    	this.AddHeader(CoreProtocolPNames.USER_AGENT, "Android-AEApp,ID=2435743");
-//    	this.AddHeader(ClientPNames.COOKIE_POLICY,  CookiePolicy.RFC_2109);
-//    	this.AddHeader("User-Agent",  "Android-AEApp,ID=2435743");
-//    	this.AddHeader("Accept",  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-//    	if (CookieStorage.getInstance().getArrayList().isEmpty())
-//         	CookieStorage.getInstance().getArrayList().add("PHPSESSID=lc89a2uu0rj6t2p219gc2cq4i2");
-//    	this.AddHeader("Cookie",  CookieStorage.getInstance().getArrayList().get(0).toString()); 
-//        switch(method) {
-//            case GET:
-//            {
-//                //add parameters
-//                String combinedParams = "";
-//                if(!params.isEmpty()){
-//                    combinedParams += "?";
-//                    for(NameValuePair p : params)
-//                    {
-//                        String paramString = p.getName() + "=" + URLEncoder.encode(p.getValue(),"UTF-8");
-//                        if(combinedParams.length() > 1)
-//                        {
-//                            combinedParams  +=  "&" + paramString;
-//                        }
-//                        else
-//                        {
-//                            combinedParams += paramString;
-//                        }
-//                    }
-//                }
-//
-//                 request = new HttpGet(url + combinedParams);
-//
-//                //add headers
-//                for(NameValuePair h : headers)
+//    	AsyncExecute mt = new AsyncExecute();
+//    	mt.execute(method);
+//    	InputStream stream  = mt.get();
+//    	return stream;
+    	HttpResponse httpResponse;
+    	DefaultHttpClient client = getNewHttpClient();
+    	InputStream instream = null;
+    	RestClient.this.AddHeader(CoreProtocolPNames.USER_AGENT, "Android-AEApp,ID=2435743");
+    	RestClient.this.AddHeader(ClientPNames.COOKIE_POLICY,  CookiePolicy.RFC_2109);
+    	RestClient.this.AddHeader("User-Agent",  "Android-AEApp,ID=IoaNN");
+    	RestClient.this.AddHeader("Accept",  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
+    	if (CookieStorage.getInstance().getArrayList().isEmpty())
+         	CookieStorage.getInstance().getArrayList().add("PHPSESSID=lc89a2uu0rj6t2p219gc2cq4i2");
+    	RestClient.this.AddHeader("Cookie",  CookieStorage.getInstance().getArrayList().get(0).toString()); 
+        switch(method) {
+            case GET:
+            {
+                //add parameters
+                String combinedParams = "";
+                if(!params.isEmpty()){
+                    combinedParams += "?";
+                    for(NameValuePair p : params)
+                    {
+                        String paramString = null;
+						try {
+							paramString = p.getName() + "=" + URLEncoder.encode(p.getValue(),"UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                        if(combinedParams.length() > 1)
+                        {
+                            combinedParams  +=  "&" + paramString;
+                        }
+                        else
+                        {
+                            combinedParams += paramString;
+                        }
+                    }
+                }
+
+                 request = new HttpGet(url + combinedParams);
+
+                //add headers
+                for(NameValuePair h : headers)
+                {
+                    request.addHeader(h.getName(), h.getValue());
+                }
+
+               // executeRequest(request, url);
+                break;
+            }
+
+            case POST:
+            {
+                request = new HttpPost(url);
+                
+                //add headers
+                for(NameValuePair h : headers)
+                {
+                    request.addHeader(h.getName(), h.getValue());
+                }
+
+                if(!params.isEmpty()){
+                    try {
+						((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+//                if(entity.getContentLength()!=0)
 //                {
-//                    request.addHeader(h.getName(), h.getValue());
+//                	((HttpPost)request).setEntity(entity);
+//                	
 //                }
-//
-//               // executeRequest(request, url);
-//                break;
-//            }
-//            case POST:
-//            {
-//                request = new HttpPost(url);
-//                
-//                //add headers
-//                for(NameValuePair h : headers)
-//                {
-//                    request.addHeader(h.getName(), h.getValue());
-//                }
-//
+
+                //executeRequest(request, url);
+                break;
+            }
+            case POST_UPLOAD:
+            {
+                request = new HttpPost(url);
+              
+                for(NameValuePair h : headers)
+                {
+                    request.addHeader(h.getName(), h.getValue());
+                }
+              
+				Log.i("POST_UPLOAD",entity.toString());
+               
+                if(entity.getContentLength()!=0)
+                {
+                	Log.i("rest client entity check",
+                				"is not null and is going to launch");
+                	((HttpPost)request).setEntity(entity);
+                	
+                }
+
+                //executeRequest(request, url);
+                break;
+            }
+            case PUT:
+            {
+                request = new HttpPut(url);
+
+                for(NameValuePair h : headers)
+                {
+                    request.addHeader(h.getName(), h.getValue());
+                }
+
+                if(!params.isEmpty()){
+                    try {
+						((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+
+                //executeRequest(request, url);
+                break;
+            }
+            case DELETE:
+            {
+                request = new HttpDelete(url);
+
+                //add headers
+                for(NameValuePair h : headers)
+                {
+                    request.addHeader(h.getName(), h.getValue());
+                }
+                Log.i("rest client delete", 
+                		"i'm in delete method");
+                Log.i("rest client delete url", 
+                		url);
 //                if(!params.isEmpty()){
-//                    ((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+//                    ((HttpPost)request).setEntity(entity);
 //                }
-////                if(entity.getContentLength()!=0)
-////                {
-////                	((HttpPost)request).setEntity(entity);
-////                	
-////                }
-//
-//                //executeRequest(request, url);
-//                break;
-//            }
-//            case PUT:
-//            {
-//                request = new HttpPut(url);
-//
-//                //add headers
-//                for(NameValuePair h : headers)
-//                {
-//                    request.addHeader(h.getName(), h.getValue());
-//                }
-//
-//                if(!params.isEmpty()){
-//                    ((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-//                }
-//
-//                //executeRequest(request, url);
-//                break;
-//            }
-//            case DELETE:
-//            {
-//                request = new HttpDelete(url);
-//
-//                //add headers
-//                for(NameValuePair h : headers)
-//                {
-//                    request.addHeader(h.getName(), h.getValue());
-//                }
-//
-//                if(!params.isEmpty()){
-//                    ((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-//                }
-//
-//                //executeRequest(request, url);
-//                break;
-//            }
-//            default:
-//            	request = null;
+
+                //executeRequest(request, url);
+                break;
+            }
+            default:
+            	request = null;
+        }
+        
+        try {
+            httpResponse = client.execute(request);
+            if (httpResponse.getLastHeader("Set-Cookie")!=null)
+            {
+            	CookieStorage.getInstance().getArrayList().remove(0);
+            	CookieStorage.getInstance().getArrayList().add(httpResponse.getLastHeader("Set-Cookie").getValue());
+            }
+            responseCode = httpResponse.getStatusLine().getStatusCode();
+            message = httpResponse.getStatusLine().getReasonPhrase();
+            Header[] headers = httpResponse.getAllHeaders();
+            for(Header head : headers)
+            {
+            	Log.i("RestClient headers", head.toString());
+            }
+            Log.i("RestClient response status code", Integer.toString(responseCode));
+            if (responseCode == 401)
+            {
+            	
+                Intent i = new Intent(context,
+                        LoginActivity.class);
+				i.putExtra("relogin", true);
+				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
+            	
+            }
+            
+            HttpEntity entity = httpResponse.getEntity();
+            if (entity != null) {
+
+                instream = entity.getContent();
+            }
+            
+
+        } catch (ClientProtocolException e)  {
+        	
+            client.getConnectionManager().shutdown();
+            e.printStackTrace();
+        } 
+        
+        catch (IOException e) {
+        	if (e instanceof HttpHostConnectException)
+            client.getConnectionManager().shutdown();
+            
+            e.printStackTrace();
+        }
+        
+//        catch (ConnectException e) {
+//            client.getConnectionManager().shutdown();
+//            publishProgress();
+//            e.printStackTrace();
 //        }
-//        
-//        try {
-//            httpResponse = client.execute(request);
-//            if (httpResponse.getLastHeader("Set-Cookie")!=null)
-//            {
-//            	CookieStorage.getInstance().getArrayList().remove(0);
-//            	CookieStorage.getInstance().getArrayList().add(httpResponse.getLastHeader("Set-Cookie").getValue());
-//            }
-//            responseCode = httpResponse.getStatusLine().getStatusCode();
-//            message = httpResponse.getStatusLine().getReasonPhrase();
-//            Header[] headers = httpResponse.getAllHeaders();
-//            for(Header head : headers)
-//            {
-//            	Log.i("RestClient headers", head.toString());
-//            }
-//            Log.i("RestClient response status code", Integer.toString(responseCode));
-//            if (responseCode == 401)
-//            {
-//            	
-//                Intent i = new Intent(context,
-//                        LoginActivity.class);
-//				i.putExtra("relogin", true);
-//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.startActivity(i);
-//            	
-//            }
-//            
-//            
-//            
-//            HttpEntity entity = httpResponse.getEntity();
-//            if (entity != null) {
-//
-//                instream = entity.getContent();
-//    
-//            }
-//            
-//        
-//        
-//
-//        } catch (ClientProtocolException e)  {
-//        	
-//            client.getConnectionManager().shutdown();
-//            e.printStackTrace();
-//        } 
-//        catch (HttpHostConnectException e)  {
-//        	
-//            client.getConnectionManager().shutdown();
-//            Toast.makeText(context, "You've lost internet connection. You should try later.",Toast.LENGTH_LONG)
-//    		.show();
-//            e.printStackTrace();
-//        } 
-//        catch (IOException e) {
-//            client.getConnectionManager().shutdown();
-//            Toast.makeText(context, "You've lost internet connection. You should try later.",Toast.LENGTH_LONG)
-//            		.show();
-//            e.printStackTrace();
-//        }
-//        
-//        return instream;
+        
+        return instream;
     }
     
     class AsyncExecute extends AsyncTask<RequestMethod, InputStream, InputStream> 
     {
     	  protected InputStream doInBackground(RequestMethod... param) {
-    		 
     	    	HttpResponse httpResponse;
     	    	DefaultHttpClient client = getNewHttpClient();
     	    	InputStream instream = null;
@@ -446,17 +481,12 @@ public class RestClient {
     	            	
     	            }
     	            
-    	            
-    	            
     	            HttpEntity entity = httpResponse.getEntity();
     	            if (entity != null) {
 
     	                instream = entity.getContent();
-    	    
     	            }
     	            
-    	        
-    	        
 
     	        } catch (ClientProtocolException e)  {
     	        	
@@ -486,7 +516,6 @@ public class RestClient {
 	        protected void onPostExecute(InputStream  result) {
 	        	 super.onPostExecute(result);
 	        	 
-	         
 	        }
 
 		
@@ -504,12 +533,10 @@ public class RestClient {
             final HttpParams params = new BasicHttpParams();
             HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
             SchemeRegistry registry = new SchemeRegistry();
             registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
             registry.register(new Scheme("https", sf, 443));
             
-
             ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
             
 

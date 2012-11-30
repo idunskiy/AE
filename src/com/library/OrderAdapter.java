@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.assignmentexpert.R;
@@ -20,6 +22,7 @@ public class OrderAdapter extends ArrayAdapter<Order>{
 
 	    Context context; 
 	    int layoutResourceId;    
+	    public static int rowHeight = 0;
 	    List<Order> orders = null;
 	    private Activity activity;
 	    public OrderAdapter(Context context,  int layoutResourceId,List<Order> orders) {
@@ -41,7 +44,7 @@ public class OrderAdapter extends ArrayAdapter<Order>{
 	        	LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            row = inflater.inflate(R.layout.dash_alt_item, parent, false);
 	            row.setBackgroundColor(Color.WHITE);
-	          
+	            //row.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,30));
 	            holder = new OrderHolder();
 	            holder.orderId = (TextView)row.findViewById(R.id.altOrderId);
 	            holder.orderTitle = (TextView)row.findViewById(R.id.altOrderTitle);
@@ -60,8 +63,8 @@ public class OrderAdapter extends ArrayAdapter<Order>{
 	        holder.orderTitle.setText(order.getTitle());
 	        holder.orderStatus.setText(order.getProcess_status().getProccessStatusTitle());
 	        holder.orderPrice.setText(Float.toString(order.getPrice()));
-
-
+//	        rowHeight = row.getHeight();
+	        
 	        return row;
 	    }
  	    

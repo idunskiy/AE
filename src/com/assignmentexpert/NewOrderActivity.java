@@ -1,6 +1,9 @@
 package com.assignmentexpert;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.Security;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,13 +38,13 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -55,6 +59,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.datamodel.Category;
 import com.datamodel.Level;
@@ -89,6 +94,8 @@ public class NewOrderActivity extends Activity{
 	private EditText taskReq;
 	
 	
+	int currFilePos;
+	
 	private SharedPreferences.Editor prefEditor;
 	
 	
@@ -118,24 +125,26 @@ public class NewOrderActivity extends Activity{
 	int exclVideoInt=0;
 	int commVideoInt=0;
 	private ProgressDialog progDailog;
+	private Button btnProfile;
+	private Spinner productSpin;
+	private Spinner essayProductSpin;
+	ViewFlipper vf;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final View header = getLayoutInflater().inflate(R.layout.header_listview, null,false);
         final View footer = getLayoutInflater().inflate(R.layout.footer_listview, null,true);
+        final View essayheader = getLayoutInflater().inflate(R.layout.essay_header, null,false);
         setContentView(R.layout.new_order);
-        
         fileList = (ListView) findViewById(R.id.list);
-		fileList.addHeaderView(header,null,false);
-       
-		
-	    
         btnOrderHistory = (Button) findViewById(R.id.btnOrdersHistory);
         btnClose = (Button) findViewById(R.id.btnClose);
+        btnProfile = (Button) findViewById(R.id.btnProfile);
         orderTitle = (EditText) header.findViewById(R.id.orderTitle);
         subjSpin = (Spinner) header.findViewById(R.id.subjectSpin);
    	 	catSpin = (Spinner) header.findViewById(R.id.categorySpin);
    	    levelSpin = (Spinner) header.findViewById(R.id.levelSpin);
+   	    
    	    
    	    
    	    Security.addProvider(new BouncyCastleProvider());
@@ -144,7 +153,6 @@ public class NewOrderActivity extends Activity{
         mDateDisplay = (TextView) findViewById(R.id.login_error);
         selectFiles = (Button) header.findViewById(R.id.btnSelectFiles);
         taskReq = (EditText) header.findViewById(R.id.taskRequirements);
-        
         
         explanationReq = (CheckBox) header.findViewById(R.id.explanationReq);
         exclVideo = (CheckBox) header.findViewById(R.id.exclVideo);
@@ -156,13 +164,11 @@ public class NewOrderActivity extends Activity{
         btnFilesRemove.setVisibility(View.INVISIBLE);
        
         
-	    fileList.addFooterView(footer,null,true);
+	  //  fileList.addFooterView(footer,null,true);
 		fileList.setCacheColorHint(Color.WHITE);
-		addSubjects();
-	    addLevels();
-		addTimeZones();
-	    addFiles();
-		fileList.setAdapter(adapter);
+		essayProductSpin =(Spinner) essayheader.findViewById(R.id.productSpin);
+		
+//		fileList.setAdapter(adapter);
 		
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
@@ -177,6 +183,58 @@ public class NewOrderActivity extends Activity{
 		editor = sharedPreferences.edit();
 		
 		
+		productSpin = (Spinner)header.findViewById(R.id.productSpin);
+		ArrayList<String> products = new ArrayList<String>();
+		products.add("Order");
+		products.add("Essay");
+		
+		
+		
+		final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, products);
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		productSpin.setAdapter(dataAdapter);
+		fileList.addHeaderView(header,null,false);
+		
+		fileList.addFooterView(footer,null,true);
+		productSpin.setOnItemSelectedListener( new OnItemSelectedListener() {
+			
+
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+	        	
+	        	 if(productSpin.getSelectedItem().toString().equals("Order")) 
+	        	 {
+			        	{
+			        		
+			     
+			        	}
+	        	
+	            }
+	        	 if(productSpin.getSelectedItem().toString().equals("Essay")) 
+	        	 {
+			        	{
+			        		Intent i = new Intent(getApplicationContext(),
+				                       NewEssayActivity.class);
+				               startActivity(i);
+			        	}
+	        	
+	            }
+	        }
+
+	        public void onNothingSelected(AdapterView<?> parent) {
+	            // do nothing
+	        }
+
+	    });
+		addSubjects();
+	    addLevels();
+		addTimeZones();
+	    addFiles();
+	    fileList.setOnLongClickListener(onclicklistener);
+		fileList.setAdapter(adapter);
+		
+		
+//	    
 		 if( !FileManagerActivity.getFinalAttachFiles().isEmpty())
        	  btnFilesRemove.setVisibility(View.VISIBLE);
          else 
@@ -192,6 +250,27 @@ public class NewOrderActivity extends Activity{
 //	           return true;         
 //	        }
 //		});
+	
+		btnProfile.setOnClickListener(new View.OnClickListener() {
+       	 
+            public void onClick(View view) {
+            	
+                Intent i = new Intent(getApplicationContext(),
+                       ProfileActivity.class);
+                startActivity(i);
+                
+            }
+        });
+		 btnOrderHistory.setOnClickListener(new View.OnClickListener() {
+        	 
+	            public void onClick(View view) {
+	            	
+	                Intent i = new Intent(getApplicationContext(),
+	                       DashboardActivityAlt.class);
+	                startActivity(i);
+	                
+	            }
+	        });
 		
 		
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -256,10 +335,13 @@ public class NewOrderActivity extends Activity{
             }
         });
         
-        orderTitle.setOnTouchListener(new OnTouchListener() {
+        orderTitle.setOnTouchListener(new OnTouchListener() 
+        {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				
-				if (orderTitle.getText().toString().equals("Order title(specify)"))
+				if (orderTitle.getText().toString().equals("Order title(specify)") | 
+						orderTitle.getText().toString().equals("The title have to be longer than 5 symbols") |
+						orderTitle.getText().toString().equals("You have to choose order name")	)
 				{
 				 orderTitle.setText("");
 				}
@@ -268,12 +350,54 @@ public class NewOrderActivity extends Activity{
 				return false;
 			}
         });
+       
+        orderTitle.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                int heightDiff = orderTitle.getRootView().getHeight() - orderTitle.getHeight();
+                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+                	if (!(orderTitle.getText().toString().equals("Order title(specify)")&orderTitle.getText().toString().equals("")))
+                	{
+                		prefEditor.putString("orderTitle",orderTitle.getText().toString());
+                		prefEditor.commit();
+    		        	//prefEditor.commit();
+                		
+                	}
+                }
+             }
+        });
+        taskReq.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                int heightDiff = taskReq.getRootView().getHeight() - taskReq.getHeight();
+                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+                	if(!(taskReq.getText().toString().equals("Task/Specific requirements")))
+                	{	
+                		prefEditor.putString("taskReq",taskReq.getText().toString());
+                		prefEditor.commit();
+                	}
+                	
+                }
+             }
+        });
+        deadline.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                int heightDiff = deadline.getRootView().getHeight() - deadline.getHeight();
+                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+                	
+                	if(!(deadline.getText().toString().equals("Deadline")))
+                	{
+                		prefEditor.putString("deadline",deadline.getText().toString());
+                		prefEditor.commit();
+                	}
+                }
+             }
+        });
         
         taskReq.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
 				
-				if (taskReq.getText().toString().equals("Task/Specific requirements"))
+				if (taskReq.getText().toString().equals("Task/Specific requirements")|
+						taskReq.getText().toString().equals("Choose the task specific requirements"))
 				{
 					taskReq.setText("");
 				}
@@ -283,7 +407,8 @@ public class NewOrderActivity extends Activity{
 			}
         });
        
-        deadline.setOnTouchListener(new OnTouchListener() {
+        deadline.setOnTouchListener(new OnTouchListener()
+        {
 
 			public boolean onTouch(View arg0, MotionEvent arg1) 
 			
@@ -379,7 +504,7 @@ public class NewOrderActivity extends Activity{
     		         	   }
     		         	   else if(orderTitle.getText().length()<5)
     		         	   {
-    		         		   Toast toast = Toast.makeText(getApplicationContext(), "The title have to be longer then 5 symbols", Toast.LENGTH_SHORT);
+    		         		   Toast toast = Toast.makeText(getApplicationContext(), "The title have to be longer than 5 symbols", Toast.LENGTH_SHORT);
     		         		   toast.show();
     		         		   orderTitle.setText("");
     		         		   orderTitle.setTextColor(Color.RED);
@@ -396,6 +521,7 @@ public class NewOrderActivity extends Activity{
     		         		   errorFlag = true;
     		         	   }
     		         	   if (subjSpin.getSelectedItem().toString().equals("Subjects"))
+    		         		   
     		         	   {
     		         		 
     		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the subject", Toast.LENGTH_SHORT);
@@ -409,10 +535,23 @@ public class NewOrderActivity extends Activity{
     		         		   toast.show();
     		         		   errorFlag = true;
     		         	   }
-    		         	   
+    		         	  
     		         	   if (errorFlag == false)
     		         	   {
+    		         		 
+    		              	  ArrayList<File> files  = new ArrayList<File>();
+    		              	 
     		         		   new SendOrderTask().execute();
+    		         		  prefEditor.remove("orderTitle");
+    		         		  prefEditor.remove("taskReq");
+    		         		  prefEditor.remove("deadline");
+    		         		  prefEditor.remove("LevelsValue");
+    		         		  prefEditor.remove("SubjectsValue");
+    		         		  prefEditor.putString("newOrder", "newOne");
+    		         		  prefEditor.commit();
+//    		         		  if (!FileManagerActivity.getFinalAttachFiles().isEmpty())
+//    		         		  FileManagerActivity.getFinalAttachFiles().clear();
+    		         		   
     		 					
     		 				} 
     		         		  
@@ -426,34 +565,79 @@ public class NewOrderActivity extends Activity{
 
         // start to comment
 
-        if (!prefs.getAll().isEmpty())
-        {
-			String levelsValue=prefs.getString("LevelsValue", null);
-			String subjectsValue=prefs.getString("SubjectsValue", null);
-
-			for(int i=0;i<levelsListSpinner.size();i++)
-			{
-				
-				if(levelsValue.equals(levelsListSpinner.get(i).toString()))
-				{
-					
-					levelSpin.setSelection(i);
-				    break;
-				}
-			}
-			
-			for(int i=0;i<subjectsListSpinner.size();i++)
-			{
-				
-				if(subjectsValue.equals(subjectsListSpinner.get(i).toString()))
-				{
-					
-					subjSpin.setSelection(i);
-				    break;
-				}
-			}
-
-        }
+//        if (!prefs.getAll().isEmpty())
+//        {
+//			String levelsValue=prefs.getString("LevelsValue", null);
+//			String subjectsValue=prefs.getString("SubjectsValue", null);
+//			CharSequence charTitle = prefs.getString("orderTitle", null);
+//			CharSequence charTask = prefs.getString("taskReq", null);
+//		 	CharSequence charDeadline = prefs.getString("deadline", null);
+//			
+//			if (charTitle != null)
+//			{
+//				orderTitle.setText(charTitle);
+//			}
+//			else 
+//				orderTitle.setText("Order title(specify)");
+//			if (charTask != null)
+//			{
+//				taskReq.setText(charTask);
+//			
+//			}
+//			else
+//				taskReq.setText("Task/Specific requirements");
+//			if (charDeadline != null)
+//			{
+//				deadline.setText(charDeadline);
+//			}
+//			else
+//			deadline.setText("Deadline");
+//			if (levelsValue != null)
+//			{
+//				for(int i=0;i<levelsListSpinner.size();i++)
+//				{
+//					
+//					if(levelsValue.equals(levelsListSpinner.get(i).toString()))
+//					{
+//						levelSpin.setSelection(i);
+//					    break;
+//					}
+//				}
+//			}
+//			else 
+//				addLevels();
+//			if (subjectsValue!=null)
+//			{
+//				Log.i("subjSize", Integer.toString(subjectsListSpinner.size()));
+//				ArrayAdapter<Subject> myAdap = (ArrayAdapter<Subject>) subjSpin.getAdapter();
+//				for(int i=0;i<myAdap.getCount();i++)
+//				{
+//					
+//					if(subjectsValue.equals(myAdap.getItem(i).getSubjectTitle()))
+//					{
+//						Log.i("subjTitle",subjectsValue);
+//						Log.i("subjTitle from spin",subjectsListSpinner.get(i).toString());
+//						Log.i("subjPosition", Integer.toString(i));
+//						//subjSpin.setSelection(i);
+//						 //cast to an ArrayAdapter
+//					
+//						int spinnerPosition = myAdap.getPosition(subjectsListSpinner.get(i));
+//						
+//						Log.i("selected item", Integer.toString(spinnerPosition));
+//						Log.i("selected item spin", Integer.toString(	subjSpin.getSelectedItemPosition()));
+//						//set the default according to value
+//						subjSpin.setSelection(i);
+//						
+//					    break;
+//					}
+//				}
+//			}
+//			else 
+//				addSubjects();
+//			
+//			
+//
+//        }
         
         // end comment
 
@@ -500,6 +684,10 @@ public class NewOrderActivity extends Activity{
     					textView.setText(FileManagerActivity.getFinalAttachFiles().get(position).getName().toString());
     					textView.setTextColor(Color.BLACK);
     					textView.setPadding(55, 0, 0, 0);
+    					for (int i = 0; i< FileManagerActivity.getFinalAttachFiles().size();i++)
+    			         {
+    							textView.setTag(i);
+    			         }
     					textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.file_icon, 0, 0, 0);
     					textView.setTextSize(16);
     					textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
@@ -518,12 +706,14 @@ public class NewOrderActivity extends Activity{
 
     			            }
     			        });
+    					textView.setOnLongClickListener(onclicklistener);
     					return view;
     					
     				}
     			};
     	    	
     	    }
+
     	    
 	@Override
     protected Dialog onCreateDialog(int id) {
@@ -567,13 +757,16 @@ public class NewOrderActivity extends Activity{
 	
 	 public void addSubjects() {
 		 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+		 
 		 try {
+			
 			Dao<Subject,Integer> daoSubject = db.getSubjectDao();
 			subjectsListSpinner = daoSubject.queryForAll();
 			final Subject head = new Subject();
 		    head.setSubjectTitle("Subjects");
+		    //if (prefs.getString("newOrder", null).equals("newOne"))
 		    subjectsListSpinner.add(0,head);
-			ArrayAdapter<Subject> dataAdapter = new ArrayAdapter<Subject>(this,
+			final ArrayAdapter<Subject> dataAdapter = new ArrayAdapter<Subject>(this,
 			android.R.layout.simple_spinner_item, subjectsListSpinner);
 			dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			subjSpin.setAdapter(dataAdapter);
@@ -581,9 +774,16 @@ public class NewOrderActivity extends Activity{
 			        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			        {
 			        	prefEditor.putString("SubjectsValue", subjSpin.getSelectedItem().toString());
+			        	prefEditor.remove("newOrder");
 			        	prefEditor.commit();
-			        	if (subjectsListSpinner.contains(head));
-			        	subjectsListSpinner.remove(head);
+			        	
+			        	
+			        	
+//			        	if (subjectsListSpinner.contains(head));
+//			        	{
+//			        		subjectsListSpinner.remove(head);
+//			        	    dataAdapter.remove(head);
+//			        	}
 			        	
 			        	Subject item = (Subject) parent.getItemAtPosition(position);
 			        	addCategories(item);
@@ -617,6 +817,10 @@ public class NewOrderActivity extends Activity{
 				 List<Category> categories =
 						 daoCategory.queryBuilder().where().
 						    eq("subject_id", subj.getSubjectId()).query();
+				 final Category head = new Category();
+				    head.setCategoryTitle("Categories");
+				    //if (prefs.getString("newOrder", null).equals("newOne"))
+				 //   categories.add(0,head);
 				ArrayAdapter<Category> dataAdapter = new ArrayAdapter<Category>(this,
 						android.R.layout.simple_spinner_item, categories);
 				dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -687,64 +891,7 @@ public class NewOrderActivity extends Activity{
 		 
 		 public void addTimeZones() {
 			timezonSpin = (Spinner) findViewById(R.id.timezoneSpin);
-//			HashMap<Integer,String> zones = new HashMap<Integer, String>();
-//			zones.put(-11, "Pago Pago/United States");
-//			zones.put(-10, "Honolulu/United States");
-//			zones.put(-9, "Anchorage/United States");
-//			zones.put(-8, "Los Angeles/United States");
-//			zones.put(-7, "Denver/United States");
-//			zones.put(-6, "Chicago/United States");
-//			zones.put(-5, "New York/United States");
-//			zones.put(-4, "La Paz/Bolivia");
-//			zones.put(-3, "Rio de Janeiro/Brazil");
-//			zones.put(-2, "Fernando de Noronha/Brazil");
-//			zones.put(-1, "UTC-1 Azores, Portugal");
-//			zones.put(0, "UTC 0 London, UK");
-//			zones.put(1, "UTC 1 Amsterdam, Netherlands");
-//			zones.put(2, "UTC 2 Athens, Greece");
-//			zones.put(3, "UTC 3 Kuwait City, Kuwait");
-//			zones.put(4, "UTC 4 Dubai, United Arab Emirates");
-//			zones.put(5, "UTC 5 Islamabad, Pakistan");
-//			zones.put(6, "UTC 6 Thimphu, Bhutan");
-//			zones.put(7, "UTC 7 Jakarta, Indonesia");
-//			zones.put(8, "UTC 8 Hong Kong, China");
-//			zones.put(9, "UTC 9 Tokyo, Japan");
-//			zones.put(10, "UTC 10 Sydney, Australia");
-//			zones.put(11, "UTC 11 Port Vila, Vanuatu");
-//			zones.put(12,"UTC 12 Wellington, New Zealand");
-//			final ArrayList <String> timezonelist = new ArrayList<String>();
 //			
-//			TimeZone timezone = TimeZone.getDefault();
-//			int TimeZoneOffset = timezone.getRawOffset()/(60 * 60 * 1000);
-//			
-//			for (int key : zones.keySet()) {
-//				if (TimeZoneOffset == key)
-//					timezonelist.add(0,zones.get(key));
-//			}
-//				timezonelist.add("UTC-11 Pago Pago, United States");
-//				timezonelist.add("UTC-10 Honolulu, United States");
-//				timezonelist.add("UTC-9 Anchorage, United States");
-//				timezonelist.add("UTC-8 Los Angeles, United States");
-//				timezonelist.add("UTC-7 Denver, United States");
-//				timezonelist.add("UTC-6 Chicago, United States");
-//				timezonelist.add("UTC-5 New York, United States");
-//				timezonelist.add("UTC-4 La Paz, Bolivia");
-//				timezonelist.add("UTC-3 Rio de Janeiro, Brazil");
-//				timezonelist.add("UTC-2 Fernando de Noronha");
-//				timezonelist.add("UTC-1 Azores, Portugal");
-//				timezonelist.add("UTC 0 London, UK");
-//				timezonelist.add("UTC 1 Amsterdam, Netherlands");
-//				timezonelist.add("UTC 2 Athens, Greece");
-//				timezonelist.add("UTC 3 Kuwait City, Kuwait");
-//				timezonelist.add("UTC 4 Dubai, United Arab Emirates");
-//				timezonelist.add("UTC 5 Islamabad, Pakistan");
-//				timezonelist.add("UTC 6 Thimphu, Bhutan");
-//				timezonelist.add("UTC 7 Jakarta, Indonesia");
-//				timezonelist.add("UTC 8 Hong Kong, China");
-//				timezonelist.add("UTC 9 Tokyo, Japan");
-//				timezonelist.add("UTC 10 Sydney, Australia");
-//				timezonelist.add("UTC 11 Port Vila, Vanuatu");
-//				timezonelist.add("UTC 12 Wellington, New Zealand");	
 			 final String[]TZ = TimeZone.getAvailableIDs();
 			    
 			    Log.i("count", Integer.toString(TZ.length));
@@ -833,6 +980,26 @@ public class NewOrderActivity extends Activity{
 
 			    });
 		 }
+		 private class SpinnersUpload extends AsyncTask<Void, Void, Void >
+		 {
+			 protected void onPreExecute() {
+		        	progDailog = ProgressDialog.show(NewOrderActivity.this,"Please wait...", "Retrieving data ...", true, true);
+		        }
+			@Override
+			protected Void doInBackground(Void... arg0) {
+				
+				return null;
+			} 
+			protected void onPostExecute(Void unused) {
+				addSubjects();
+			    addLevels();
+				addTimeZones();
+			    addFiles();
+		        progDailog.dismiss();
+		          
+		        }
+			 
+		 }
 		 
 		 private class SendOrderTask extends AsyncTask<Void, Void, JSONObject > {
 			    
@@ -854,17 +1021,13 @@ public class NewOrderActivity extends Activity{
 	         			   TimeZone timezone = TimeZone.getTimeZone(timezonSpin.getSelectedItem().toString());
 	         			   Log.i("selected timezone", timezone.toString());
 	         			   
-//	         					   
-//	 					response = launch.sendOrder(orderTitle.getText().toString(),
-//	 							Integer.toString(((Category)catSpin.getSelectedItem()).getCategoryId()),
-//	 							Integer.toString(((Level)levelSpin.getSelectedItem()).getLevelId()),
-//	 					deadline.getText().toString(),"",Integer.toString(explanationReqInt), taskReq.getText().toString(),
-//	 					timezonSpin.getSelectedItem().toString(),FileManagerActivity.getFinalAttachFiles());
-	 					response = launch.sendOrder("qwerty ipsa",
+	         					   
+	 					response = launch.sendOrder(orderTitle.getText().toString(),
 	 							Integer.toString(((Category)catSpin.getSelectedItem()).getCategoryId()),
 	 							Integer.toString(((Level)levelSpin.getSelectedItem()).getLevelId()),
-	 					deadline.getText().toString(),"",Integer.toString(explanationReqInt),"suka blye",
+	 					deadline.getText().toString(),taskReq.getText().toString(),Integer.toString(explanationReqInt), "",
 	 					timezonSpin.getSelectedItem().toString(),FileManagerActivity.getFinalAttachFiles());
+	 					
 	 					Log.i("new order creation response", response.toString());
 				} catch (Exception e) {
 					
@@ -879,7 +1042,10 @@ public class NewOrderActivity extends Activity{
 		 	  	   progDailog.dismiss();
 		 	  	Intent i = new Intent(NewOrderActivity.this,
 	                       DashboardActivityAlt.class);
-	            startActivity(i);
+		 	   Bundle mBundle = new Bundle();
+               mBundle.putString("NewOrder", "wasAdded");
+               i.putExtras(mBundle);
+	           startActivity(i);
 		        
 		            // Pass the result data back to the main activity
 		        	
@@ -897,7 +1063,7 @@ public class NewOrderActivity extends Activity{
 //					else 
 //					{
 //						  this.cancel(true);
-//						  Toast mToast =  Toast.makeText(getApplicationContext(), "Нету больше!!!", Toast.LENGTH_LONG);
+//						  Toast mToast =  Toast.makeText(getApplicationContext(), "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!!!", Toast.LENGTH_LONG);
 //			   	  	      mToast.show();
 //						
 //					}
@@ -909,6 +1075,116 @@ public class NewOrderActivity extends Activity{
 
 				
 		   }
+		 public int getFilePosition(View v)
+		 {
+			 int pos = 0;
+			for (int i = 0; i<adapter.getCount();i++)
+			{
+				Log.i("fileList item", adapter.getItem(i).getName());
+				if (((CheckBox)v).getText().equals((adapter.getItem(i).getName())))
+				 pos = i;
+			}
+			 return pos;
+		 }
+		 public void setFilePosition(int position)
+		 {
+			 this.currFilePos = position;
+		 }
+		 
+		  OnLongClickListener onclicklistener = new OnLongClickListener() {
+				public boolean onLongClick(View arg0) {
+					final CharSequence[] items = {"Open", "Delete", "Details"};
+					final AlertDialog.Builder builder = new AlertDialog.Builder(NewOrderActivity.this);
+				    builder.setTitle(((TextView)arg0).getText().toString());
+				    Log.i("view class", arg0.getClass().getName());
+				    final int pos = getFilePosition(arg0);
+				    Log.i("position ", Integer.toString(pos));
+				    Log.i("view name", ((CheckBox)arg0).getText().toString());
+				    Log.i("view tag", (((CheckBox)arg0).getTag()).toString());
+				    Integer position  = (Integer) ((CheckBox)arg0).getTag();
+				    setFilePosition(position.intValue());
+				    
+					builder.setItems(items, new DialogInterface.OnClickListener() {
+					    public void onClick(DialogInterface dialog, int item) {
+					    	if (item == 0)
+					    	{
+					    		File file = FileManagerActivity.getFinalAttachFiles().get(pos);
+					    		
+					    			Intent intent = new Intent();
+					    			intent.setAction(android.content.Intent.ACTION_VIEW);
+					    			intent.setDataAndType(Uri.fromFile(file), "text/plain");
+					    			startActivity(intent);
+					    			Log.i("file position in new Order open", Integer.toString(pos));
+								
+					    	}
+					    	 else if (item == 1)
+					    		{  
+					    		 
+					    		   if (FileManagerActivity.getFinalAttachFiles().size()==1)
+					    		   {  
+					    			   FileManagerActivity.getFinalAttachFiles().clear();
+					    			   adapter.clear();
+					    			   adapter.notifyDataSetChanged();
+					    			   btnFilesRemove.setVisibility(View.INVISIBLE);
+					    		   }
+					    		   else
+					    			   { 
+					    				   try
+					    				   {
+					    					   
+						    				     adapter.remove(FileManagerActivity.getFinalAttachFiles().get(pos));
+								    		     Log.i("count",Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
+								    		     adapter.notifyDataSetChanged();
+					    				   }
+					    				   catch(IndexOutOfBoundsException e)
+					    				   {
+					    					 //  FileManagerActivity.getFinalAttachFiles().remove(position.intValue());
+					    					 //  Log.i("exception deleted position",FileManagerActivity.getFinalAttachFiles().get(position.intValue()).getName() );
+					    					   e.printStackTrace();
+					    				   }
+					    				  
+					    				   for (File f :  FileManagerActivity.getFinalAttachFiles())
+							    		     {
+							    		    	 Log.i("file container", f.getName());
+							    		     } 
+					    				   Log.i("file manager size", Integer.toString( FileManagerActivity.getFinalAttachFiles().size()));
+					    			   }
+					    		}
+					    	else if (item == 2)
+					    	{
+					    		File file = FileManagerActivity.getFinalAttachFiles().get(pos);
+					    		Log.i("file position in new Order details", Integer.toString(pos));
+					    		AlertDialog.Builder builder2 = new AlertDialog.Builder(NewOrderActivity.this);
+					  		    builder2.setTitle(file.getName());
+					  		  FileInputStream fis;
+							try {
+								fis = new FileInputStream(file);
+								builder2.setMessage("Size of file is: " + Long.toString(fis.getChannel().size())+ "  KB"+"\r\n"+
+								"Path of file is: " +"\r\n" + file.getPath());
+
+							} catch (FileNotFoundException e) 
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IOException e) 
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				    			
+					  		    
+					  		  AlertDialog alert = builder2.create();
+					  			alert.show();
+					    	}
+					    	
+					    	 
+					    }
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+					return true;
+				}
+			};
 
 		 
 	 

@@ -176,7 +176,7 @@ public class JSONParser {
 	        return jArr;
 	    }
 	    
-	    public String getStringCaptcha (String url, List<NameValuePair> params) throws Exception
+	    public String getStringFromUrl (String url, List<NameValuePair> params) throws Exception
 	    {
 	    	
 	    	  RestClient client = new RestClient(url);

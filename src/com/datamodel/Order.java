@@ -55,6 +55,10 @@ public class Order implements Parcelable{
 	boolean den;
 	@SerializedName("deadline")
 	DateTime deadline;
+	@SerializedName("is_active")
+	boolean is_active;
+	@SerializedName("product")
+	Product product;
 	List<Order> orders;
 	public Order()
 	{}
@@ -65,7 +69,8 @@ public class Order implements Parcelable{
 			DateTime checkpoint_deadline, boolean h_notified, float refund,
 			String special_info, boolean checkpoint_deadline_sent,
 			ProcessStatus process_status, DateTime created_at,
-			CustomerThread cus_thread, boolean den, DateTime deadline) {
+			CustomerThread cus_thread, boolean den, DateTime deadline , boolean is_active,
+			Product product) {
 		this.files = files;
 		this.customer_deadline_sent = customer_deadline_sent;
 		this.payed = payed;
@@ -89,6 +94,8 @@ public class Order implements Parcelable{
 		this.cus_thread = cus_thread;
 		this.den = den;
 		this.deadline = deadline;
+		this.is_active = is_active;
+		this.product = product;
 	}
 
 	public Order(Parcel in) {
@@ -185,10 +192,17 @@ public class Order implements Parcelable{
 	public DateTime getDeadline() {
 		return this.deadline;
 	}
+	
+	public boolean getIsActive() {
+		return this.is_active;
+	}
+	public Product getProduct() {
+		return this.product;
+	}
 
 	// setters
 
-	public void setOrderId(List<File> files) {
+	public void setOrderFiles(List<File> files) {
 		this.files = files;
 	}
 
@@ -224,7 +238,7 @@ public class Order implements Parcelable{
 		this.timezone = timezone;
 	}
 
-	public void getTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
@@ -276,8 +290,18 @@ public class Order implements Parcelable{
 		this.den = den;
 	}
 
+	
+
 	public void setDeadline(DateTime deadline) {
 		this.deadline = deadline;
+	}
+	
+	public void setIsActive(boolean is_active) {
+		this.is_active = is_active;
+	}
+	
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 	public List<Order> getOrders()
@@ -292,7 +316,7 @@ public class Order implements Parcelable{
 	public String toString() {
 		return "id=" + id + " " + "title=" + title
 				+ " " + "price=" + price + " " 
-				+ timezone+level+"}";
+				+ timezone+level+"price= " + product + "}";
 	}
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -368,6 +392,19 @@ public class Order implements Parcelable{
 	            	throw new UnsupportedOperationException();
 	            }
 	        };
+	  @Override
+	  public boolean equals(Object other){
+		  boolean result = false;
+		  if (other instanceof Order)
+		  {
+			  if (((Order) other).getOrderid() == this.getOrderid())
+				 result = true;
+		  }
+		  else
+			  result = false;
+		  
+		  return result;
+	  }
 	
 
 }

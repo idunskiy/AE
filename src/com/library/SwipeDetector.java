@@ -100,11 +100,11 @@ public class SwipeDetector extends SimpleOnGestureListener implements View.OnTou
    @Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		Log.i("SingleTap Dashboard",Float.toString(e.getY()));
-		return false;
+		return true;
 	}
    @Override
     public boolean onDoubleTap(MotionEvent e) {
 		Log.i("DoubleTap Dashboard",Float.toString(e.getY()));
-		return false;
+		return true;
 	}
 }

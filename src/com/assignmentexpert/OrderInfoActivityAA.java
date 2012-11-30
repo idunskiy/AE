@@ -5,10 +5,13 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.datamodel.Category;
@@ -23,8 +26,8 @@ public class OrderInfoActivityAA extends Activity {
 	private Button btnInfoOrder;
 	TextView productTextView;
     TextView priceTextView;
-	 TextView timezoneTextView;
-	 TextView subjTextView;
+	TextView timezoneTextView;
+	TextView subjTextView;
 	private TextView postedTextView;
 	private TextView categoryTextView;
 	private TextView levelTextView;
@@ -35,6 +38,7 @@ public class OrderInfoActivityAA extends Activity {
 	List<Subject> subjectsList;
 	List<Category> categoryList;
 	List<Level> levelList;
+	private LinearLayout layout;
 	
 	@SuppressWarnings("null")
 	@Override
@@ -42,12 +46,13 @@ public class OrderInfoActivityAA extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_info_aa);
         btnClose = (Button) findViewById(R.id.btnClose);
+        
 	    btnInteractions = (Button) findViewById(R.id.btnInteractions);
 	    btnInfoOrder = (Button) findViewById(R.id.btnInfoOrder);
 	    btnInfoOrder.setText("info"+ "\r\n"+Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
 	    
 	    productTextView = (TextView)findViewById(R.id.productTextView);
-	    priceTextView = (TextView)findViewById(R.id.priceTextView);
+	    priceTextView =   (TextView)findViewById(R.id.priceTextView);
 	    timezoneTextView = (TextView)findViewById(R.id.timezoneTextView);
 	    subjTextView = (TextView)findViewById(R.id.subjTextView);
 	    postedTextView =  (TextView)findViewById(R.id.postedTextView);
@@ -57,6 +62,8 @@ public class OrderInfoActivityAA extends Activity {
 	    taskTextView =  (TextView)findViewById(R.id.taskTextView);
 	    requireTextView =  (TextView)findViewById(R.id.requireTextView);
 	    
+	    layout = (LinearLayout)findViewById(R.id.infoMessageListLayout);
+	    
 	    Log.i("chosed listItem", DashboardActivityAlt.listItem.toString());
 	    
 	    DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -64,6 +71,7 @@ public class OrderInfoActivityAA extends Activity {
 	    Dao<Category, Integer> daoCategory = null;
 	    Dao<Level, Integer> daoLevel = null;
 		try {
+			
 			daoSubject = db.getSubjectDao();
 			subjectsList = daoSubject.queryForAll();
 			
@@ -89,6 +97,8 @@ public class OrderInfoActivityAA extends Activity {
 			if (DashboardActivityAlt.listItem.getLevel() != null)
 			DashboardActivityAlt.listItem.getLevel().setLevelTitle((
 					daoLevel.queryForId(DashboardActivityAlt.listItem.getLevel().getLevelId()).getLevelTitle()));
+			
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,7 +121,8 @@ public class OrderInfoActivityAA extends Activity {
 	    deadlineTextView.setText(DashboardActivityAlt.listItem.getDeadline().toString());
 	    taskTextView.setText(DashboardActivityAlt.listItem.getOrderinfo());
 	    requireTextView.setText(DashboardActivityAlt.listItem.getSpecInfo());
-	    
+	    productTextView.setText(DashboardActivityAlt.listItem.getProduct().getProductType());
+	    addFiles();
 	    
 	    
 //	    Log.i("category order",DashboardActivityAlt.listItem.getCategory().getCategoryTitle());
@@ -137,5 +148,36 @@ public class OrderInfoActivityAA extends Activity {
 	               
 	           }
 	       });
+	}
+	public void addFiles()
+	 {
+
+	    if(!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
+	    {
+	    	TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
+		         for (int i = 0; i< DashboardActivityAlt.listItem.getOrderFiles().size();i++)
+		          {
+		            
+		            	View line = new View(this);
+		                line.setLayoutParams(new LayoutParams(1, LayoutParams.MATCH_PARENT));
+		                line.setBackgroundColor(0xAA345556);
+		                tv[i] = new TextView(this);
+		                tv[i].setId(i);
+		                tv[i].setTag(i);
+		                tv[i].setTextColor(Color.BLACK);
+		                tv[i].setTextSize(12);
+		                tv[i].setCompoundDrawablesWithIntrinsicBounds(
+		                        0, R.drawable.file_icon, 0, 0);
+		                tv[i].setText(DashboardActivityAlt.listItem.getOrderFiles().get(i).getFileName());
+		                layout.addView(tv[i], 0);
+		                layout.addView(line, 1);
+		                
+	
+		          }
+		       
+	      }
+	  
+	    
+
 	}
 }

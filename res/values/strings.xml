@@ -5,7 +5,13 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_assignment">AssignmentActivity</string>
 	<string name="Password">Password</string>
-	<string name="subject">Subject</string>
+	<string name="subject">Subjects</string>
+	<string name="level">Levels</string>
+	<string name="category">Categories</string>
 	<string name="timezone">Choose your timezone</string>
+	<string name="essayType">Type of essay (select)</string>
+	<string name="citationStyle">Citation style (select)</string>
+	<string name="referencesNumber">Number of references</string>
 	<string name="open_helper_classname">DatabaseHandler</string>
+	<string name="preOrder">Choose order type</string>
 </resources>

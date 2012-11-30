@@ -23,7 +23,7 @@
             android:name="com.assignmentexpert.LoginActivity"
              android:windowSoftInputMode="stateAlwaysHidden" >
              
-            <intent-filter>
+           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
@@ -45,7 +45,7 @@
             android:name="com.assignmentexpert.NewOrderActivity"
             android:label="NewOrder"
             android:windowSoftInputMode="stateAlwaysHidden" >
-            
+             
             
              
         </activity>
@@ -73,6 +73,11 @@
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
+            android:name=".OrderInfoActivityEW"
+            android:label="OrderInfoActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
             android:name="com.assignmentexpert.InteractionsActivityAlt"
             android:label="InteractionsActivity"
             android:windowSoftInputMode="stateAlwaysHidden" >
@@ -88,8 +93,29 @@
             android:windowSoftInputMode="stateAlwaysHidden" >
              
         </activity>
+        <activity
+            android:name="com.assignmentexpert.ProfileActivity"
+            android:label="ProfileActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+             
+        </activity>
+         <activity
+            android:name="com.assignmentexpert.PreOrderActivity"
+            android:label="PreOrderActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+             
+        </activity>
+        <activity
+            android:name="com.assignmentexpert.NewEssayActivity"
+            android:label="NewEssayActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+             
+        </activity>
         <service android:name="com.library.ServiceMessages">
         </service>
+        <activity android:name="com.paypal.android.MEP.PayPalActivity"
+   android:theme="@android:style/Theme.Translucent.NoTitleBar"
+   android:configChanges="keyboardHidden|orientation"/>
       
     </application>
 

@@ -95,20 +95,7 @@
 	               android:textStyle="bold" />
 
 	</LinearLayout>
-	            <Button
-	                android:id="@+id/btnPay"
-	                android:layout_width="75dp"
-	                android:layout_height="40dp"
-				      android:layout_centerVertical="true"
-	                android:layout_marginLeft="5dp"
-	                android:layout_marginRight="30dp"
-	               
-	                android:layout_toRightOf="@+id/deadlineLayout"
-	                android:gravity="center_vertical|center_horizontal"
-	                android:text="Pay"
-	                android:textColor="#FFFFFF"
-	                android:textSize="18dp"
-	                android:textStyle="bold" />
+	           
 	             <TextView
 	            android:id="@+id/priceLabel"
 	            android:text="N/A"
