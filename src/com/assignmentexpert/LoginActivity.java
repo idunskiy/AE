@@ -1,79 +1,77 @@
 package com.assignmentexpert;
 
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.os.AsyncTask;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datamodel.Category;
+import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.LoginAsync;
+import com.asynctasks.RestoreAsync;
+import com.customitems.CustomMenuButton;
+import com.customitems.CustomTextView;
 import com.datamodel.Customer;
-import com.datamodel.EssayCreationStyle;
-import com.datamodel.EssayType;
-import com.datamodel.Level;
 import com.datamodel.Order;
-import com.datamodel.ProcessStatus;
-import com.datamodel.ProductType;
-import com.datamodel.Subject;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.support.DatabaseConnection;
 import com.library.ContentRepository;
-import com.library.DataParsing;
 import com.library.DatabaseHandler;
-import com.library.RestClient;
-import com.library.UserFunctions;
+import com.library.FrequentlyUsedMethods;
+import com.tabscreens.DashboardTabScreen;
+import com.tabscreens.LoginTabScreen;
 
-public class LoginActivity extends Activity implements Runnable {
+public class LoginActivity extends FragmentActivity implements Runnable, ITaskLoaderListener{
     private static final int DIALOG2_KEY = 0;
 	private static final int DIALOG1_KEY = 1;
-	Button btnLogin;
+	CustomMenuButton btnLogin;
     Button btnLinkToRegister;
     Button btnProceed;
-    Button btnRestore;
+    TextView btnRestore;
     Button btnClose;
     EditText inputEmail;
     EditText inputPassword;
     TextView loginErrorMsg;
     CheckBox checkboxSignMe;
-    
-    static boolean newUser = false;
-    
    
+    
+    public static String forFragmentLogin;
+    public static String forFragmentPassword;
     static boolean loginError = false;
-    
-    private Dialog progDailog;
-    
-	public DatabaseHandler databaseHandler=null;
-	 private static Context _context;
+    static boolean newUser = false;
+    private static Context instance;
+    public static String passUserId = null;
+    static List<Order> orders;
+    private static Context _context;
 	
  
     // JSON Response node names
@@ -87,52 +85,73 @@ public class LoginActivity extends Activity implements Runnable {
     private static String KEY_NAME = "name";
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
-    static Customer getUser;
-    public static String passUserId = null;
-    SharedPreferences.Editor editor;
-    static List<Order> orders;
-    JSONObject json;
+    private static final int DLG_EXAMPLE1 = 0;
+    public static Customer getUser;
     
+    private Dialog progDailog;
+ 	public DatabaseHandler databaseHandler=null;
+    JSONObject json;
     boolean signMe = false;
-    SharedPreferences sharedPreferences;
     boolean value = false;
-   
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+	private TextView imageHeader;
+	public static String restorePass ="";
+	
+	final FrequentlyUsedMethods faq = new FrequentlyUsedMethods(LoginActivity.this);
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
         setContentView(R.layout.login);
+    	InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        CustomTextView a = new CustomTextView(this);
          // Importing all assets like buttons, text fields
         inputEmail = (EditText) findViewById(R.id.loginEmail);
         inputPassword = (EditText) findViewById(R.id.loginPassword);
+        inputEmail.setSelection(0);
         btnProceed= (Button) findViewById(R.id.btnProceed);
-
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        
-       
-        btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
-        btnClose = (Button) findViewById(R.id.btnClose);
+//        btnLogin = (CustomMenuButton) findViewById(R.id.btnLogin);
+//     
+//        btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
+//        btnClose = (Button) findViewById(R.id.btnClose);
         loginErrorMsg = (TextView) findViewById(R.id.login_error);
-        btnRestore = (Button) findViewById(R.id.btnRestore);
-        checkboxSignMe = (CheckBox) findViewById(R.id.checkSigned);
-        RestClient helper = new RestClient(getBaseContext());
+        btnRestore = (TextView) findViewById(R.id.btnRestore);
+       // checkboxSignMe = (CheckBox) findViewById(R.id.checkSigned);
+        imageHeader =  (TextView) findViewById(R.id.imageView1);
+
+        getWindow().setFormat(PixelFormat.RGBA_8888);
         sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
         _context = this;
         editor = sharedPreferences.edit();
+        btnProceed.getBackground().setAlpha(120);
+        
+     
+        
+       
     	Log.d("user while login",sharedPreferences.getString("username", ""));
     	Log.d("password while login",sharedPreferences.getString("password", ""));
     	Log.d("password while login",Boolean.toString(sharedPreferences.contains("logout")));
     	Bundle bundle = getIntent().getExtras();
         if (bundle != null)
-          if (getIntent().getExtras().getBoolean("relogin") == true)
+        { 
+        	if (getIntent().getExtras().getBoolean("relogin") == true)
             	reLogin();
+          if(getIntent().getExtras().getString("restError") != null)
+        	  Toast.makeText(this, getIntent().getExtras().getString("restError"), Toast.LENGTH_LONG).show();
+        	  
+        }
+        
     	inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				//inputPassword.setFocusable(true);
 				inputPassword.setText("");
 				inputPassword.setHint("Password");
-				inputPassword.setHint("Password"); 
+				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
+				.showSoftInput(inputPassword, 0); 
 				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				inputPassword.setTextColor(Color.BLACK);
 				return false;
 			}
     		
@@ -150,32 +169,40 @@ public class LoginActivity extends Activity implements Runnable {
 			
     		
     	});
-    	btnClose.setOnClickListener(new View.OnClickListener() {
-  	       
-            public void onClick(View view) {
-            	moveTaskToBack(true);
-            } 
-    	});
+//    	btnClose.setOnClickListener(new View.OnClickListener() {
+//  	       
+//            public void onClick(View view) {
+//            	moveTaskToBack(true);
+//            } 
+//    	});
     	
-    	checkboxSignMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
-            {           
-            	if (isChecked == true)
-            	{
-	            	editor.putString("username",inputEmail.getText().toString());
-			        editor.putString("password",inputPassword.getText().toString());
-			        editor.putBoolean("isChecked", checkboxSignMe.isChecked());
-			        editor.commit();
-            	}
-            }
-            });
+//    	checkboxSignMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
+//            {           
+//            	if (isChecked == true)
+//            	{
+//            	 boolean isOnline = faq.isOnline();
+//			    	 if (isOnline)
+//			    	 {
+//			    		 
+//		            	editor.putString("username",inputEmail.getText().toString());
+//				        editor.putString("password",inputPassword.getText().toString());
+//				        editor.putBoolean("isChecked", checkboxSignMe.isChecked());
+//				        editor.commit();
+//				        
+//			    	 }
+//            	}
+//            }
+//            });
     	
     	inputEmail.setText("shurko@ukr.net");
     	inputPassword.setText("123456");
 
         if(sharedPreferences.getBoolean("isChecked", signMe)) 
         {
-        	new LoginTask().execute(sharedPreferences.getString("username", ""),sharedPreferences.getString("password", ""));
+        	forFragmentLogin = sharedPreferences.getString("username", "");
+   		 	forFragmentPassword = sharedPreferences.getString("password", "");
+   		 	LoginAsync.execute(this, this);
         }
 
     	// Login button Click Event
@@ -236,41 +263,30 @@ public class LoginActivity extends Activity implements Runnable {
 			    			 newUser = false;
 			    			 Log.i("old User action","LoginActivity");
 			    	 }
-			    	 Log.i("new user boolean", Boolean.toString(newUser));
-			    	 
-			    	 Log.i("email String", email);
-			    	 new LoginTask().execute(email,password);
-			    	 Log.i("shared Prefs before", sharedPreferences.getString("username", ""));
-			    	 editor.putString("username", email);
-			    	 editor.putString("password", password);
-			    	 //editor.putString("oldUser", email);
-			    	 editor.commit();
-			    	 Log.i("shared Prefs afeter", sharedPreferences.getString("username", ""));
+			    	 boolean isOnline = faq.isOnline();
+			    	 if (isOnline)
+			    		 
+				     {
+			    		 forFragmentLogin = email;
+			    		 forFragmentPassword = password;
+			    		 LoginAsync.execute(LoginActivity.this,LoginActivity.this);
+				    	 editor.putString("username", email);
+				    	 editor.putString("password", password);
+				    	 editor.commit();
+			    	 }
 				  }
-
 			}
 			
         });
        
 	
-        // Link to Register Screen
-       btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
- 
-            public void onClick(View view) {
-            	
-                Intent i = new Intent(getApplicationContext(),
-                        RegisterActivity.class);
-                startActivity(i);
-                
-            }
-        });
+
    
        btnRestore.setOnClickListener(new View.OnClickListener() {
     	   
            public void onClick(View view) {
-               Intent i = new Intent(getApplicationContext(),
-                       RestoreActivity.class);
-               startActivity(i);
+        	    showDialog(DLG_EXAMPLE1);
+
                
            }
        });
@@ -278,7 +294,9 @@ public class LoginActivity extends Activity implements Runnable {
 
     private DatabaseHandler getHelper1() {
 		if (databaseHandler == null) {
+			
 			databaseHandler = DatabaseHandler.getHelper(getApplicationContext());
+			
 		}
 		return (DatabaseHandler) databaseHandler;
 	}
@@ -286,11 +304,11 @@ public class LoginActivity extends Activity implements Runnable {
     public  void reLogin()
     {
     	
-    	
 //    	editor.remove("isChecked");
 //    	editor.commit();
+    	
     	signMe = false;
-    	checkboxSignMe.setChecked(false);
+    	//checkboxSignMe.setChecked(false);
     	inputEmail.setText(sharedPreferences.getString("username", ""));
     	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     	inputPassword.setText(sharedPreferences.getString("password", ""));
@@ -300,214 +318,10 @@ public class LoginActivity extends Activity implements Runnable {
     	
     }
    
-    class LoginTask extends AsyncTask<String, String, Void> {
-
-        private DatabaseConnection connect;
-
-		protected void onPreExecute() {
-        	progDailog = ProgressDialog.show(LoginActivity.this,"Please wait...", "Retrieving data ...", true);
-        }
-
-        protected Void doInBackground(String... param)  {
-        	 ContentRepository _contactRepo;
-        	 ContentRepository _contactRepo2;
-        
-        	UserFunctions userFunction = new UserFunctions();
-        	try {
-				json = userFunction.loginUser(param[0], param[1]);
-				
-			} catch (Exception e1) {
-				
-				e1.printStackTrace();
-			}
-        	
-            // check for login response
-            try {
-//            	if (RestClient.inetError == true)
-//            	{throw new NoInternetException();}
-            	if ((json.getString(KEY_STATUS) != null) & json.getString(KEY_MESSAGE).equals((String)"Success"))
-            	{
-            		
-                    String res = json.getString(KEY_STATUS);
-                    if(Integer.parseInt(res) == 1)
-                    {	
-                       	appendLog(json.toString());
-                    	DataParsing u = new DataParsing();
-                    	editor.putString("user_id",u.wrapUserId(json));
-                		editor.commit();
-                		passUserId = u.wrapUserId(json);
-                		List<Category> catlist = u.wrapCategories(json);
-                		List<ProcessStatus> status = u.wrapStatuses(json);
-                		List<Level> level = u.wrapLevels(json);
-                		List<Subject> subject = u.wrapSubjects(json);
-                		List<EssayType> essayTypes = u.wrapEssayType(json);
-                		List<EssayCreationStyle> essayCreatStyle = u.wrapEssayCreationStyle(json);
-                		Log.i("essayTypes", essayTypes.toString());
-                		Log.i("essayCreationStyles", essayCreatStyle.toString());
-                		getUser = u.wrapUser(json);
-                		Log.i("get user from", getUser.toString());
-                		
-                		_contactRepo=new ContentRepository(getContentResolver(),getApplicationContext());
-
-                		DatabaseHandler dbHelper=getHelper1();
-                		
-                		dbHelper.open();
-                		dbHelper.getWritableDatabase();
-                		Log.i("isOpened",Boolean.toString(dbHelper.isOpen()));
-                		
-                		Dao<Subject, Integer> daoSubject=dbHelper.getDao(Subject.class);
-                		QueryBuilder<Subject,Integer> Subjectquery = daoSubject.queryBuilder();
-
-                		try
-                		{
-                			
-                		   	if (Subjectquery.query().isEmpty())
-                		   		_contactRepo.saveSubjects(subject);
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			dbHelper.open();			
-                			e.printStackTrace();
-                			
-                		}
-                		Log.i("subjects",daoSubject.queryForAll().toString());
-                		
-                		Dao<Category, Integer> daoCat=dbHelper.getDao(Category.class);
-                		QueryBuilder<Category,Integer> catquery = daoCat.queryBuilder();
-                		try{
-                			dbHelper.open();	
-                			if (catquery.query().isEmpty())
-                			{
-                				_contactRepo.saveCategories(catlist);
-                			}
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			dbHelper.open();			
-                			e.printStackTrace();
-                			
-                		}
-                		Log.i("Rest client error flag", Boolean.toString(RestClient.inetError));
-                		Dao<ProcessStatus, Integer> daoStatus=dbHelper.getDao(ProcessStatus.class);
-                		QueryBuilder<ProcessStatus,Integer> Statusquery = daoStatus.queryBuilder();
-                		try{
-                			if (Statusquery.query().isEmpty())
-                			 _contactRepo.saveStatuses(status);
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			dbHelper.open();			
-                			e.printStackTrace();
-                			
-                		}
-
-                		Dao<Level, Integer> daoLevel=dbHelper.getDao(Level.class);
-                		QueryBuilder<Level,Integer> levelquery = daoLevel.queryBuilder();
-                		try
-                		{
-                			
-                			if (levelquery.query().isEmpty())
-                				_contactRepo.saveLevels(level);
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			getHelper1().open();			
-                			e.printStackTrace();
-                			
-                		}
-                		
-                		Dao<EssayType, Integer> daoEssayType=dbHelper.getDao(EssayType.class);
-                		QueryBuilder<EssayType,Integer> essayTypequery = daoEssayType.queryBuilder();
-                		try
-                		{
-                			
-                			if (essayTypequery.query().isEmpty())
-                				_contactRepo.saveEssayTypes(essayTypes);
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			getHelper1().open();			
-                			e.printStackTrace();
-                			
-                		}
-                		Log.i("essayType in database",daoEssayType.queryForAll().toString());
-                		
-                		Dao<EssayType, Integer> daoEssayCreationStyle=dbHelper.getDao(EssayCreationStyle.class);
-                		QueryBuilder<EssayType,Integer> essayCrStyleQuery= daoEssayCreationStyle.queryBuilder();
-                		try
-                		{
-                			
-                			if (essayCrStyleQuery.query().isEmpty())
-                				_contactRepo.saveEssayCreationStyles(essayCreatStyle);
-                		}
-                		catch (IllegalStateException e)
-                		{
-                			getHelper1().open();			
-                			e.printStackTrace();
-                			
-                		}
-                		Log.i("essayCreationStyles in database",daoEssayCreationStyle.queryForAll().toString());
-                		
-                     }
-            
-          	}
-            	else
-            	{
-            		final String wrong = "Incorrect login or password"; 
-            		
-            		publishProgress(wrong);
-            	}
-         }
-          catch (JSONException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-//           catch(NoInternetException  e)
-//           {
-//            	this.cancel(true);
-//    			editor.clear();
-//    			editor.commit();
-//    			((LoginActivity)_context).finish();
-//    			_context.startActivity(getIntent());
-//    			 Toast.makeText(LoginActivity.this, "You've lost internet connection. You should try later.",Toast.LENGTH_LONG)
-//        		   .show();
-//    			e.printStackTrace();
-//            }
-//        catch (HttpHostConnectException e) {
-//        	
-//		}
-             
-            return(null);
-        }
-        protected void onProgressUpdate(String ... progress) {
-//        	inputEmail.setText(progress[0]);
-//        	inputPassword.setText(progress[0]);
-        	this.cancel(true);
-        	Toast toast = Toast.makeText(LoginActivity.this, progress[0], Toast.LENGTH_LONG);
-        	toast.show();
-        	
-        	Intent intent = getIntent();
-        	finish();
-        	startActivity(intent);
-        	
-        	
-		}
-
-        protected void onPostExecute(Void unused) {
-        	
-           Intent i = new Intent(getApplicationContext(),
-                   DashboardActivityAlt.class);
-                   startActivity(i);
-                   progDailog.dismiss();
-          
-        }
-      }
     
     	
     
-    public void appendLog(String text)
+    public static void appendLog(String text)
     {       
        File logFile = new File("sdcard/log.txt");
        if (!logFile.exists())
@@ -524,11 +338,13 @@ public class LoginActivity extends Activity implements Runnable {
        }
        try
        {
+    	   
           //BufferedWriter for performance, true to set append to file flag
           BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true)); 
           buf.append(text);
           buf.newLine();
           buf.close();
+          
        }
        catch (IOException e)
        {
@@ -561,5 +377,158 @@ public class LoginActivity extends Activity implements Runnable {
 			}
 			
 		}
+	  @Override
+	    public void onBackPressed() {
+	        // Do Here what ever you want do on back press;
+	    }
+	  @Override
+	  public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	  }
+	  public static Context getInstance(){
+		    if (instance == null)
+		    {
+		        instance = LoginActivity._context;
+		    }
+		    return instance;
+		}
+	  
+
+	public void onLoadFinished(Object data) {
+		if (data instanceof String & ((String)data).equalsIgnoreCase("success"))
+		{
+			Log.i("LoginAsync in LoginActivity result", "success");
+//			Intent i = new Intent(getApplicationContext(),
+//                DashboardActivityAlt.class);
+//                startActivity(i);
+			Intent i = new Intent(getApplicationContext(),
+	                DashboardTabScreen.class);
+	                startActivity(i);
+                }
+		else if(data instanceof String & ((String)data).equalsIgnoreCase("error"))
+		{
+			
+		     Toast.makeText(LoginActivity.this, LoginAsync.loginErrorMess, Toast.LENGTH_LONG).show();
+		     finish();
+	    	 Intent i = new Intent(getApplicationContext(),
+		                LoginTabScreen.class);      
+	    	 startActivity(i);
+	    	 
+		}
+	}
+	@Override
+	public void onResume()
+	{
+		
+		
+	    super.onResume();
+	    InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//        Drawable drawable= getResources().getDrawable(R.drawable.login);
+//        drawable.setAlpha(255);
+//        Drawable drawable2= getResources().getDrawable(R.drawable.signup);
+//        drawable2.setAlpha(80);
+//        Drawable drawable3= getResources().getDrawable(R.drawable.close);
+//        drawable3.setAlpha(80);
+//		getResources().getDrawable(R.drawable.login).setAlpha(255);
+//        getResources().getDrawable(R.drawable.signup).setAlpha(80);
+//        getResources().getDrawable(R.drawable.close).setAlpha(80);
+	}
+
+	public void onCancelLoad() {
+		 Toast.makeText(LoginActivity.this, LoginAsync.loginErrorMess, Toast.LENGTH_LONG).show();
+	     finish();
+    	 Intent i = getIntent();      
+    	 startActivity(i);
+    	 
+	}
+	private void init(AttributeSet attrs) { 
+	    TypedArray a=this.obtainStyledAttributes(
+	         attrs,
+	         R.styleable.MyCustomView);
+
+	    //Use a
+	    Log.i("test",a.getString(
+	         R.styleable.MyCustomView_android_text));
+	    Log.i("test",""+a.getColor(
+	         R.styleable.MyCustomView_android_textColor, Color.BLACK));
+	    Log.i("test",a.getString(
+	         R.styleable.MyCustomView_extraInformation));
+
+	    //Don't forget this
+	    a.recycle();
+	}
+	 @Override
+	    protected Dialog onCreateDialog(int id) {
+	 
+	        switch (id) {
+	            case DLG_EXAMPLE1:
+	                return createExampleDialog();
+	            default:
+	                return null;
+	        }
+	    }
+	 
+	    /**
+	     * If a dialog has already been created,
+	     * this is called to reset the dialog
+	     * before showing it a 2nd time. Optional.
+	     */
+	    @Override
+	    protected void onPrepareDialog(int id, Dialog dialog) {
+	 
+	        switch (id) {
+	            case DLG_EXAMPLE1:
+	                // Clear the input box.
+	                EditText text = (EditText) dialog.findViewById(1);
+	                text.setText("");
+	                break;
+	        }
+	    }
+	  private Dialog createExampleDialog() {
+		  
+	        AlertDialog.Builder builder = new AlertDialog.Builder(getParent());
+	        builder.setTitle("Forgot password?");
+	        builder.setMessage("To reset your password, please enter your email address");
+	 
+	         // Use an EditText view to get user input.
+	         final EditText input = new EditText(this);
+	         input.setId(1);
+	         input.setHint("Email Address");
+	         builder.setView(input);
+	         final String pass = input.getText().toString();
+	        
+	        builder.setPositiveButton("Reset", new DialogInterface.OnClickListener() {
+	 
+	            public void onClick(DialogInterface dialog, int whichButton) {
+	            	boolean isOnline = faq.isOnline();
+			    	 if (isOnline  & EmailValidate(input.getText().toString()))
+			    	 {
+			    		 
+			    		 Log.i("restore password", pass);
+			    		 restorePass = input.getText().toString();
+			    		 RestoreAsync.execute(LoginActivity.this, LoginActivity.this);
+			    	 }
+			    	 else 
+			    	 {
+			    		 
+			    		 Toast.makeText(LoginActivity.this, "Some error occurs", Toast.LENGTH_SHORT).show();
+			    		 
+			    	 }
+	                return;
+	            }
+	        });
+	 
+	        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	 
+	            public void onClick(DialogInterface dialog, int which) {
+	                return;
+	            }
+	        });
+	 
+	        return builder.create();
+	    }
 	
 }

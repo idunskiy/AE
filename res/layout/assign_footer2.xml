@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:id="@+id/footerList"
+        android:focusable="true"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+         android:gravity="center|center"  >
+  
+ 		 <ListView android:id="@android:id/list"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent" />
+         
+          <Button
+		    android:id="@+id/btnSubmitOrder"
+		    style="@style/custom_button"
+		    android:layout_width="fill_parent"
+		    android:layout_below="@android:id/list"
+		    android:text="Submit Order"
+		  	android:textColor="#000000"
+		    />
+          <!--android:onClick="butSubmit_Click"  -->
+           <TextView
+            android:id="@+id/textDoneWell"
+            style="@style/custom_textview"
+            android:layout_width="fill_parent"
+            android:layout_below="@+id/btnSubmitOrder"
+            android:text="If you've done well - SUBMIT button should be active"
+            android:textStyle="bold" />
+           
+</RelativeLayout>

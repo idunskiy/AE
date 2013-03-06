@@ -8,7 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
+import java.io.File;
 public class Messages implements Parcelable
 {
 	/**
@@ -35,11 +35,12 @@ public class Messages implements Parcelable
 	ArrayList<File> files;
 	@SerializedName("tread")
 	Threads thread;
+	int position;
 	// need for ORMlite
 	public Messages()
 	{}
 	public Messages (int id, DateTime created_at , String body, DateTime deadline, float price, 
-			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<File> files, Threads thread)
+			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<File> files, Threads thread, int position)
     {
         this.id = id;
         this.created_at = created_at;
@@ -51,6 +52,7 @@ public class Messages implements Parcelable
         this.is_pr_ch = is_pr_ch;
         this.files = files;
         this.thread = thread;
+        this.position = position;
     }
 	public Messages(Parcel in) {
 		readFromParcel(in);
@@ -103,6 +105,10 @@ public class Messages implements Parcelable
 	{
 		 return this.thread;
     }
+	public int getPosition() 
+	{
+		 return this.position;
+    }
 		
 	public void setMessageId(int id)
 	{
@@ -152,6 +158,10 @@ public class Messages implements Parcelable
 	{
 		 this.thread = thread;
     }
+	public void setPosition(int position) 
+	{
+		  this.position = position;
+    }
 	public int describeContents() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -196,9 +206,6 @@ public class Messages implements Parcelable
 	                return new Messages[size];
 	            }
 	        };
-
-	
-	
 
 	
 	@Override

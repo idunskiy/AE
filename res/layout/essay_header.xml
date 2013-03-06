@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScrollView 
      xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/essayScroll"
      android:layout_width="fill_parent"
      android:layout_height="wrap_content"
-     
+     android:background="#FFFFFF"
      >
   <LinearLayout
         android:id="@+id/headerList"
@@ -30,16 +31,6 @@
 		 	android:text="@string/subject"
 		    android:prompt="@string/subject"
 		    android:gravity="center_vertical|center_horizontal" />
-
-		<Spinner
-		    android:id="@+id/categorySpin"
-		    android:layout_width="250dp"
-		    android:layout_height="wrap_content"
-		    android:layout_below="@+id/subjectSpin"
-		    android:layout_marginTop="30dp"
-		    android:prompt="@string/category"
-		    android:text="Category"
-		    android:gravity="center_vertical|center_horizontal" />
 		
 		<Spinner
 		    android:id="@+id/levelSpin"
@@ -57,7 +48,7 @@
 		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/levelSpin"
 		    android:layout_marginTop="30dp"
-		    android:text="Order title(specify)"
+		    android:hint="Order title(specify)"
 		    android:gravity="center_vertical|center_horizontal" />
 		
 		<EditText
@@ -66,7 +57,7 @@
 		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/levelSpin"
 		    android:layout_marginTop="30dp"
-		    android:text="Deadline"
+		    android:hint="Deadline"
 		    android:gravity="center_vertical|center_horizontal" />
    			
 		<Spinner
@@ -85,12 +76,13 @@
 		    android:prompt="@string/essayType"
 		    android:gravity="center_vertical|center_horizontal" />
 		
-		<EditText
+		<Spinner
 		    android:id="@+id/numberPagesEssay"
 		    android:layout_width="250dp"
-		    android:layout_height="100dp"
+		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/timezone"
 		    android:layout_marginTop="30dp"
+		    android:prompt="@string/numberPages"
 		    android:hint="Number of pages"
 		    android:inputType="number"
 		    android:gravity="left|top" />
@@ -103,31 +95,34 @@
 		    android:prompt="@string/citationStyle"
 		    android:gravity="center_vertical|center_horizontal" />
 	   
-		<EditText
-		    android:id="@+id/numberPagesEssay"
+		<Spinner
+		    android:id="@+id/numberReferences"
 		    android:layout_width="250dp"
-		    android:layout_height="100dp"
+		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/timezone"
 		    android:layout_marginTop="30dp"
+		    android:prompt="@string/numberReferences"
 		    android:hint="Number of references"
 		    android:inputType="number"
 		    android:gravity="left|top" />
+		
 		<EditText
 		    android:id="@+id/taskRequirements"
 		    android:layout_width="250dp"
 		    android:layout_height="100dp"
 	    	android:layout_below="@+id/timezone"
 		    android:layout_marginTop="30dp"
-		    android:text="Task/Specific requirements"
+		    android:hint="Task/Specific requirements"
 		    android:gravity="left|top" />
 			
 		
          <TextView
             android:id="@+id/diff"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="----------------------------------------------------------"
+            android:gravity="center|center"
+            android:text="----------------------------------------------------"
             android:textColor="#000000"
             android:textStyle="bold" />
          

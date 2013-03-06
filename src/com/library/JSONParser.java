@@ -1,4 +1,4 @@
-package com.library;
+ package com.library;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -185,18 +185,10 @@ public class JSONParser {
 	    	  {
 	    		  client.AddParam(param.getName(), param.getValue());  
 	    	  }
-
-	          try
-	          {
-	              client.Execute(RequestMethod.POST);
-	          }
-	          catch (Exception e)
-	          {
-	            
-	          }
+	    	  Log.i(" get string from url method  url",url);
+	        
 	          
-		    InputStream is = client.Execute(RequestMethod.POST);
-//	    	InputStream is = HttpClient.getResponse(url, params);
+		    InputStream is = client.Execute(RequestMethod.GET);
 	        try {
 	            BufferedReader reader = new BufferedReader(new InputStreamReader(
 	                    is, "iso-8859-1"), 8);
@@ -207,7 +199,7 @@ public class JSONParser {
 	            }
 	            is.close();
 	            json = sb.toString();
-	            
+	            Log.i("Json Parser class get string from url method",json);
 	          // json = client.getResponse();
 	           
 	        } 
@@ -217,6 +209,58 @@ public class JSONParser {
 	        return json;
 
 	    }
+	    public JSONObject getJSONfromInputStream (InputStream is) throws Exception
+	    {
+	    	
+	    	  try {
+		        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+		            StringBuilder sb = new StringBuilder();
+		            
+		            String line = null;
+		            try
+		            {
+			            while ((line = reader.readLine()) != null)
+			            {
+			                sb.append(line);// + "n");
+			            }
+		            }
+		            catch (IOException e)
+		            {
+		            	e.printStackTrace();
+		            }
+		            finally
+		            {
+		            	try
+		            	{
+		            		is.close();
+		            	}
+		            	catch (IOException e)
+			            {
+			            	e.printStackTrace();
+			            }
+		            }
+		            
+		          
+		               json = sb.toString();
+		            Log.i("getJSONfromInputStream result", json);
+		            
+		        } 
+		        catch (Exception e) {
+		            Log.e("Buffer Error JSON Parsing at ORDER_CREATE", "Error converting result " + e.toString());
+		            
+		        }
+		        try {
+		        	
+		            jObj = new JSONObject(json);
+		        } catch (JSONException e) {
+		        	
+		            Log.e("JSON Parser in order creating", "Error parsing data " + e.toString());
+		        }
+		        return jObj;
+
+	    }
+	    
 	    
 
 	    

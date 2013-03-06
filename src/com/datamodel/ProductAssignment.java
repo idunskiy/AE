@@ -92,6 +92,7 @@ public class ProductAssignment extends ProductType{
 	public String toString() {
 		return "title=" + title + "info " + "=" + info
 				+ " " + "profile=" + dtl_expl +  "}";
+	
 	}
 	
 	

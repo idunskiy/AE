@@ -1,65 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/new_order"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#FFFFFF"
-    >
-           <LinearLayout
-            
-		    android:layout_width="fill_parent"
-		    android:layout_height="50dp"
-		    android:orientation="horizontal"
-		    android:weightSum="1.0" 
-		    android:id="@+id/panelButtons">
-
-            <Button
-                android:id="@+id/btnInfoOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#007FFF"
-                android:gravity="center|center_horizontal"
-                android:text="Info"   
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".25"/>
-
-            <Button
-                android:id="@+id/btnInteractions"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#838B83"
-                android:gravity="center|center_horizontal"
-                android:text="Assignment expert"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".50"/>
-
-            <Button
-                android:id="@+id/btnClose"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" 
-                android:background="#CD0000"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Close"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold"
-                android:layout_weight=".25" />
-
-     </LinearLayout>
      <ScrollView
 		    android:id="@+id/scrollOrderInfo"
+		    xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:layout_below="@+id/panelButtons">
+		    android:background="#000000"
+		    >
 	     <RelativeLayout
 		    android:id="@+id/panelInteractions"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:background="#FFFFFF"
+		    android:background="#000000"
 		    android:orientation="horizontal" >
   
 	     
@@ -86,7 +37,7 @@
 	         android:gravity="left"
 	         android:padding="10dip"
 	         android:text="Product"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
 	     <TextView
@@ -96,7 +47,7 @@
 	         android:gravity="left|top"
 			 android:paddingLeft="10dp"	
 			 android:text=""        
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
 	     </LinearLayout>
@@ -114,7 +65,7 @@
 	         android:gravity="right"
 	         android:padding="10dip"
 	         android:text="Price"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
@@ -125,7 +76,7 @@
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
 	         android:paddingRight="10dp"	
-	         android:textColor="#555555"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         />
@@ -157,9 +108,9 @@
 	         android:gravity="left"
 	         android:padding="10dip"
 	         android:text="Subject"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     <TextView
 	         android:id="@+id/subjTextView"
 	         android:layout_width="fill_parent"
@@ -167,9 +118,9 @@
 	         android:gravity="left|top"
 	         android:paddingLeft="10dp"
 	         android:text=""
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     </LinearLayout>
 	       <LinearLayout
 	        android:id="@+id/timezoneLayout"
@@ -186,9 +137,9 @@
 	         android:gravity="right"
 	         android:padding="10dip"
 	         android:text="Timezone"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         
 	         />
 	       <TextView
@@ -198,9 +149,9 @@
 	         android:gravity="right|top"
 	          android:paddingRight="10dp"	
 	         android:text=""
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         />
 	       </LinearLayout>
 	       
@@ -230,9 +181,9 @@
 	         android:gravity="left"
 	         android:padding="10dip"
 	         android:text="Category"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     <TextView
 	         android:id="@+id/categoryTextView"
 	         android:layout_width="fill_parent"
@@ -240,9 +191,9 @@
 	         android:gravity="left|top"
 	          android:paddingLeft="10dp"
 	         android:text=""
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     </LinearLayout>
 	       <LinearLayout
 	        android:id="@+id/timezoneLayout"
@@ -259,9 +210,9 @@
 	         android:gravity="right"
 	         android:padding="10dip"
 	         android:text="Posted"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         
 	         />
 	       <TextView
@@ -271,9 +222,9 @@
 	         android:gravity="right|top"
 	          android:paddingRight="10dp"	
 	         android:text=""
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         />
 	       </LinearLayout>
 	       
@@ -303,9 +254,9 @@
 	         android:gravity="left"
 	         android:padding="10dip"
 	         android:text="Level"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     <TextView
 	         android:id="@+id/levelTextView"
 	         android:layout_width="fill_parent"
@@ -313,9 +264,9 @@
 	         android:gravity="left|top"
 	         android:text=""
 	          android:paddingLeft="10dp"
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	     </LinearLayout>
 	       <LinearLayout
 	        android:id="@+id/deadlineLayout"
@@ -332,9 +283,9 @@
 	         android:gravity="right"
 	         android:padding="10dip"
 	         android:text="Deadline"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         
 	         />
 	       <TextView
@@ -344,9 +295,9 @@
 	         android:gravity="right|top"
 	         android:paddingRight="10dp"	
 	         android:text=""
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 
-	         android:textSize="15dp"
+	         android:textSize="14dp"
 	         />
 	       </LinearLayout>
 	       
@@ -360,20 +311,20 @@
 	         android:layout_below="@+id/levelDeadlineLayout"
 	         android:text="Requirements"
 	          android:padding="10dip"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	 <TextView
 	         android:id="@+id/requireTextView"
 	         android:layout_width="fill_parent"
-	         android:layout_height="wrap_content"
+	         android:layout_height="60dp"
 	         android:gravity="left|top"
 	         android:text=""
 	          android:paddingLeft="10dp"
 	         android:layout_below="@+id/requireLabel"
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	         
 	         <TextView
 	         android:id="@+id/tasklabel"
@@ -383,9 +334,9 @@
 	         android:layout_below="@+id/requireTextView"
 	         android:text="Task"
 	          android:padding="10dip"
-	         android:textColor="#555555"
+	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	 <TextView
 	         android:id="@+id/taskTextView"
 	         android:layout_width="fill_parent"
@@ -394,14 +345,14 @@
 	         android:text=""
 	         android:paddingLeft="10dp"
 	         android:layout_below="@+id/tasklabel"
-	         android:textColor="#787878"
+	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
-	         android:textSize="15dp" />
+	         android:textSize="14dp" />
 	 <HorizontalScrollView 
 	        android:layout_width="fill_parent"
 		    android:layout_height="75dp"
 		    android:layout_below="@+id/taskTextView"
-		    android:background="#FFFFFF"
+		    android:background="#000000"
 		     >	   
 	        <LinearLayout
 	        android:id="@+id/infoMessageListLayout"
@@ -417,4 +368,3 @@
 	    
 	    
 
- </RelativeLayout>

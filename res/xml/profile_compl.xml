@@ -1,0 +1,20 @@
+ <PreferenceScreen
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+      android:key="profile_compl">
+     
+  			<ListPreference
+	                        android:title="Country"
+	                        android:key="profileCountry"
+	                        android:summary="Type of essay"
+	                         />
+  			
+  			
+        	<ListPreference
+	                        android:title="Time zone"
+	                        android:key="profileTimezone"
+	                        android:summary="Number of pages"
+	                         />
+        
+    
+</PreferenceScreen>

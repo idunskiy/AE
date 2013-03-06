@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+<!-- 
+    <TextView android:id="@+android:id/title"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:textSize="12dp"/>  
+
+    <TextView android:id="@+android:id/summary"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:textSize="8dp"/>
+        
+        
+        <TextView  android:id="@+android:id/title"
+     		android:textSize="19sp"
+     		android:paddingTop="10dp"
+     		android:textColor="#FFFFFF"
+     		android:layout_marginLeft="10dp"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content" />
+ -->
+ <com.customitems.CustomTextView
+   	    
+        android:id="@+android:id/title"
+        android:textSize="19sp"
+     		android:paddingTop="10dp"
+     		android:textColor="#FFFFFF"
+     		android:layout_marginLeft="10dp"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Medium.ttf">
+    </com.customitems.CustomTextView>
+ 
+ <CheckBox
+   	   	
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text=""
+        android:layout_alignParentRight="true"
+        android:paddingRight="8dp"
+        android:gravity="right"
+        android:textSize="20sp"/>
+ 
+ </RelativeLayout>

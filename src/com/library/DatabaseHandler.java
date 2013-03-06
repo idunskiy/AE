@@ -14,6 +14,8 @@ import com.datamodel.Category;
 import com.datamodel.EssayCreationStyle;
 import com.datamodel.EssayType;
 import com.datamodel.Level;
+import com.datamodel.NumberOfReferences;
+import com.datamodel.NumberPages;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -37,6 +39,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     private Dao<Subject, Integer> simpleSubjectDao;
     private Dao<EssayType, Integer> simpleEssayTypetDao;
     private Dao<EssayCreationStyle, Integer> simpleEssayCreationStyleDao;
+    private Dao<NumberPages, Integer> simpleNumberPagesDao;
+    private Dao<NumberOfReferences, Integer> simpleNumberReferencesDao;
     // Login table name
     private static final String TABLE_LOGIN = "login";
     private static final AtomicInteger usageCounter = new AtomicInteger(0);
@@ -47,6 +51,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     private RuntimeExceptionDao<Subject, Integer> subjectRuntimeDao = null;
     private RuntimeExceptionDao<EssayType, Integer> essayTypetRuntimeDao = null;
     private RuntimeExceptionDao<EssayCreationStyle, Integer> essayCreationStyleRuntimeDao = null;
+    private RuntimeExceptionDao<NumberPages, Integer> numberPagesRuntimeDao = null;
+    private RuntimeExceptionDao<NumberOfReferences, Integer> numberReferencesRuntimeDao = null;
     //private Dao<Category, Integer> categoryDao;
     // Categories table name
    // private CategoryDAO categoryDao = null;
@@ -97,6 +103,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
             TableUtils.createTable(connectionSource, Subject.class);
             TableUtils.createTable(connectionSource, EssayType.class);
             TableUtils.createTable(connectionSource, EssayCreationStyle.class);
+            TableUtils.createTable(connectionSource, NumberPages.class);
+            TableUtils.createTable(connectionSource, NumberOfReferences.class);
  			Log.i(DatabaseHandler.class.getName(), "created new entries in onCreate: " );
          }
          catch (SQLException e){
@@ -118,6 +126,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	           TableUtils.dropTable(connectionSource, Subject.class,true);
 	           TableUtils.dropTable(connectionSource, EssayType.class,true);
 	           TableUtils.dropTable(connectionSource, EssayCreationStyle.class,true);
+	           TableUtils.dropTable(connectionSource, NumberPages.class,true);
+	           TableUtils.dropTable(connectionSource, NumberOfReferences.class,true);
 	           onCreate(db, connectionSource);
 	       	}
 	       catch (SQLException e){
@@ -173,6 +183,21 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleEssayCreationStyleDao;
 		}
+	  public Dao<NumberPages, Integer> getNumberPagesDao() throws SQLException 
+	    {
+			if (simpleNumberPagesDao == null) {
+				simpleNumberPagesDao = getDao(NumberPages.class);
+			}
+			return simpleNumberPagesDao;
+		}
+	  public Dao<NumberOfReferences, Integer> getNumberReferencesDao() throws SQLException 
+	    {
+			if (simpleNumberReferencesDao == null) {
+				simpleNumberReferencesDao = getDao(NumberOfReferences.class);
+			}
+			return simpleNumberReferencesDao;
+		}
+
 	  
 //		/**
 //		 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
@@ -217,6 +242,18 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 				essayCreationStyleRuntimeDao = getRuntimeExceptionDao(EssayCreationStyle.class);
 			}
 			return essayCreationStyleRuntimeDao;
+		}
+		public RuntimeExceptionDao<NumberPages, Integer> getSimpleNumberPagesDao() {
+			if (numberPagesRuntimeDao == null) {
+				numberPagesRuntimeDao = getRuntimeExceptionDao(NumberPages.class);
+			}
+			return numberPagesRuntimeDao;
+		}
+		public RuntimeExceptionDao<NumberOfReferences, Integer> getSimpleNumberReferencesDao() {
+			if (numberReferencesRuntimeDao == null) {
+				numberReferencesRuntimeDao = getRuntimeExceptionDao(NumberOfReferences.class);
+			}
+			return numberReferencesRuntimeDao;
 		}
 		
 		

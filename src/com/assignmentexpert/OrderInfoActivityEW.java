@@ -3,22 +3,25 @@ package com.assignmentexpert;
 import java.sql.SQLException;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.datamodel.Category;
 import com.datamodel.Level;
 import com.datamodel.ProductWriting;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.library.DatabaseHandler;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class OrderInfoActivityEW extends Activity{
 	private Button btnClose;
@@ -50,7 +53,6 @@ public class OrderInfoActivityEW extends Activity{
         
 	    btnInteractions = (Button) findViewById(R.id.btnInteractions);
 	    btnInfoOrder = (Button) findViewById(R.id.btnInfoOrder);
-	    btnInfoOrder.setText("info"+ "\r\n"+Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
 	    
 	    productTextView = (TextView)findViewById(R.id.productTextView);
 	    priceTextView =   (TextView)findViewById(R.id.priceTextView);
@@ -69,6 +71,11 @@ public class OrderInfoActivityEW extends Activity{
 	    referenceTextView = (TextView)findViewById(R.id.referenceTextView);
 	    pagesTextView = (TextView)findViewById(R.id.pagesTextView);
 	    
+	    
+	    
+	   
+	    
+	    
 	    DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 	    Dao<Subject, Integer> daoSubject = null;
 	    Dao<Category, Integer> daoCategory = null;
@@ -80,8 +87,6 @@ public class OrderInfoActivityEW extends Activity{
 			daoLevel = db.getLevelDao();
 			levelList = daoLevel.queryForAll();
 			
-			daoCategory = db.getCategoryDao();
-			categoryList = daoCategory.queryForAll();
 			
 			
 		} catch (SQLException e) {
@@ -90,17 +95,16 @@ public class OrderInfoActivityEW extends Activity{
 		}
 		
 		try {
-			if (DashboardActivityAlt.listItem.getCategory().getCategoryId() != 0)
-			DashboardActivityAlt.listItem.getCategory().setCategoryTitle((
-					daoCategory.queryForId(DashboardActivityAlt.listItem.getCategory().getCategoryId())).getCategoryTitle());
-			if (DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId() != 0)
-			DashboardActivityAlt.listItem.getCategory().getCategorySubject().setSubjectTitle((
-					daoSubject.queryForId(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId())).getSubjectTitle());
+			
+			//if (DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId() != 0)
+			//DashboardActivityAlt.listItem.getCategory().getCategorySubject().setSubjectTitle((
+			//		daoSubject.queryForId(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId())).getSubjectTitle());
 			if (DashboardActivityAlt.listItem.getLevel() != null)
 			DashboardActivityAlt.listItem.getLevel().setLevelTitle((
 					daoLevel.queryForId(DashboardActivityAlt.listItem.getLevel().getLevelId()).getLevelTitle()));
-			
-			
+			if (DashboardActivityAlt.listItem.getSubject() != null)
+				DashboardActivityAlt.listItem.getSubject().setSubjectTitle((
+						daoSubject.queryForId(DashboardActivityAlt.listItem.getSubject().getSubjectId()).getSubjectTitle()));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,47 +115,54 @@ public class OrderInfoActivityEW extends Activity{
 	    
 	    priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
 	    timezoneTextView.setText(DashboardActivityAlt.listItem.getTimezone());
-	    subjTextView.setText(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectTitle());
+	    subjTextView.setText(DashboardActivityAlt.listItem.getSubject().getSubjectTitle());
 	    postedTextView.setText(DashboardActivityAlt.listItem.getCreated_at().toString());
-	    categoryTextView.setText(DashboardActivityAlt.listItem.getCategory().getCategoryTitle());
 	    
 	    if (DashboardActivityAlt.listItem.getLevel() != null)
 	       levelTextView.setText(DashboardActivityAlt.listItem.getLevel().getLevelTitle());
 	    else
 	       levelTextView.setText("N/A");
 	    deadlineTextView.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-	    taskTextView.setText(DashboardActivityAlt.listItem.getOrderinfo());
+	    taskTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayInfo());
 	    productTextView.setText(DashboardActivityAlt.listItem.getProduct().getProductType());
-	    
-	    typeTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayType().getEssayTypeTitle());
-	    citationTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayStyle().getECSTitle());
-	    
+	    Log.i("dash board writing", DashboardActivityAlt.listItem.toString());
+	    try{
+	    //if (((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayType().getEssayTypeTitle()!=null)
+	    	typeTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayType().getEssayTypeTitle());
+	    //if(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayStyle().getECSTitle()!=null)
+	    	citationTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayStyle().getECSTitle());
+	    }
+	    catch(NullPointerException e)
+	    {
+	    	typeTextView.setText("");citationTextView.setText("");
+	    }
 	    referenceTextView.setText(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayNumbRef());
-	    pagesTextView.setText(Integer.toString(((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayPagesNumb()));
-	    
+	    pagesTextView.setText((((ProductWriting)DashboardActivityAlt.listItem.getProduct().getProduct()).getEssayPagesNumb()));
+	    Log.i("listItem in orderInfoEW", DashboardActivityAlt.listItem.toString());
 	    addFiles();
 	    
-	    btnClose.setOnClickListener(new View.OnClickListener() {
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       DashboardActivityAlt.class);
-	               startActivity(i);
-	               
-	           }
-	       });
-        btnInteractions.setOnClickListener(new View.OnClickListener() {
-	    	   
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       InteractionsActivityViewPager.class);
-	               startActivity(i);
-	               
-	           }
-	       });
+//	    btnClose.setOnClickListener(new View.OnClickListener() {
+//	           public void onClick(View view) {
+//	               Intent i = new Intent(getApplicationContext(),
+//	                       DashboardActivityAlt.class);
+//	               startActivity(i);
+//	               
+//	           }
+//	       });
+//        btnInteractions.setOnClickListener(new View.OnClickListener() {
+//	    	   
+//	           public void onClick(View view) {
+//	               Intent i = new Intent(getApplicationContext(),
+//	                       InteractionsActivityViewPager.class);
+//	               startActivity(i);
+//	               
+//	           }
+//	       });
 	}
 	public void addFiles()
 	 {
-
+		try
+		{
 	    if(!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
 	    {
 	    	TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
@@ -176,9 +187,27 @@ public class OrderInfoActivityEW extends Activity{
 		          }
 		       
 	      }
-	  
-	    
-
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+		}
 	}
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		 InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	}
+	
+	@Override
+    public void onBackPressed() {
+		Intent i = new Intent(getApplicationContext(),
+                DashboardActivityAlt.class);
+        startActivity(i);
+    }
+	
 }
 

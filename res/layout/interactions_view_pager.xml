@@ -1,62 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:id="@+id/new_order"
     android:layout_width="fill_parent"
+    android:background="#000000"
     android:layout_height="fill_parent">
-  
-  		  
-           <LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="50dp"
-		    android:orientation="horizontal"
-		    android:weightSum="1.0" 
-		    android:id="@+id/panelButtons">
-
-            <Button
-                android:id="@+id/btnInfoOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#838B83"
-                android:gravity="center|center_horizontal"
-                android:text="Info"   
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".25"/>
-
-            <Button
-                android:id="@+id/btnInteractions"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#007FFF"
-                android:gravity="center|center_horizontal"
-                android:text="Assignment expert"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".50"/>
-
-            <Button
-                android:id="@+id/btnClose"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" 
-                android:background="#CD0000"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Close"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold"
-                android:layout_weight=".25" />
-
-     </LinearLayout>
-     
 
 	<RelativeLayout
 	    android:id="@+id/panelInteractions"
 	    android:layout_width="wrap_content"
 	    android:layout_height="75dp"
 	    android:layout_below="@+id/panelButtons"
-	    android:background="#C0C0C0"
+	    android:background="#738495"
 	    android:orientation="horizontal" >
 		
 
@@ -67,29 +22,32 @@
                android:orientation="vertical"
                android:weightSum="1.0" >
 		   
-	           <TextView
+	           <com.customitems.CustomTextView
 	            android:id="@+id/textLabel"
 	            android:text="Deadline:"
 	            android:layout_height="fill_parent"
 	            android:layout_width="115dp"
 	            android:layout_marginRight="10dp"
-	           
+	            foo:customFont="Roboto-Regular.ttf"
+	            android:textSize="14sp"
 	            android:layout_weight=".50" 
 	            android:gravity="center_vertical|center_horizontal"
 	            android:padding="10dip"
-	            android:textColor="#545454"
+	            android:textColor="#43576b"
 	            android:textStyle="bold" />
 
-	           <TextView
+	           <com.customitems.CustomTextView
 	               android:id="@+id/deadlineLabel"
 	               android:layout_width="fill_parent"
 	               android:layout_height="fill_parent"
 	               android:layout_marginRight="10dp"
+	               foo:customFont="Roboto-Regular.ttf"
 	               android:layout_weight=".50"
 	               android:gravity="left|center_horizontal"
 	               android:padding="10dip"
 	               android:text="Deadline:"
-	               android:textColor="#545454"
+	               android:textColor="#000000"
+	               android:textSize="14sp"
 	               android:textStyle="bold" />
 
 	</LinearLayout>
@@ -107,26 +65,68 @@
 	                android:textColor="#FFFFFF"
 	                android:textSize="18dp"
 	                android:textStyle="bold" />
-	             <TextView
+	          <com.customitems.CustomTextView
 	            android:id="@+id/priceLabel"
 	            android:text="N/A:"
+	             android:textSize="14sp"
 	            android:layout_height="fill_parent"
 	            android:layout_width="75dp"
 	            android:layout_alignParentRight="true"
 	            android:paddingLeft="10dp"
 	            android:gravity="center_vertical|center_horizontal"
-	            android:textColor="#545454"
+	            android:textColor="#FFFFFF"
+	           foo:customFont="Roboto-Regular.ttf" 
 	            android:textStyle="bold" />
 	           
    </RelativeLayout>
-
+  
 <android.support.v4.view.ViewPager
     android:id="@+id/conpageslider"
-    android:layout_below="@+id/panelInteractions"
-    android:background="#FFFFFF"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"/>
-
+    android:layout_height="wrap_content"
+    
+    android:layout_below="@+id/panelInteractions"
+    android:layout_above="@+id/interactionsFooterLayout"
+    android:background="#000000" />
+  <LinearLayout 
+      android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+				android:layout_alignParentBottom="true"
+	              android:orientation="vertical"
+              android:id = "@+id/interactionsFooterLayout" >
+	          <ListView   
+	          android:layout_width="fill_parent"
+              android:layout_height="0dp"
+              android:id="@+id/interactionsFileList">
+	              
+	          </ListView>
+  <LinearLayout 
+      android:id = "@+id/interactionsFooter"
+              android:layout_width="fill_parent"
+              android:layout_height="70dp"
+              android:layout_alignParentBottom="true"
+              android:orientation="horizontal"
+              android:weightSum="1.0"
+             >
+    <Button android:text="Reply"
+          android:id="@+id/saveProfile"
+            android:layout_weight="0.47"
+            style="@style/custom_button"
+            android:layout_width="fill_parent"
+             />
+    <Button android:text="Inactivate"
+        android:id="@+id/cancelProfile"
+        	style="@style/custom_button"
+        	android:layout_weight="0.53"
+        	android:layout_marginLeft="5dp"
+        	android:paddingLeft="10dp"
+        	android:layout_marginBottom="10dp"
+        	android:background="@drawable/gray_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+   
+    </LinearLayout>
+    </LinearLayout>
 <TextView
     android:id="@+id/emptyResult"
     android:layout_width="wrap_content"

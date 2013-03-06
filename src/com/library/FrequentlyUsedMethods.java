@@ -1,33 +1,50 @@
 package com.library;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.preference.ListPreference;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.NewMessageActivity;
 import com.assignmentexpert.R;
+import com.datamodel.Level;
+import com.datamodel.Order;
+import com.datamodel.ProcessStatus;
+import com.j256.ormlite.dao.Dao;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
+import com.paypal.android.MEP.PayPalInvoiceData;
+import com.paypal.android.MEP.PayPalInvoiceItem;
 import com.paypal.android.MEP.PayPalPayment;
 
 public class FrequentlyUsedMethods {
 	private static final int server = PayPal.ENV_SANDBOX;
 	private static final String appID = "APP-80W284485P519543T";
+//	private static final String appID = "APP-8HA162973U847442G";
 	private static final int request = 1;
 	public static CheckoutButton launchSimplePayment;
 	Context context;
 	Activity activity;
+	public FrequentlyUsedMethods(Context ctx)
+	{ this.context = ctx;}
 	public void setContext(Context ctx)
 	{
 		this.context = ctx;
@@ -87,8 +104,8 @@ public class FrequentlyUsedMethods {
 		Log.i("now I'm in this Activity",  arg.getClass().getName());
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams((int) getContext().getResources().getDimension(R.dimen.paypal_width), LayoutParams.WRAP_CONTENT);
 		lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		lp.leftMargin =(int) getContext().getResources().getDimension(R.dimen.paypal_left_margin); //(int) dpFromPx(135);
-		lp.topMargin = (int) getContext().getResources().getDimension(R.dimen.paypal_top_margin);//(int) dpFromPx(20);
+		lp.leftMargin =(int) getContext().getResources().getDimension(R.dimen.paypal_left_margin); 
+		lp.topMargin = (int) getContext().getResources().getDimension(R.dimen.paypal_top_margin);
 		
 		launchSimplePayment.setOnClickListener(mCorkyListener);
 		// The CheckoutButton is an android LinearLayout so we can add it to our display like any other View.
@@ -110,21 +127,34 @@ public class FrequentlyUsedMethods {
       	Log.i("item current price" , Float.toString(DashboardActivityAlt.listItem.getPrice()));
       	//if (new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice()))!= null) 
       	newPayment.setSubtotal(new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice())));
-      	
       	newPayment.setCurrencyType("USD");
-      	newPayment.setRecipient("billing@globalwriters.co.uk");
+      	newPayment.setRecipient("ivand_1356619309_biz@aeteam.org");
       	newPayment.setMerchantName("BrainRouter LTD");
-      	newPayment.setIpnUrl("http://www.assignmentexpert.com/assignments/index.php/tools/paypal_notifier");
+      	newPayment.setIpnUrl(StaticFields.testHost+"/app_dev.php/payment/notifier/");
+      	newPayment.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
+      	PayPalInvoiceData invoice = new PayPalInvoiceData();
+        	invoice.setTax(new BigDecimal("0"));
+      	  invoice.setShipping(new BigDecimal("0"));
+      	 PayPalInvoiceItem  item =new PayPalInvoiceItem();
+      	 item.setName("something");
+      	 item.setID(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
+      	 item.setQuantity(1);
+      	 invoice.getInvoiceItems().add(item);
+      	 newPayment.setInvoiceData(invoice);
+      	
+      	
       	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getContext(),new ResultPayPalDelegate());
 	    getActivity().startActivityForResult(paypalIntent, request);
 	    }
    };
+   private int savedPosition;
+   private int savedListTop;
    public boolean payPalActivate()
    {
 	   boolean result;
-	   if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equals("Inactive") | DashboardActivityAlt.listItem.getCusThread().getMessages().isEmpty() )
-		   result  = false;
-	   else result = true;
+	   if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("Discussion") )
+		   result  = true;
+	   else result = false;
 	   return result;
    }
    public float convertPixelsToDp(float px, Activity ctx){
@@ -137,12 +167,134 @@ public class FrequentlyUsedMethods {
    {
        return px / getContext().getResources().getDisplayMetrics().density;
    }
-//   public void showToast()
-//   {
-//	   Toast.makeText(getContext(), "", duration)
-//	   
-//   }
    
+   public boolean isOnline() {
+	   boolean res = false;
+       ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+       NetworkInfo netInfo = cm.getActiveNetworkInfo();
+       if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+    	   res= true;
+       }
+       else
+       {
+    	   Toast.makeText(context, "Connection is not available. Please try later.", Toast.LENGTH_LONG).show();
+    	   res = false;
+        }
+       return res;
+   }
+   public Order updateOrderFields(Order ord)
+   {
+	   		
+	   		DatabaseHandler db = new DatabaseHandler(context.getApplicationContext());
+			Dao<ProcessStatus, Integer> daoProcess;
+			Dao<Level, Integer> daoLevel;
+			try {
+				daoProcess = db.getStatusDao();
+				daoLevel = db.getLevelDao();
+				ord.getProcess_status().setProccessStatusTitle
+				((daoProcess.queryForId(ord.getProcess_status().getProccessStatusId()).getProccessStatusTitle()));
+				if (ord.getLevel() != null)
+				ord.getLevel().setLevelTitle((daoLevel.queryForId(ord.getLevel().getLevelId()).getLevelTitle()));
+				Log.i("order dashboard in updateOrderFields FAQ class", Integer.toString(ord.getProcess_status().getProccessStatusId()));
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			
+			return ord;
+			
+   }
+   public void setListPos(int savedPosition, int savedListTop)
+	{
+		this.savedPosition = savedPosition;
+		this.savedListTop = savedListTop;
+	}
 	
+	public int getListPos()
+	{
+		return this.savedPosition;
+	}
+	public int getListTop()
+	{
+		return this.savedListTop;
+	}
+   
+	 public void addTimeZones(ListPreference timezonePref) {
+			final String[] TZ = TimeZone.getAvailableIDs();
+
+			ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
+					getContext(), android.R.layout.simple_spinner_item);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+			final ArrayList<String> TZ1 = new ArrayList<String>();
+			for (int i = 0; i < TZ.length; i++) {
+				if (!(TZ1.contains(TimeZone.getTimeZone(TZ[i]).getID()))) {
+					if (timezoneValidate(TZ[i]))
+						TZ1.add(TZ[i]);
+				}
+			}
+			for (int i = 0; i < TZ1.size(); i++) {
+				
+				
+				adapter.add(TZ1.get(i));
+			}
+			
+			CharSequence[] entries = new CharSequence[adapter.getCount()];
+		    CharSequence[] entryValues = new CharSequence[adapter.getCount()];
+		    int i = 0;
+		    for (String dev : TZ1)
+		    {
+		    	entries[i] = dev;
+	            entryValues[i] = dev;
+	            if (TimeZone.getTimeZone(TZ1.get(i)).getID()
+						.equals(TimeZone.getDefault().getID())) {
+	            	 timezonePref.setSummary((TimeZone.getDefault().getID()));
+				}
+	            i++;
+	            
+		    }
+		   
+		    timezonePref.setEntries(entries);
+		    timezonePref.setEntryValues(entryValues);
+		    Locale locale = new Locale("en", "IN");
+		    String curr = TimeZone.getTimeZone(TimeZone.getDefault().getID()).getDisplayName(false,TimeZone.SHORT, locale);
+		    String currTimeZone = "";
+		    for (int q = 0; q<TZ1.size();q++)
+		    {
+		    	if (TimeZone.getTimeZone(TZ1.get(q)).getDisplayName(false,TimeZone.SHORT, locale).equals(curr))
+		    	currTimeZone = TZ1.get(q);
+		    }
+		    timezonePref.setSummary(currTimeZone );
+			
+		}
+	 public boolean timezoneValidate(String email)
+	    {
+	        
+	    	Pattern pattern = Pattern.compile(".+\\/+[A-z]+");
+				Matcher matcher = pattern.matcher(email);
+				boolean matchFound = matcher.matches();
+	    	return matchFound;
+	    }
+	 public Context getDialogContext(Activity act) {
+		    Context context;
+		    if (act.getParent() != null) 
+		        context = act.getParent();
+		    else context = act;
+		    Log.i("RegisterAct curr context", context.getClass().toString());
+		        return context;
+		}
+	 
+	 
+//	 public static List<Order> cloneList(List<Order> dogList) {
+//		    List<Order> clonedList = new ArrayList<Order>(dogList.size());
+//		    for (Order dog : dogList) {
+//		        clonedList.add(new Order(dog));
+//		    }
+//		    return clonedList;
+//		}
 	
 }

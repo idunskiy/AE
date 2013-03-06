@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
+  <TableLayout 
+    android:id="@+id/tableLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="*">
+     
+		 <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1"
+          >
+	  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <com.customitems.CustomTextView
+   	    
+        android:id="@+android:id/title"
+        	android:textSize="18sp"
+     		android:paddingTop="10dp"
+     		android:textColor="#FFFFFF"
+     		android:layout_marginLeft="25dp"
+     			android:text="Sign me in when AE starts"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Medium.ttf">
+    </com.customitems.CustomTextView>
+
+ <CheckBox
+   	   
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text=""
+        android:checked="true"
+        android:layout_alignParentRight="true"
+        android:paddingRight="8dp"
+        android:gravity="right"
+        android:textSize="20sp"/>
+ 
+ </RelativeLayout>
+  </TableRow>
+   <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+   <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1"
+          >
+ 	  <LinearLayout 
+              android:layout_width="fill_parent"
+              android:layout_height="70dp"
+              android:orientation="horizontal"
+              android:weightSum="1.0"
+             >
+             
+    <Button android:text="Save"
+          android:id="@+id/saveProfile"
+            android:layout_weight="0.47"
+            style="@style/custom_button"
+            android:layout_width="fill_parent"
+             />
+    <Button android:text="Cancel"
+        android:id="@+id/cancelProfile"
+        	style="@style/custom_button"
+        	android:layout_weight="0.53"
+        	android:layout_marginLeft="5dp"
+        	android:paddingLeft="10dp"
+        	android:layout_marginBottom="10dp"
+        	android:background="@drawable/gray_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+   
+    </LinearLayout>
+	    </TableRow>
+		 
+  </TableLayout>
+  
+ </LinearLayout>

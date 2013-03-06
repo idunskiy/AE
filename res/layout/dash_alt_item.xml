@@ -1,70 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="5dip" 
-    android:background="#FFFFFF">
-    <LinearLayout
+    android:background="#000000">
+    <RelativeLayout
         android:id="@+id/thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip"
         android:padding="3dip" >
 
-        <TextView
+        <com.customitems.CustomTextView
             android:id="@+id/altOrderId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ID"
             android:gravity="center|center"
-            android:textColor="#040404"
-            android:textSize="15dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:typeface="sans" />
-    </LinearLayout>
-
-    <!-- Title Of Song -->
-
-    <!-- Artist Name -->
-
-    <TextView
-        android:id="@+id/altOrderTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dip"
-        android:textStyle="bold"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text="Just gona stand there and ..."
-        android:textColor="#000000"
-        android:textSize="14dp" />
-
-    <!-- Rightend Duration -->
-    <TextView
+            foo:customFont="Roboto-Regular.ttf"/>
+        <com.customitems.CustomTextView
         android:id="@+id/altOrderStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/altOrderTitle"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="5dip"
-        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_below="@+id/altOrderId"
         android:textColor="#838B8B"
-        android:textSize="14dp"
-        android:textStyle="bold" />
-
-    <!-- Rightend Arrow -->
-
+        android:textSize="14sp"
+        android:textStyle="bold" 
+        foo:customFont="Roboto-Regular.ttf"/>
+    </RelativeLayout>
+    
+ <RelativeLayout
+     android:layout_toLeftOf="@+id/thumbnail"
+        android:id="@+id/thumbnail2"
+        android:layout_alignRight="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent">
     <TextView
+			    android:layout_width="1dp"
+			    android:id="@+id/menu_sep1"
+			    android:layout_height="50dp"
+			    android:background="#565656"	
+			/>
+	</RelativeLayout>
+	
+    <com.customitems.CustomTextView
+        android:id="@+id/altOrderTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="@+id/altOrderPrice"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="45dp"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/thumbnail2"
+        android:text="Just gona stand there and ..."
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        foo:customFont="Roboto-Medium.ttf" />
+    
+     <TextView
+			    android:layout_width="1dp"
+			    android:id="@+id/menu_sep2"
+			    android:layout_marginRight="8dp"
+			    android:layout_alignRight="@+id/altOrderTitle"
+			    android:layout_height="50dp"
+			   android:background="#565656"
+			/>	
+    <com.customitems.CustomTextView
         android:id="@+id/altOrderPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="8dp"
         android:layout_alignTop="@+id/thumbnail"
-        android:text="Rihanna Love the way lie"
-        android:textColor="#458B74"
-        android:textSize="15dp"
+        android:text="$"
+        android:textColor="#4da400"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:typeface="sans" />
+        foo:customFont="Roboto-Medium.ttf" />
 
 </RelativeLayout>

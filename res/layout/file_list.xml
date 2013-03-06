@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+    android:layout_height="0dp"
+    android:layout_width="0dp"
+    android:background="#262626"
+    android:orientation="vertical">
+    <RelativeLayout 
+    android:orientation="horizontal"
+    android:id="@+id/fileLayout"
+    android:background="#262626"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+ <ImageView
+      android:id="@+id/fileicon"
+     android:src= "@drawable/clip"
+     android:layout_marginTop="10dp"
+     android:layout_width="wrap_content" 
+     android:layout_height="wrap_content"
+     android:layout_marginLeft="20dp"
+     />
+ <com.customitems.CustomTextView
+   	    
+        android:id="@+android:id/title"
+        android:textSize="14sp"
+     		android:paddingTop="10dp"
+     		android:textColor="#FFFFFF"
+     		android:layout_marginLeft="10dp"
+     		android:layout_toRightOf="@+id/fileicon"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Regular.ttf">
+    </com.customitems.CustomTextView>
+    <com.customitems.CustomTextView
+   	    
+        android:id="@+id/fileSize"
+        android:textSize="14sp"
+     		android:paddingTop="10dp"
+     		android:layout_below="@+android:id/title"
+     		android:textColor="#42aeff"
+     		android:layout_alignLeft="@+android:id/title"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Regular.ttf">
+    </com.customitems.CustomTextView>
+ 
+ 
+ 
+ </RelativeLayout>
+    	<com.customitems.ExpandedListView 
+   	    
+        android:id="@+id/fileslist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#262626"/>
+                <Button
+		    android:id="@+id/btnRemoveFiles"
+		    style="@style/custom_button"
+		    android:layout_width="fill_parent"
+		    android:background="@drawable/gray_button"
+		    android:text="Remove"
+		    />
+           
+ </LinearLayout>

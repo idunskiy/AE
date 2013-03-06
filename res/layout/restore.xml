@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF" >
+    android:background="#FFFFFF" 
+     android:descendantFocusability="beforeDescendants"
+		android:focusableInTouchMode="true">
  
     <RelativeLayout
+          android:id="@+id/relativeRestore"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dip" >
+        android:padding="10dip" 
+       >
 
         <!-- View Title Label -->
 		<ImageView
@@ -32,10 +35,9 @@
         <EditText
             android:id="@+id/restoreEmail"
             android:layout_width="250dp"
-            android:text="E-mail"
+            android:hint="E-mail"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            
             android:layout_marginTop="165dp"
             android:ems="10" />
  			
@@ -116,11 +118,13 @@
 
         <EditText
             android:id="@+id/captcha"
+            android:hint="Captcha"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/restoreEmail"
             android:layout_alignTop="@+id/captchaView"
-            android:ems="10" >
+            android:ems="10"
+            >
 
             <requestFocus />
         </EditText>

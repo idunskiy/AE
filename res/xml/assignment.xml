@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+      android:key="orderScreen">
+  		
+                
+                	 <ListPreference
+                        android:title="Product"
+                        android:summary="Not selected"
+                        android:key="productPref"
+                        android:entries="@array/productsArray"
+                        android:entryValues="@array/productsArray"/>
+	                <ListPreference
+	                        android:title="Subject"
+	                        android:summary="Not selected"
+	                        android:key="subjectPref"
+	                         />
+	                 <ListPreference
+	                        android:title="Category"
+	                        android:summary="Not selected"
+	                        android:key="categoryPref"
+                         />
+                    <ListPreference
+                        android:title="Level"
+                        android:summary="Not selected"
+                        android:key="levelPref"
+                         />
+                    <com.customitems.DatePreference
+				       android:title="Deadline"
+                        android:summary="Not selected"
+                        android:key="deadlinePref"
+                         android:entries="@array/empty_array"
+                        android:entryValues="@array/empty_array"
+				        />
+    
+                    <!-- 
+                      <ListPreference
+                        android:title="Deadline"
+                        android:summary="Not selected"
+                        android:key="deadlinePref"
+                         android:entries="@array/empty_array"
+                        android:entryValues="@array/empty_array"
+                         />
+                          -->
+                        <ListPreference
+                        android:title="Time zone"
+                        android:summary="Not selected"
+                        android:key="timezonePref"
+                         />
+</PreferenceScreen>

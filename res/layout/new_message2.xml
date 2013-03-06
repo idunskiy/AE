@@ -1,62 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/new_order"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-  
-  		  
-           <LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="50dp"
-		    android:orientation="horizontal"
-		    android:weightSum="1.0" 
-		    android:id="@+id/panelButtons">
+<LinearLayout 
+      android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		      xmlns:android="http://schemas.android.com/apk/res/android"
+       		xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+       		android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnInfoOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#838B83"
-                android:gravity="center|center_horizontal"
-                android:text="Info"   
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".25"/>
-
-            <Button
-                android:id="@+id/btnInteractions"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#007FFF"
-                android:gravity="center|center_horizontal"
-                android:text="Assignment expert"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".50"/>
-
-            <Button
-                android:id="@+id/btnClose"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" 
-                android:background="#CD0000"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Close"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold"
-                android:layout_weight=".25" />
-
-     </LinearLayout>
-     
-
+     <ScrollView
+		    android:id="@+id/scrollNewMessage"
+		    android:layout_width="wrap_content"
+		    android:layout_height="0dp"
+		   android:layout_weight="1"
+		    >
+  <RelativeLayout
+	    android:id="@+id/newMessagePanel"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	   >
 	<RelativeLayout
 	    android:id="@+id/panelInteractions"
 	    android:layout_width="wrap_content"
 	    android:layout_height="75dp"
 	    android:layout_below="@+id/panelButtons"
-	    android:background="#C0C0C0"
+	    android:background="#738495"
 	    android:orientation="horizontal" >
 		
 
@@ -67,28 +33,32 @@
                android:orientation="vertical"
                android:weightSum="1.0" >
 		   
-	           <TextView
+	           <com.customitems.CustomTextView
 	            android:id="@+id/textLabel"
 	            android:text="Deadline:"
 	            android:layout_height="fill_parent"
 	            android:layout_width="115dp"
 	            android:layout_marginRight="10dp"
+	            foo:customFont="Roboto-Regular.ttf"
+	            android:textSize="14sp"
 	            android:layout_weight=".50" 
 	            android:gravity="center_vertical|center_horizontal"
 	            android:padding="10dip"
-	            android:textColor="#545454"
+	            android:textColor="#43576b"
 	            android:textStyle="bold" />
 
-	           <TextView
+	           <com.customitems.CustomTextView
 	               android:id="@+id/deadlineLabel"
 	               android:layout_width="fill_parent"
 	               android:layout_height="fill_parent"
 	               android:layout_marginRight="10dp"
+	               foo:customFont="Roboto-Regular.ttf"
 	               android:layout_weight=".50"
 	               android:gravity="left|center_horizontal"
 	               android:padding="10dip"
 	               android:text="Deadline:"
-	               android:textColor="#545454"
+	               android:textColor="#000000"
+	               android:textSize="14sp"
 	               android:textStyle="bold" />
 
 	</LinearLayout>
@@ -106,112 +76,123 @@
 	                android:textColor="#FFFFFF"
 	                android:textSize="18dp"
 	                android:textStyle="bold" />
-	             <TextView
+	          <com.customitems.CustomTextView
 	            android:id="@+id/priceLabel"
-	            android:text="N/A"
+	            android:text="N/A:"
+	             android:textSize="14sp"
 	            android:layout_height="fill_parent"
 	            android:layout_width="75dp"
-	            android:paddingLeft="10dp"
 	            android:layout_alignParentRight="true"
+	            android:paddingLeft="10dp"
 	            android:gravity="center_vertical|center_horizontal"
-	            android:textColor="#545454"
+	            android:textColor="#FFFFFF"
+	           foo:customFont="Roboto-Regular.ttf" 
 	            android:textStyle="bold" />
 	           
    </RelativeLayout>
-<RelativeLayout
-	    android:id="@+id/panelMessage"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_below="@+id/panelInteractions"
-	    android:background="#FFFFFF"
-	    android:orientation="horizontal" >
-	              
-	              <TextView
-	            android:id="@+id/interactionId"
-	            android:text="Interaction"
-	            android:layout_width="150dp"
-	          
-                android:gravity="center_vertical|center_horizontal"
-	            android:layout_height="wrap_content"
-	            android:padding="10dip"
-	            android:textColor="#545454"
-	            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/editMessage"
-            android:layout_width="280dp"
-            android:layout_height="170dp"
-            android:layout_below="@+id/interactionId"
-            android:gravity="left"
-            android:layout_centerHorizontal="true"
-            android:clickable="true"
-            android:cursorVisible="true"
-            android:ems="10"
-            android:focusable="true"
-            android:hint="Your message">
-            <requestFocus />
-        </EditText>
-        <HorizontalScrollView
-    android:id="@+id/scrollMessageFiles"
+ 
+ <TableLayout 
+    android:id="@+id/tableLayout1"
     android:layout_width="fill_parent"
-    android:layout_height="65dp"
-    android:layout_below="@+id/editMessage"
-    android:orientation="horizontal"
-    android:weightSum="1.0" >
-            <LinearLayout
-	    android:id="@+id/panelMessageFiles"
-	    android:orientation="horizontal"
-	    android:layout_width="wrap_content"
-	    android:layout_height="match_parent"
-	    android:background="#FFFFFF"
-	    >
-	  
-
-                
-            </LinearLayout>
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/panelInteractions"
+    android:stretchColumns="*"
+   >
+	 <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/edit_row" 
+          android:layout_weight="1"
+          >
+	              <com.customitems.CustomTextView
+             android:id="@+id/interactionId"
+             android:layout_width="150dp"
+             android:layout_height="fill_parent"
+             android:text="Reply"
+             android:layout_marginTop="3dp"
+             android:layout_marginLeft="25dp"
+             android:textColor="#FFFFFF"
+             android:textSize="14sp"
+             android:textStyle="bold"
+             foo:customFont="Roboto-Regular.ttf" />
+	     
+	 </TableRow>
+     
+     
+    
+    <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/edit_row" 
+          android:layout_weight="1"
+          >
+    <com.customitems.CustomEditText
+        android:id="@+id/editMessage"
+        style="@style/custom_edittext"
+            android:layout_width="fill_parent"
+            android:gravity="top|left"
+        android:layout_height="120dp"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Write your message">
+    </com.customitems.CustomEditText>
+        
+   </TableRow>
+		 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		
+		     <TableRow
+          android:id="@+id/tableRow1"
+           style="@style/button_row"
+          android:layout_weight="1">
+   		<Button
             
-            </HorizontalScrollView>
+            android:id="@+id/btnAddFilesMessage"
+            style="@style/custom_button"
+            	android:background="@drawable/gray_button"
+            android:layout_centerHorizontal="true"
+            android:text="Add files"
+             />
+ 		
+ 		 	</TableRow>
+ 		</TableLayout>
+ 		 <include layout="@layout/file_list"
+                android:id="@+id/messageFileList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_below="@+id/tableLayout1"
+              />
+ 	
+      
 
+	</RelativeLayout>
+	
+</ScrollView>	    
+	<LinearLayout
+	    android:id="@+id/panelMessage2"
+	    android:layout_alignParentBottom="true"
+	    android:layout_marginTop="10dp"
+	    android:layout_below="@layout/file_list"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:weightSum="1.0">
         <Button
             android:id="@+id/btnSendMessage"
-            android:layout_width="75dp"
-            android:layout_height="45dp"
-            android:layout_alignLeft="@+id/editMessage"
-            android:layout_below="@+id/scrollMessageFiles"
-            android:gravity="center_vertical|center_horizontal"
+             style="@style/custom_button"
             android:text="Send"
-            android:textColor="#FFFFFF"
-            android:textSize="18dp"
-            android:textStyle="bold" />
-
-         <Button
-             android:id="@+id/btnAddFilesMessage"
-             android:layout_width="85dp"
-             android:layout_height="45dp"
-             android:layout_below="@+id/scrollMessageFiles"
-             android:layout_centerHorizontal="true"
-             android:gravity="center_vertical|center_horizontal"
-             android:text="Add files"
-             android:background="#00FF7F"
-             android:textColor="#FFFFFF"
-             android:textSize="14dp"
-             android:textStyle="bold" />
+            android:layout_weight="0.5"/>
 
          <Button
              android:id="@+id/btnCancelNewMessage"
-             android:layout_width="85dp"
-             android:layout_height="45dp"
-             android:layout_below="@+id/scrollMessageFiles"
-             android:layout_marginLeft="14dp"
-             android:layout_toRightOf="@+id/btnAddFilesMessage"
-             android:gravity="center_vertical|center_horizontal"
-             android:text="Cancel"
-             android:textColor="#FFFFFF"
-             android:textSize="14dp"
-             android:textStyle="bold" />
+            style="@style/custom_button"
+        	android:layout_marginLeft="5dp"
+        	android:paddingLeft="10dp"
+        	android:text="Cancel"
+        	android:layout_marginBottom="10dp"
+        	android:background="@drawable/gray_button"
+             android:layout_weight="0.5" />
+	</LinearLayout>
+</LinearLayout>
 
-</RelativeLayout>	    
-
-
-
-</RelativeLayout>

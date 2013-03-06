@@ -1,25 +1,21 @@
 package com.assignmentexpert;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,10 +23,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activitygroups.MainTabGroup;
+import com.asynctaskbase.ITaskLoaderListener;
+import com.customitems.CustomTextView;
+import com.library.FrequentlyUsedMethods;
 
-import com.library.UserFunctions;
-
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends FragmentActivity implements ITaskLoaderListener{
     Button btnProceed;
     Button btnLinkToLogin;
     Button btnClose;
@@ -41,8 +39,11 @@ public class RegisterActivity extends Activity {
     TextView registerErrorMsg;
     ImageView captcha;
     EditText captchaEdit;
-	boolean errorFlag = false;
+
 	private ProgressDialog pd = null;
+	private Button btnLinkToRegisterScreen;
+	private CustomTextView btnTermsService;
+	private CustomTextView btnPrivatePolicy;
  
     // JSON Response node names
     private static String KEY_SUCCESS = "status";
@@ -53,11 +54,22 @@ public class RegisterActivity extends Activity {
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
     private static String KEY_STATUS = "status";
+    
+    public static String userName;
+    public static String userEmail;
+    public static String userPass;
+    public static String userConf;
+    public static String userCaptcha;
+    
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
- 
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        final FrequentlyUsedMethods faq = new FrequentlyUsedMethods(RegisterActivity.this);
         // Importing all assets like buttons, text fields
         inputFullName = (EditText) findViewById(R.id.registerName);
         inputEmail = (EditText) findViewById(R.id.registerEmail);
@@ -65,18 +77,41 @@ public class RegisterActivity extends Activity {
         confPassword = (EditText) findViewById(R.id.registerPasswordconf);
         captchaEdit = (EditText) findViewById(R.id.captcha);
         btnProceed = (Button) findViewById(R.id.btnProceed);
-        btnLinkToLogin = (Button) findViewById(R.id.btnLogin);
-        btnClose = (Button) findViewById(R.id.btnClose);
-             
+        btnTermsService = (CustomTextView)findViewById(R.id.btnTermsService);
+        btnPrivatePolicy = (CustomTextView)findViewById(R.id.btnPrivatePolicy);
+//        btnLinkToLogin = (CustomMenuButton) findViewById(R.id.btnLogin);
+//        btnClose = (CustomMenuButton) findViewById(R.id.btnClose);
+//        btnLinkToRegisterScreen = (CustomMenuButton) findViewById(R.id.btnLinkToRegisterScreen);
+     
         // downloading the image
-        this.pd = ProgressDialog.show(this, "Please wait..", "Downloading Data...", true, false); 
-        new DownloadTask().execute();
+       // new DownloadCaptchaTask().execute();
+        btnProceed.getBackground().setAlpha(120);
+        
+        
+        
+//        Drawable drawable= getResources().getDrawable(R.drawable.login);
+//        drawable.setAlpha(80);
+//        btnLinkToLogin.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+//      
+//        
+//        Drawable drawable2= getResources().getDrawable(R.drawable.signup);
+//        drawable2.setAlpha(100);
+//        drawable2.setBounds(0, 0, (int)(drawable.getIntrinsicWidth()), 
+//                (int)(drawable.getIntrinsicHeight()));
+//        btnLinkToRegisterScreen.setCompoundDrawables(null, drawable2, null, null);
+//        Drawable drawable3= getResources().getDrawable(R.drawable.close);
+//        drawable3.setBounds(0, 0, (int)(drawable.getIntrinsicWidth()), 
+//                (int)(drawable.getIntrinsicHeight()));
+//        drawable3.setAlpha(80);
+//        btnClose.setCompoundDrawables(null, drawable3, null, null);
+        
+        
+//        CaptchaAsync.execute(this, this);
 
         inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
-				inputPassword.setText("");
-				inputPassword.setHint("Password"); inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				inputPassword.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -85,8 +120,6 @@ public class RegisterActivity extends Activity {
         confPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
-				confPassword.setText("");
-				confPassword.setHint("Password confirmation");
 				confPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 				confPassword.setTextColor(Color.BLACK);
 				return false;
@@ -95,8 +128,7 @@ public class RegisterActivity extends Activity {
     	});
     	inputEmail.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputEmail.setText("");
-				inputEmail.setHint("E-mail (Login in future)");
+				
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
 				inputEmail.setTextColor(Color.BLACK);
@@ -105,8 +137,7 @@ public class RegisterActivity extends Activity {
     	});
     	inputFullName.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputFullName.setText("");
-				inputFullName.setHint("FirstName");
+				
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputFullName, 0); 
 				inputFullName.setTextColor(Color.BLACK);
@@ -115,194 +146,152 @@ public class RegisterActivity extends Activity {
     	});
     	captchaEdit.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				captchaEdit.setText("");
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(captchaEdit, 0); 
 				captchaEdit.setTextColor(Color.BLACK);
 				return false;
 			}
     	});
+    	btnTermsService.setOnClickListener(new View.OnClickListener() {
+
+    	    public void onClick(View v) {
+    	    	String url = "http://www.assignmentexpert.com/terms-and-conditions.html";
+    	    	Intent i = new Intent(Intent.ACTION_VIEW);
+    	    	i.setData(Uri.parse(url));
+    	    	startActivity(i);
+    	    }
+    	});
+    	btnPrivatePolicy.setOnClickListener(new View.OnClickListener() {
+
+    	    public void onClick(View v) {
+    	    	String url = "http://www.assignmentexpert.com/privacy-policy.html";
+    	    	Intent i = new Intent(Intent.ACTION_VIEW);
+    	    	i.setData(Uri.parse(url));
+    	    	startActivity(i);
+    	    }
+    	});
+    	
         // Register Button Click event
         btnProceed.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-               String name = inputFullName.getText().toString();
-               String email = inputEmail.getText().toString();
-               String password = inputPassword.getText().toString();
-               String confpassword = confPassword.getText().toString();
-               String captcha = captchaEdit.getText().toString();
-               if(inputFullName.getText().toString().equals("FirstName") )
-            	   {
-            	   inputFullName.getText().clear();
-            	   errorFlag = true;
-            	   }
-            	   
-            		 if(email.equals("E-mail(Login in future)"))
-            		 {
-            			 inputEmail.getText().clear();
-            			 errorFlag = true;
-            		 }
-            		  		if (password.equals("Password(min 6 symbols)"))
-            		  		{
-            		  			inputPassword.getText().clear();
-            		  			errorFlag = true;
-            		  		}
-            		  			if(confpassword.equals("Password confirmation"))
-            		  			{
-            		  				confPassword.getText().clear();
-            		  				errorFlag = true;
-            		  			}
+//               boolean errorFlag = false;
+//               String name = inputFullName.getText().toString();
+//               String email = inputEmail.getText().toString();
+//               String password = inputPassword.getText().toString();
+//               String confpassword = confPassword.getText().toString();
+//               String captcha = captchaEdit.getText().toString();
+//                
+//                if (inputEmail.length()<2)
+//                {
+//                            	
+//                	inputEmail.setText(" ");
+//                	inputEmail.setTextColor(Color.RED);
+//                	inputEmail.setText("Must be valid");
+//                	
+//                	errorFlag = true;
+//               	}
+//               
+//                
+//                
+//                if (inputFullName.length()<2)
+//                	{
+//                	
+//                	inputFullName.setText(" ");
+//                	inputFullName.setTextColor(Color.RED);
+//                	inputFullName.setText("At least 2 charachters");
+//                	
+//
+//                	errorFlag = true;
+//                 	}
+//                
+//                if (inputPassword.length()<5)
+//            	{
+//            	inputPassword.setText("");
+//            	inputPassword.setTextColor(Color.RED);
+//            	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+//            	inputPassword.setText("At least 5 charachters");
+//            	
+//            	errorFlag = true;
+//             	}
+//                if (!confpassword.equals(password))
+//                {	 
+//                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+//           	 		confPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+//                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+//                	inputPassword.setText("");
+//                	inputPassword.setTextColor(Color.RED);
+//                	confPassword.setText("");
+//                	confPassword.setTextColor(Color.RED);
+//                	inputPassword.setText("Should be equal");
+//                	confPassword.setText("Should be equal");
+//                	
+//                	errorFlag = true;
+//                }
+//                if (captchaEdit.length()!=4)
+//                {
+//                	captchaEdit.setText(" ");
+//                	captchaEdit.setTextColor(Color.RED);
+//                	captchaEdit.setText("Incorrect");
+//                	errorFlag = true;
+//                }
+//
+//                if (!EmailValidate(email))
+//                {
+//                	inputEmail.setText(" ");
+//                	inputEmail.setTextColor(Color.RED);
+//                	inputEmail.setText("You have to enter correct email");
+//                	errorFlag = true;
+//                	
+//                }
+//                // register data processing
+//                
+//                if (errorFlag == false)
+//                {	
+//			    	 
+//			    		 userName = name;
+//			    		 userEmail  = email;
+//			    		 userPass = password;
+//			    		 userConf = confpassword;
+//			    		 userCaptcha = captcha;
+//			    		
+//			             
+//			    		// new RegisterTask().execute(name, email, password, confpassword, captcha);
+//			    		 
+////			    		 (((TabActivity) getParent()).getTabHost().getCurrentTabView()).setIntent(i);
+////			    		 LoginTabScreen myTabs = (LoginTabScreen) RegisterActivity.this.getParent();
+////			    		 myTabs.getCurrentActivity();
+////			    		 Intent i = new Intent(getApplicationContext(),
+////		                        RegisterActivityCompl.class);
+//			    			
+////			    		 
+//			    		 
+//			    		 //RegisterAsync.execute(RegisterActivity.this, RegisterActivity.this);
+//			    		 
+//                }
             	
-                
-                if (inputEmail.length()<2)
-                {
-                            	
-                	inputEmail.setText(" ");
-                	inputEmail.setTextColor(Color.RED);
-                	inputEmail.setText("Must be valid");
-                	
-                	errorFlag = true;
-               	}
-               
-                
-                
-                if (inputFullName.length()<2)
-                	{
-                	
-                	inputFullName.setText(" ");
-                	inputFullName.setTextColor(Color.RED);
-                	inputFullName.setText("At least 2 charachters");
-                	
-
-                	errorFlag = true;
-                 	}
-                
-                if (inputPassword.length()<5)
-            	{
-            	inputPassword.setText(" ");
-            	inputPassword.setTextColor(Color.RED);
-            	inputPassword.setText("At least 5 charachters");
-            	
-            	errorFlag = true;
-             	}
-                if (!confpassword.equals(password))
-                {	 
-                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-           	 		confPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-                	inputPassword.setText(" ");
-                	inputPassword.setTextColor(Color.RED);
-                	confPassword.setText(" ");
-                	confPassword.setTextColor(Color.RED);
-                	inputPassword.setText("Should be equal");
-                	confPassword.setText("Should be equal");
-                	
-                	errorFlag = true;
-                }
-                if (captchaEdit.length()<4)
-                {
-                	captchaEdit.setText(" ");
-                	captchaEdit.setTextColor(Color.RED);
-                	captchaEdit.setText("Incorrect");
-                	errorFlag = true;
-                }
-
-                if (!EmailValidate(email))
-                {
-                	inputEmail.setText(" ");
-                	inputEmail.setTextColor(Color.RED);
-                	inputEmail.setText("You have to enter correct email");
-                	errorFlag = true;
-                	
-                }
-                // register data processing
-                
-                if (errorFlag == false)
-                {	
-                	UserFunctions reg = new UserFunctions();
-                JSONObject a = null;
-				try {
-					a = reg.registerUser(name, email, password, confpassword, captcha);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-                	Log.i("register_response", a.toString());
-                	String b;
-					try {
-						b = a.get(KEY_STATUS).toString();
-						if (Integer.parseInt(b)==1)
-						{
-							String message = "Registration confirmation message was send to"+"\r\n"+ name+ 
-									"\r\n"+"Congratulations!";
-							Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
-							toast.show();
-							
-						}
-						else 
-						{
-							String message = "Registration failed";
-							Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
-							toast.show();
-							
-						}
-					} 
-					catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
-					
-                }
-     
-                
-            }
-        });
-        btnClose.setOnClickListener(new View.OnClickListener() {
-   	       
-            public void onClick(View view) {
-            	moveTaskToBack(true);
-            } 
-    	});
-        // Link to Login Screen
-        btnLinkToLogin.setOnClickListener(new View.OnClickListener() {
- 
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),
-                        LoginActivity.class);
-                startActivity(i);
-                // Close Registration View
-                finish();
-            }
-        });
-    }
-    private class DownloadTask extends AsyncTask<String, Void, Bitmap> {
-        protected Bitmap doInBackground(String... args) {
-           
-       	 UserFunctions a = new UserFunctions();
-       	 Bitmap bitmap = null;
-       	 try {
-				  bitmap = a.getCaptcha();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-       	
-			
-			return bitmap;
-
-           
-        }
-
-        protected void onPostExecute(Bitmap bitmap) {
-            // Pass the result data back to the main activity
-            //RestoreActivity.this.data = result;
-       	 RegisterActivity.this.captcha  = (ImageView) findViewById(R.id.captchaView);
-       	 captcha.setImageBitmap(bitmap);
-            if (RegisterActivity.this.pd != null) {
-            	RegisterActivity.this.pd.dismiss();
-            }
+              
+                Intent frequentMessages = new Intent(getParent(), RegisterActivityCompl.class);
+	             MainTabGroup parentActivity = (MainTabGroup)getParent();
+	             parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
+    		
+    		 
             
-        }
-   }    
+            }
+        });
+
+    }
+    @Override 
+    public void onResume()
+    {
+    	
+    	super.onResume();
+    	getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    	InputMethodManager imm = (InputMethodManager)getSystemService(
+  		      Context.INPUT_METHOD_SERVICE);
+      	imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    	  
+    
+    }
     boolean EmailValidate(String email)
     {
         
@@ -311,5 +300,25 @@ public class RegisterActivity extends Activity {
 			boolean matchFound = matcher.matches();
     	return matchFound;
     }
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
+    }
+	public void onLoadFinished(Object data) {
+		 if (data instanceof Bitmap & data != null)
+    	 {
+    		 RegisterActivity.this.captcha  = (ImageView) findViewById(R.id.captchaView);
+    		 captcha.setImageBitmap((Bitmap)data);
+    	 }
+		 if (data instanceof String)
+		 {
+			 Toast.makeText(RegisterActivity.this, data.toString(), Toast.LENGTH_LONG).show();
+		 }
+		
+	}
+	public void onCancelLoad() {
+		 Toast.makeText(RegisterActivity.this, "Some error occurs. Please try later", Toast.LENGTH_LONG).show();
+		
+	}
     
 }

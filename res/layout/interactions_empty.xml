@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/new_order"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent" xmlns:app="http://schemas.android.com/apk/res/com.assignmentexpert">
   
   		  
            <LinearLayout
@@ -120,17 +120,18 @@
 	    android:background="#FFFFFF"
 	    android:orientation="horizontal" >
 	            
-	             <TextView
+	             <com.customitems.CustomTextView
 	            android:id="@+id/interactionId"
 	            android:text="Interaction"
 	            android:layout_width="150dp"
 	            android:layout_below="@+id/interactionAbove"
-                android:gravity="center_vertical|center_horizontal"
+                android:gravity="left"
+                android:layout_marginLeft="10dp"
 	            android:layout_height="wrap_content"
 	            android:padding="10dip"
 	            android:textColor="#545454"
 	            android:textStyle="bold" />
-	            <TextView
+	            <com.customitems.CustomTextView
 	            android:id="@+id/interactionDate"
 	            android:text="Date"
 	            android:layout_width="fill_parent"
@@ -142,16 +143,17 @@
 	            android:padding="10dip"
 	            android:textColor="#545454"
 	            android:textStyle="bold" />
-	            <TextView
+	            <com.customitems.CustomTextView
 	            android:id="@+id/interactionMessage"
 	            android:text="Message"
+	            android:padding="10dip"
+	            android:layout_marginLeft="10dp"
 	            android:layout_width="fill_parent"
 	            android:layout_height="250dp"
 	            android:layout_below="@+id/interactionId"
 	           
-	            android:gravity="center_vertical|center_horizontal"
+	            android:gravity="top|left"
 	            
-	            android:padding="10dip"
 	            android:textColor="#545454"
 	            android:textStyle="bold" />
 	              <LinearLayout

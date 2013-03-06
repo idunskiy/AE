@@ -14,4 +14,10 @@
 	<string name="referencesNumber">Number of references</string>
 	<string name="open_helper_classname">DatabaseHandler</string>
 	<string name="preOrder">Choose order type</string>
+	<string name="numberReferences">Number of references</string>
+	<string name="numberPages">Number of pages</string>
+	<string name="profileText">Here you can edit your personal  \ninformation and see balance</string>
 </resources>
+
+<!--  <string name="profileText"><![CDATA[Here you can edit personal <br />information and see balance 2]]></string>
+-->

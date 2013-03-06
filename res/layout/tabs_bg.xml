@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+    android:id="@+id/tabsLayout" android:layout_width="fill_parent"
+    android:layout_height="64dp"
+    android:gravity="center" android:orientation="vertical" 
+    android:background="@drawable/menu_button">
+	<com.customitems.ObscuredImageView
+	android:id="@+id/icon"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	/>
+    <com.customitems.CustomTextView
+        android:id="@+id/tabTextView"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_width="fill_parent"
+        style="@style/custom_textview"
+        foo:customFont="Roboto-Medium.ttf"
+         />
+
+</LinearLayout>

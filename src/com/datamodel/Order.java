@@ -1,5 +1,6 @@
 package com.datamodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Parcel;
@@ -59,10 +60,12 @@ public class Order implements Parcelable{
 	boolean is_active;
 	@SerializedName("product")
 	Product product;
+	@SerializedName("subject")
+	Subject subject;
 	List<Order> orders;
 	public Order()
 	{}
-	public Order(List<File> files, boolean customer_deadline_sent,
+	public Order(ArrayList<File> files, boolean customer_deadline_sent,
 			boolean payed, boolean payment_failed, boolean not_payed_sent,
 			String info, int id, Category category, String timezone,
 			String title, Level level, DateTime updated_at, float price,
@@ -70,7 +73,7 @@ public class Order implements Parcelable{
 			String special_info, boolean checkpoint_deadline_sent,
 			ProcessStatus process_status, DateTime created_at,
 			CustomerThread cus_thread, boolean den, DateTime deadline , boolean is_active,
-			Product product) {
+			Product product, Subject subject) {
 		this.files = files;
 		this.customer_deadline_sent = customer_deadline_sent;
 		this.payed = payed;
@@ -96,9 +99,11 @@ public class Order implements Parcelable{
 		this.deadline = deadline;
 		this.is_active = is_active;
 		this.product = product;
+		this.subject = subject;
 	}
 
 	public Order(Parcel in) {
+		this();
 		readFromParcel(in);
 	}
 	public List<File> getOrderFiles() {
@@ -198,6 +203,9 @@ public class Order implements Parcelable{
 	}
 	public Product getProduct() {
 		return this.product;
+	}
+	public Subject getSubject() {
+		return this.subject;
 	}
 
 	// setters
@@ -303,6 +311,9 @@ public class Order implements Parcelable{
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+	public void setSubject(Subject subject) {
+		this.subject = subject;
+	}
 
 	public List<Order> getOrders()
 	{
@@ -316,26 +327,31 @@ public class Order implements Parcelable{
 	public String toString() {
 		return "id=" + id + " " + "title=" + title
 				+ " " + "price=" + price + " " 
-				+ timezone+level+"price= " + product + "}";
+				+ timezone+level+"price= "+"process status = "+ process_status+"}";
+				//+ product +" "+ product.getProduct().toString()+"" +"process status = "+ process_status+"}";
+		
 	}
 	public int describeContents() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 	private void readFromParcel(Parcel in) {
-		boolean[] myBooleanArr = new boolean[6];
-		
-		
 		files = in.readArrayList(File.class.getClassLoader());
-		
-		checkpoint_deadline_sent = myBooleanArr[0];
-		customer_deadline_sent =  myBooleanArr[1];
-		payed = myBooleanArr[2];
-		payment_failed = myBooleanArr[3];
-		not_payed_sent = myBooleanArr[4];
-		den = myBooleanArr[5];
-		h_notified = myBooleanArr[6];
-		in.readBooleanArray(myBooleanArr);
+		checkpoint_deadline_sent = in.readByte() == 1; 
+		customer_deadline_sent = in.readByte() == 1; 
+		payed = in.readByte() == 1; 
+		payment_failed = in.readByte() == 1; 
+		not_payed_sent = in.readByte() == 1; 
+		den = in.readByte() == 1;
+		h_notified = in.readByte() == 1; 
+//		checkpoint_deadline_sent = myBooleanArr[0];
+//		customer_deadline_sent =  myBooleanArr[1];
+//		payed = myBooleanArr[2];
+//		payment_failed = myBooleanArr[3];
+//		not_payed_sent = myBooleanArr[4];
+//		den = myBooleanArr[5];
+//		h_notified = myBooleanArr[6];
+	//	in.readBooleanArray(myBooleanArr);
 		special_info = in.readString();
 		title = in.readString();
 		timezone = in.readString();
@@ -355,13 +371,20 @@ public class Order implements Parcelable{
 	}
 	public void writeToParcel(Parcel par, int arg1) {
 		par.writeList(files);
-		par.writeBooleanArray(new boolean[] {checkpoint_deadline_sent});
-		par.writeBooleanArray(new boolean[] {customer_deadline_sent});
-		par.writeBooleanArray(new boolean[] {payed});
-		par.writeBooleanArray(new boolean[] {payment_failed});
-		par.writeBooleanArray(new boolean[] {not_payed_sent});
-		par.writeBooleanArray(new boolean[] {den});
-		par.writeBooleanArray(new boolean[] {h_notified});
+		par.writeByte((byte) (checkpoint_deadline_sent ? 1 : 0)); 
+		par.writeByte((byte) (customer_deadline_sent ? 1 : 0)); 
+		par.writeByte((byte) (payed ? 1 : 0)); 
+		par.writeByte((byte) (payment_failed ? 1 : 0)); 
+		par.writeByte((byte) (not_payed_sent ? 1 : 0));
+		par.writeByte((byte) (den ? 1 : 0));
+		par.writeByte((byte) (h_notified ? 1 : 0)); 
+//		par.writeBooleanArray(new boolean[] {checkpoint_deadline_sent});
+//		par.writeBooleanArray(new boolean[] {customer_deadline_sent});
+//		par.writeBooleanArray(new boolean[] {payed});
+//		par.writeBooleanArray(new boolean[] {payment_failed});
+//		par.writeBooleanArray(new boolean[] {not_payed_sent});
+//		par.writeBooleanArray(new boolean[] {den});
+//		par.writeBooleanArray(new boolean[] {h_notified});
 		par.writeString(special_info);
 		par.writeString(info);
 		par.writeString(timezone);
@@ -377,11 +400,8 @@ public class Order implements Parcelable{
 		par.writeParcelable(process_status, arg1);
 		par.writeFloat(price);
 		par.writeFloat(refund);
-
-		
 	}
 
-	
 	public static final Parcelable.Creator<Order> CREATOR =
 	    	new Parcelable.Creator<Order>() {
 	            public Order createFromParcel(Parcel in) {
@@ -389,7 +409,8 @@ public class Order implements Parcelable{
 	            }
 	 
 	            public Order[] newArray(int size) {
-	            	throw new UnsupportedOperationException();
+	            	//throw new UnsupportedOperationException();
+	            	return new Order[size];
 	            }
 	        };
 	  @Override

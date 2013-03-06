@@ -1,130 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF" >
- 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:padding="10dip" >
-
-        <!-- View Title Label -->
-		<ImageView
-           android:id="@+id/imageView1"
-           android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
-            android:background="#000000"
-           android:src="@drawable/stand_logo" />
-        <TextView
-            android:id="@+id/login_error"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dip"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <!-- Login Button -->
-
-        <EditText
-            android:id="@+id/loginEmail"
-            android:layout_width="250dp"
-            android:text="Login (E-mail)"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="130dp"
-            android:ems="10" />
-
-        <EditText
-            android:id="@+id/loginPassword"
-            android:clickable="true" 
-            android:cursorVisible="true" 
-            android:focusable="true" 
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:text="@string/Password"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="210dp"
-            android:ems="10" />
-
-        <CheckBox
-            android:id="@+id/checkSigned"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_alignRight="@+id/loginPassword"
-            android:layout_below="@+id/loginPassword"
-            android:layout_marginLeft="30dp"
-            android:text="Sign me in when AE starts"
-            android:textColor="#000000" />
-
-        <Button
-            android:id="@+id/btnProceed"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="310dip"
-            android:text="Proceed" />
-        
-        <Button
-            android:id="@+id/btnRestore"
-            android:layout_width="250dp"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="390dip"
-            android:text="Forgot Password?" />
-
-        <!-- Link to Registration Screen -->
-
-<LinearLayout
+    android:background="#000000" 
+    android:focusableInTouchMode="true"
+    android:focusable="true">
+   
+ <TableLayout 
+    android:id="@+id/tableLayout1"
     android:layout_width="fill_parent"
-    android:layout_height="50dp"
-    android:layout_below="@+id/imageView1"
-    android:orientation="horizontal"
-    android:weightSum="1.0" >
+    android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:stretchColumns="*">
+     <!--
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_height="71dp"
+        android:layout_width="fill_parent"
+     >
+        <TextView
+            android:id="@+id/imageView1"
+          	style="@style/headerStyle"
+            />
+        
+        </TableRow>
+         <TableRow
+        android:id="@+id/tableRow1"
+      	style="@style/button_row"
+         >
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:orientation="horizontal"
+            android:weightSum="1.0" 
+            android:layout_width="fill_parent"
+            android:layout_height="61dp">
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/login_error"
-            android:background="#007FFF"
-            android:text="Login"
-            android:gravity="center|center_horizontal" 
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold" 
-            android:layout_weight=".33"      
-           />
+            <com.customitems.CustomMenuButton
+                android:id="@+id/btnLogin"
+                style="@style/menu_item"
+                android:layout_weight=".33"
+                android:gravity="center|center_horizontal"
+                android:paddingBottom="2dp"
+                android:paddingTop="8dp"
+                android:text="Log In"
+                android:textColor="#FFFFFF"
+                foo:customFont="Roboto-Medium.ttf" />
 
-        <Button
-            android:id="@+id/btnLinkToRegisterScreen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#838B83"
-            android:text="Register"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold"
-             android:layout_weight=".33" />
-        <Button
-            android:id="@+id/btnClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/btnLinkToRegisterScreen"
-            android:layout_alignBottom="@+id/btnLinkToRegisterScreen"
-            android:gravity="center_vertical|center_horizontal" 
-            android:layout_alignParentRight="true"
-            android:background="#CD0000"
-            android:text="Close"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold" 
-            android:layout_weight=".34"/>
+			<TextView
+			    android:layout_width="1dp"
+			    android:layout_height="fill_parent"
+			    android:background="#0e1b29"
+			/>
+            <com.customitems.CustomMenuButton
+                android:id="@+id/btnLinkToRegisterScreen"
+                android:layout_weight=".33"
+                android:text="Sign Up"
+                android:paddingTop="8dp"
+                android:paddingBottom="2dp"
+                android:textColor="#FFFFFF"
+                 foo:customFont="Roboto-Medium.ttf"
+                style="@style/menu_item" />
+			<TextView
+			    android:layout_width="1dp"
+			    android:layout_height="fill_parent"
+			    android:background="@drawable/menu_separator"
+			/>
+            <com.customitems.CustomMenuButton
+                android:id="@+id/btnClose"
+                style="@style/menu_item"
+                android:paddingTop="8dp"
+                android:paddingBottom="2dp"
+                android:layout_weight=".34"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Close"
+                foo:customFont="Roboto-Medium.ttf"
+                android:textColor="#FFFFFF" />
+
         </LinearLayout>
-
-    </RelativeLayout>
- 
+         </TableRow>
+    <TableRow android:layout_height="1px" android:background="#323232">
+   <TextView android:layout_span="1" android:layout_height="3dp" 
+             android:layout_width="fill_parent" android:text=""
+             android:background = "#326ba1">
+   </TextView>
+	</TableRow>
+	 -->
+          <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1"
+          >
+   	<com.customitems.CustomTextView
+   	    
+        android:id="@+id/textViewPlus1"
+        android:layout_width="fill_parent"
+        style="@style/custom_textview"
+        android:text="Enter your credentails to log in"
+        foo:customFont="Roboto-Medium.ttf">
+    </com.customitems.CustomTextView>
+		 </TableRow>
+		 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow2"
+         style="@style/edit_row"
+         android:gravity="center"
+          android:focusableInTouchMode="true"
+           android:focusable="true"
+         android:layout_gravity="center_vertical"
+       >
+   	<com.customitems.CustomEditText
+        android:id="@+id/loginEmail"
+        style="@style/custom_edittext"
+        android:focusable="true"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Email">
+    </com.customitems.CustomEditText>
+         </TableRow>
+         	 <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow1"
+         style="@style/edit_row"
+        >
+   	<com.customitems.CustomEditText
+        android:id="@+id/loginPassword"
+        style="@style/custom_edittext"
+        android:focusable="true"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Password">
+    </com.customitems.CustomEditText>
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+       
+ 	<TableRow
+        android:id="@+id/tableRow3"
+        style="@style/button_row"
+        >
+        <Button
+            
+            android:id="@+id/btnProceed"
+            style="@style/custom_button"
+            android:layout_centerHorizontal="true"
+            android:text="Log In"
+             />
+	    </TableRow>
+	
+		<TableRow
+		     
+        android:id="@+id/tableRow1"
+        style="@style/text_row"
+        >
+   	<com.customitems.CustomTextView
+   	     android:focusableInTouchMode="true"
+         android:focusable="true"
+        android:id="@+id/btnRestore"
+        style="@style/custom_textview"
+        android:layout_marginTop="17dp"
+        android:text="Forgot Password?"
+        android:layout_width="fill_parent"
+        android:gravity="center"
+        android:textColor="#42aeff"
+        foo:customFont="Roboto-Medium.ttf"/>
+		</TableRow>
+		 
+	</TableLayout>
 </ScrollView>
+

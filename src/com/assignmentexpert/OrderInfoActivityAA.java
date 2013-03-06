@@ -4,18 +4,21 @@ import java.sql.SQLException;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.datamodel.Category;
 import com.datamodel.Level;
+import com.datamodel.ProductAssignment;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.library.DatabaseHandler;
@@ -49,7 +52,12 @@ public class OrderInfoActivityAA extends Activity {
         
 	    btnInteractions = (Button) findViewById(R.id.btnInteractions);
 	    btnInfoOrder = (Button) findViewById(R.id.btnInfoOrder);
-	    btnInfoOrder.setText("info"+ "\r\n"+Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
+	   /// btnInfoOrder.setText("info"+ "\r\n"+Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
+	    
+	    InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    
 	    
 	    productTextView = (TextView)findViewById(R.id.productTextView);
 	    priceTextView =   (TextView)findViewById(R.id.priceTextView);
@@ -119,9 +127,16 @@ public class OrderInfoActivityAA extends Activity {
 	    else
 	       levelTextView.setText("N/A");
 	    deadlineTextView.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-	    taskTextView.setText(DashboardActivityAlt.listItem.getOrderinfo());
-	    requireTextView.setText(DashboardActivityAlt.listItem.getSpecInfo());
+	    taskTextView.setText(((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignInfo());
+	    if (((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignDtl_expl())
+	    	requireTextView.setText("Detailed explanation"+"\r\n" );
+	    if(((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignExcVideo())
+	    	requireTextView.append("Exclusive video"+"\r\n" );
+	    if(((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignCommVideo())
+	    	requireTextView.append("Common video" );
+	    	
 	    productTextView.setText(DashboardActivityAlt.listItem.getProduct().getProductType());
+	    Log.i("listItem in orderInfoAA", DashboardActivityAlt.listItem.toString());
 	    addFiles();
 	    
 	    
@@ -131,27 +146,28 @@ public class OrderInfoActivityAA extends Activity {
 	    
 	    
 	    
-	    btnClose.setOnClickListener(new View.OnClickListener() {
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       DashboardActivityAlt.class);
-	               startActivity(i);
-	               
-	           }
-	       });
-        btnInteractions.setOnClickListener(new View.OnClickListener() {
-	    	   
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       InteractionsActivityViewPager.class);
-	               startActivity(i);
-	               
-	           }
-	       });
+//	    btnClose.setOnClickListener(new View.OnClickListener() {
+//	           public void onClick(View view) {
+//	               Intent i = new Intent(getApplicationContext(),
+//	                       DashboardActivityAlt.class);
+//	               startActivity(i);
+//	               
+//	           }
+//	       });
+//        btnInteractions.setOnClickListener(new View.OnClickListener() {
+//	    	   
+//	           public void onClick(View view) {
+//	               Intent i = new Intent(getApplicationContext(),
+//	                       InteractionsActivityViewPager.class);
+//	               startActivity(i);
+//	               
+//	           }
+//	       });
 	}
 	public void addFiles()
 	 {
-
+		try
+		{
 	    if(!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
 	    {
 	    	TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
@@ -176,8 +192,27 @@ public class OrderInfoActivityAA extends Activity {
 		          }
 		       
 	      }
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+		}
 	  
 	    
 
 	}
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		 InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	}
+	@Override
+    public void onBackPressed() {
+		Intent i = new Intent(getApplicationContext(),
+                DashboardActivityAlt.class);
+        startActivity(i);
+    }
 }

@@ -2,7 +2,8 @@
 <ScrollView 
      xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+          android:id="@+id/orderScroll">
   <LinearLayout
       
         android:id="@+id/headerList"
@@ -56,7 +57,7 @@
 		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/levelSpin"
 		    android:layout_marginTop="30dp"
-		    android:text="Order title(specify)"
+		    android:hint="Order title(specify)"
 		    android:gravity="center_vertical|center_horizontal" />
 		
 		<EditText
@@ -65,7 +66,7 @@
 		    android:layout_height="wrap_content"
 	    	android:layout_below="@+id/levelSpin"
 		    android:layout_marginTop="30dp"
-		    android:text="Deadline"
+		    android:hint="Deadline"
 		    android:gravity="center_vertical|center_horizontal" />
    			
 	
@@ -84,7 +85,7 @@
 		    android:layout_height="100dp"
 	    	android:layout_below="@+id/timezone"
 		    android:layout_marginTop="30dp"
-		    android:text="Task/Specific requirements"
+		    android:hint="Task/Specific requirements"
 		    android:gravity="left|top" />
 			
 			
@@ -120,7 +121,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="----------------------------------------------------------"
+            android:gravity="center|center"
+            android:text="----------------------------------------------------"
             android:textColor="#000000"
             android:textStyle="bold" />
          

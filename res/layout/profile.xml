@@ -10,61 +10,6 @@
     android:layout_height="wrap_content" >
 
     <LinearLayout
-        android:id="@+id/buttonsPanel"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:weightSum="1.0" >
-
-        <Button
-            android:id="@+id/btnNewOrder"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight=".25"
-            android:background="#838B83"
-            android:gravity="center|center_horizontal"
-            android:text="New order"
-            android:textColor="#FFFFFF"
-            android:textSize="17dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnOrdersHistory"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight=".25"
-            android:background="#838B83"
-            android:gravity="center|center_horizontal"
-            android:text="Orders history"
-            android:textColor="#FFFFFF"
-            android:textSize="17dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight=".25"
-            android:background="#007FFF"
-            android:gravity="center|center_horizontal"
-            android:text="Profile"
-            android:textColor="#FFFFFF"
-            android:textSize="17dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnClose"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight=".25"
-            android:background="#CD0000"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="Log out"
-            android:textColor="#FFFFFF"
-            android:textSize="17dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-    <LinearLayout
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:id="@+id/layoutLabel"
@@ -104,7 +49,7 @@
                 android:gravity="top|left"
                 android:padding="10dip"
                 android:text="Login"
-                android:layout_weight="0.5"
+                android:layout_weight="0.6"
                 android:textColor="#555555"
                 android:textSize="15dp"
                 android:textStyle="bold" />
@@ -115,7 +60,7 @@
                 android:layout_height="fill_parent"
                 android:gravity="center|right"
                 android:paddingRight="10dp"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:text=""
                 android:textColor="#000000"
                 android:textSize="15dp"
@@ -138,16 +83,17 @@
                 android:layout_height="fill_parent"
                 android:gravity="top|left"
                 android:padding="10dip"
-                android:layout_weight="0.5"
+                android:layout_weight="0.6"
                 android:text="First name"
                 android:textColor="#555555"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <TextView
+            <EditText
                 android:id="@+id/firstnameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
+                  android:layout_weight="0.4"
                 android:gravity="center|right"
                 android:paddingRight="10dp"
                 android:text=""
@@ -172,18 +118,18 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|left"
                 android:padding="10dip"
-                android:layout_weight="0.5"
+                android:layout_weight="0.6"
                 android:text="Last name"
                 android:textColor="#555555"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <TextView
+            <EditText
                 android:id="@+id/lastnameTextView"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:gravity="center|right"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:text=""
                 android:paddingRight="10dp"
                 android:textColor="#000000"
@@ -203,7 +149,7 @@
              android:id="@+id/CategoryLabel"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
-             android:layout_weight="0.5"
+             android:layout_weight="0.6"
              android:gravity="top|left"
              android:padding="10dip"
              android:text="Phone"
@@ -211,11 +157,12 @@
              android:textSize="15dp"
              android:textStyle="bold" />
 
-         <TextView
+         <EditText
              android:id="@+id/phoneTextView"
              android:layout_width="match_parent"
              android:layout_height="fill_parent"
-             android:layout_weight="0.5"
+             android:layout_weight="0.4"
+             android:inputType="number"
              android:gravity="center|right"
              android:paddingRight="10dp"
              android:textColor="#000000"
@@ -238,17 +185,17 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|left"
                 android:padding="10dip"
-                android:layout_weight="0.5"
+                android:layout_weight="0.6"
                 android:text="Time zone"
                 android:textColor="#555555"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/timezoneTextView"
+            <Spinner
+                android:id="@+id/timezoneProfileSpin"
                android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:gravity="center|right"
                 android:paddingRight="10dp"
                 android:text=""
@@ -272,17 +219,17 @@
                 android:layout_height="wrap_content"
                 android:gravity="top|left"
                 android:padding="10dip"
-                android:layout_weight="0.5"
+                android:layout_weight="0.6"
                 android:text="Password"
                 android:textColor="#555555"
                 android:textSize="15dp"
                 android:textStyle="bold" />
 
-            <TextView
+            <EditText
                 android:id="@+id/passTextView"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:paddingRight="10dp"
                 android:gravity="center|right"
                 android:text=""
@@ -292,9 +239,53 @@
        
          </LinearLayout>
 
-   
+        
+          
        </LinearLayout>
-       
+        <Button
+             android:id="@+id/btnEditProfile"
+             android:layout_width="220dp"
+             android:layout_height="fill_parent"
+             android:layout_marginLeft="50dp"
+             android:layout_below="@+id/panelInteractions"
+             android:gravity="center|center_horizontal"
+             android:text="Edit profile"
+             android:textColor="#FFFFFF"
+             android:textSize="20dp"
+             android:textStyle="bold" />
+
+         <LinearLayout
+             android:id="@+id/savingLayout"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:visibility="gone"
+             android:layout_alignParentLeft="true"
+             android:layout_below="@+id/panelInteractions"
+             android:orientation="horizontal" >
+
+             <Button
+                 android:id="@+id/btnSaveProfileUpdate"
+                 android:layout_width="100dp"
+                 android:layout_height="fill_parent"
+                 android:layout_marginLeft="50dp"
+                 android:gravity="center|center_horizontal"
+                 android:text="Save"
+                 android:textColor="#FFFFFF"
+                 android:textSize="20dp"
+                 android:textStyle="bold" />
+
+             <Button
+                 android:id="@+id/btnCancelProfileUpdate"
+                 android:layout_width="100dp"
+                 android:layout_height="fill_parent"
+                 android:layout_marginLeft="20dp"
+                 android:gravity="center|center_horizontal"
+                 android:text="Cancel"
+                 android:textColor="#FFFFFF"
+                 android:textSize="20dp"
+                 android:textStyle="bold" />
+         </LinearLayout>
+
 </RelativeLayout>
 
 </ScrollView>

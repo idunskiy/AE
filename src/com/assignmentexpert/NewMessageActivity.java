@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,35 +21,41 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activitygroups.MainTabGroup;
+import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.PayPalAsync;
+import com.asynctasks.SendMessageAsync;
+import com.customitems.CustomTextView;
 import com.datamodel.Messages;
 import com.datamodel.Order;
 import com.library.FrequentlyUsedMethods;
-import com.library.ResultPayPalDelegate;
 import com.library.UserFunctions;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalActivity;
-import com.paypal.android.MEP.PayPalPayment;
-public class NewMessageActivity extends Activity{
+public class NewMessageActivity extends FragmentActivity implements ITaskLoaderListener{
 	private ViewPager pager;
 	public Context cxt;
 	//private CharSequence[] pages = {"stuff", "more stuff", "other stuff"};
@@ -94,6 +99,16 @@ public class NewMessageActivity extends Activity{
 	protected static final Integer INITIALIZE_FAILURE = 2;
 	FrequentlyUsedMethods faq;
 	private RelativeLayout panelInteractions;
+	public static String newMessage = "";
+	   View messageFileList;
+	private ArrayList<Integer> checks = new ArrayList<Integer>();
+	private ListView fileslist;
+	private Button btnFilesRemove;
+	CustomTextView test1TextView;
+	CustomTextView fileSizeHead;
+	 RelativeLayout newMessagePanel ;
+	 TextView deadline;
+	 TextView priceLabel;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -102,123 +117,104 @@ public class NewMessageActivity extends Activity{
 	    this.setContentView(R.layout.new_message2);
 	    
 	    cxt = this;
-	    scroll = (HorizontalScrollView) findViewById(R.id.scrollMessageFiles);
 	    pager = (ViewPager) findViewById(R.id.conpageslider);
 	  
-	    
-	    TextView deadline = (TextView)findViewById(R.id.deadlineLabel);
-	    TextView priceLabel = (TextView)findViewById(R.id.priceLabel);
 	    LayoutInflater inflater = LayoutInflater.from(cxt);
-		faq = new FrequentlyUsedMethods();
+
+		faq = new FrequentlyUsedMethods(NewMessageActivity.this);
+		faq.setActivity(NewMessageActivity.this);
+		faq.setContext(NewMessageActivity.this);
 	    btnCancelNewMessage = (Button) findViewById(R.id.btnCancelNewMessage);
-	    btnClose = (Button) findViewById(R.id.btnClose);
-	    btnInfo = (Button) findViewById(R.id.btnInfoOrder);
 	    btnPay  = (Button) findViewById(R.id.btnPay);
-	    btnInfoOrder = (Button) findViewById(R.id.btnInfoOrder);
 	    btnAddFilesMessage = (Button) findViewById(R.id.btnAddFilesMessage);
-	    btnCancel =(Button) findViewById(R.id.btnCancelNewMessage);
 	    btnSendMessage =(Button) findViewById(R.id.btnSendMessage);
 	    editMessage =(EditText) findViewById(R.id.editMessage);
-	    layout  = (LinearLayout) findViewById(R.id.panelMessageFiles);
-	   
-	     btnInfoOrder.setText("info"+"\r\n"+ Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
 	     page = inflater.inflate(R.layout.interactions_item, null);
 	     interId = (TextView) page.findViewById(R.id.interactionId);
 	     interMess = (TextView) page.findViewById(R.id.interactionMessage);
 	     textDate = (TextView) page.findViewById(R.id.interactionDate);
 	     emptyList = (TextView) findViewById(R.id.emptyResult);
+	     messageFileList = findViewById(R.id.messageFileList);
+//	     messageFileList.setVisibility(View.GONE);
+	     fileslist = (ListView) messageFileList.findViewById(R.id.fileslist);
+	     btnFilesRemove = (Button)messageFileList.findViewById(R.id.btnRemoveFiles);
+	     
+	     test1TextView = (CustomTextView) messageFileList.findViewById(android.R.id.title);
+	     fileSizeHead = (CustomTextView) messageFileList.findViewById(R.id.fileSize);
 	     
 	     panelInteractions =  ((RelativeLayout)findViewById(R.id.panelInteractions));
-	     addFiles();
+	     deadline = (TextView)findViewById(R.id.deadlineLabel);
+	   	 priceLabel = (TextView)findViewById(R.id.priceLabel);
+	     
+	     newMessagePanel = (RelativeLayout)findViewById(R.id.newMessagePanel);
+	     if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
+	     {
+	    	 Log.i("new message Act", "before adding");
+	    	 addFiles();
+	    	 Log.i("new message Act", "after adding");
+	     }
 	     
 	     prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	     prefEditor = prefs.edit();
-	     if (!faq.payPalActivate())
-		    {
-		    	btnPay.setVisibility(View.VISIBLE);
-		    	btnPay.setClickable(false);
-		    	btnPay.setEnabled(false);
-		    	btnPay.setBackgroundColor(Color.GRAY);
-		    	
-		    }
-		    else new PayPalInitialize().execute();
-	     
-			
-	     editMessage.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-	            public void onGlobalLayout() {
-	                int heightDiff = editMessage.getRootView().getHeight() - editMessage.getHeight();
-	                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
-	                	if (!(editMessage.getText().toString().equals("")))
-	                	{
-	                		prefEditor.putString("messageBody",editMessage.getText().toString());
-	                		prefEditor.commit();
-	    		        	
-	                		
-	                	}
-	                }
-	             }
-	        });
-	     if (DashboardActivityAlt.messagesExport.isEmpty())
-		    {
-		    	  deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-		    	  
-		    }
-		    else
-		    {   
-		    	priceLabel.setTextColor(Color.GREEN);
-			    priceLabel.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
-			    deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-		    } 
-	    btnClose.setOnClickListener(new View.OnClickListener() {
-	    	   
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       DashboardActivityAlt.class);
-	               startActivity(i);
-	               
-	           }
-	       });
-	    
+//	     if (!DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("discussion"))
+//		    {
+//		    	btnPay.setVisibility(View.VISIBLE);
+//		    	btnPay.setClickable(false);
+//		    	btnPay.setEnabled(false);
+//		    	btnPay.setBackgroundColor(Color.GRAY);
+//		    	
+//		    }
+//		    else PayPalAsync.execute(this, this);//new PayPalInitialize().execute();
+//	     
+//			
+//	     editMessage.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+//	            public void onGlobalLayout() {
+//	                int heightDiff = editMessage.getRootView().getHeight() - editMessage.getHeight();
+//	                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+//	                	if (!(editMessage.getText().toString().equals("")))
+//	                	{
+//	                		prefEditor.putString("messageBody",editMessage.getText().toString());
+//	                		prefEditor.commit();
+//	    		        	
+//	                		
+//	                	}
+//	                }
+//	             }
+//	        });
+//	     if (DashboardActivityAlt.messagesExport.isEmpty())
+//		    {
+//		    	  deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
+//		    }
+//		    else
+//		    {   
+//		    	priceLabel.setTextColor(Color.GREEN);
+//			    priceLabel.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
+//			    deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
+//		    } 
+//	    
 	    btnCancelNewMessage.setOnClickListener(new View.OnClickListener() {
-	    	   
 	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       InteractionsActivityViewPager.class);
-	               startActivity(i);
+	        	   
+	        	   Intent frequentMessages = new Intent(getParent(), InteractionsActivityViewPager.class);
+		             MainTabGroup parentActivity = (MainTabGroup)getParent();
+		             parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
 	               
 	           }
 	       });
-	    
-	    btnInfo.setOnClickListener(new View.OnClickListener() {
-	    	   
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       OrderInfoActivityAA.class);
-	               startActivity(i);
-	               
-	           }
-	       });
+//	    
 	    btnAddFilesMessage.setOnClickListener(new View.OnClickListener() {
 	    	   
 	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
+	                Intent i = new Intent(getApplicationContext(),
 	                       FileManagerActivity.class); 
-	               Bundle mBundle = new Bundle();
+	                Bundle mBundle = new Bundle();
 	                mBundle.putString("FileManager", "NewMessage");
 	                i.putExtras(mBundle);
-	                startActivity(i);
+	                startActivityForResult(i,4);
 	               
 	           }
 	       });
-	    
-	    btnCancel.setOnClickListener(new View.OnClickListener() {
-	    	   
-	           public void onClick(View view) {
-	               Intent i = new Intent(getApplicationContext(),
-	                       InteractionsActivityViewPager.class);
-	               startActivity(i);
-	           }
-	       });
+	   
 	    
 	    btnSendMessage.setOnClickListener(new View.OnClickListener() {
 	    	   
@@ -229,9 +225,15 @@ public class NewMessageActivity extends Activity{
 	        	   }
 	        	   else
 	        	   {
-		              new SendMessageTask().execute();
+		             boolean isOnline = faq.isOnline();
+		             if (isOnline)
+		             {	 
+		            	 newMessage =  editMessage.getText().toString();
+//	        		  new SendMessageTask().execute();
+	        		  SendMessageAsync.execute(NewMessageActivity.this, NewMessageActivity.this);
 		              prefEditor.remove("messageBody");
 		              prefEditor.commit();
+		             }
 	        	   }
 	           }
 	       });
@@ -248,12 +250,84 @@ public class NewMessageActivity extends Activity{
 				editMessage.setText("");
         }
 	    
+	 
+	    btnFilesRemove.setOnClickListener(new View.OnClickListener() {
+         	 
+            public void onClick(View view) {
+//            	 LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+// 		        View view3 = inflater.inflate(R.layout.file, null);
+// 		       final CheckBox checkBox = (CheckBox)view3
+//						.findViewById(R.id.fileCheck); 
+//            	if (checkBox.isChecked())
+//					  checks.set(position, 1);
+//				else
+//					  checks.set(position, 0);
+         for(int i=0;i<checks.size();i++){
+        	 
+        	Log.i("cheks state", Integer.toString(checks.get(i)));
+        	
+        	 
+          if(checks.get(i)==1){
+        	   adapter.remove(adapter.getItem(i));
+                checks.remove(i);
+                test1TextView.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+                long wholeSize = 0;
+                for (File file: FileManagerActivity.getFinalMessageFiles())
+                {
+                	wholeSize += file.length();
+                }
+                fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
+                
+                 i--;
+              }
+          if( FileManagerActivity.getFinalMessageFiles().isEmpty())
+           	  newMessagePanel.removeView(messageFileList);
+          	
+            }
+
+          }
+       });
+	    
+	
 	}
 	
 	
-	OnLongClickListener onclicklistener = new OnLongClickListener() {
-
+	 public void updateLayout()
+	    {
+	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==2 | DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==3)
+	    	{
+	    		 priceLabel.setText("N/A");
+	    	}
+	    	else
+	    	 { 
+	    		priceLabel.setTextColor(Color.GREEN);
+	   		    priceLabel.setText("$"+Float.toString(DashboardActivityAlt.listItem.getPrice()));
+	    	 }
+	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==4)
+				   	    {
+				   	    	Log.i("interations status", "process status is 4");
+				   	    	btnPay.setVisibility(View.GONE);
+				   	    	PayPalAsync.execute(this, this);
+				   	    	
+				   	    }
+				   	else
+				   	    {
+				   	    	Log.i("process status is not 4", DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle());
+				   	    	btnPay.setVisibility(View.VISIBLE);
+				   	    	btnPay.setClickable(false);
+				   	    	btnPay.setEnabled(false);
+				   	    	Log.i("Interactions activity item status", DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle());
+				   	    	
+				   	  }
+		      deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
+		   	    
+		   	   
+	    	
+	    }
+	    
 	
+	
+	OnLongClickListener onclicklistener = new OnLongClickListener() {
 		public boolean onLongClick(final View arg0) {
 			final CharSequence[] items = {"Open", "Delete", "Details"};
 			final AlertDialog.Builder builder = new AlertDialog.Builder(NewMessageActivity.this);
@@ -264,7 +338,7 @@ public class NewMessageActivity extends Activity{
 			    	 Integer position  = (Integer) ((TextView)arg0).getTag();
 			    	if (item == 0)
 			    	{
-			    		File file = FileManagerActivity.getFinalAttachFiles().get(position.intValue());
+			    		File file = FileManagerActivity.getFinalMessageFiles().get(position.intValue());
 			    		
 			    			//Scanner input = new Scanner(new File(filesDir, file.getName()));
 			    			//Environement.getExternalStorageDirectory().getAbsolutePath() + "/" + file;
@@ -278,10 +352,10 @@ public class NewMessageActivity extends Activity{
 			    	 else if (item == 1)
 			    		{  
 			    		 
-			    		   if (FileManagerActivity.getFinalAttachFiles().size()==1)
+			    		   if (FileManagerActivity.getFinalMessageFiles().size()==1)
 			    		   { 
 			    			   Log.i("the size is 1", "is going to clear");
-			    			   FileManagerActivity.getFinalAttachFiles().clear();
+			    			   FileManagerActivity.getFinalMessageFiles().clear();
 			    			   layout.removeAllViewsInLayout();
 			    			   layout.invalidate();
 			    		   }
@@ -290,12 +364,11 @@ public class NewMessageActivity extends Activity{
 			    				   try
 			    				   {
 			    					 
-			    						 FileManagerActivity.getFinalAttachFiles().remove(position.intValue());
+			    					   FileManagerActivity.getFinalMessageFiles().remove(position.intValue());
 			    					    ((LinearLayout)arg0.getParent()).removeView(arg0);
 				    				     layout.invalidate();
-						    		     updateFileList( FileManagerActivity.getFinalAttachFiles());
+						    		     updateFileList( FileManagerActivity.getFinalMessageFiles());
 						    		     
-						    		     Log.i("count",Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
 					    		     
 			    				   }
 			    				   catch(IndexOutOfBoundsException e)
@@ -305,16 +378,11 @@ public class NewMessageActivity extends Activity{
 			    					   e.printStackTrace();
 			    				   }
 			    				  
-			    				   for (File f :  FileManagerActivity.getFinalAttachFiles())
-					    		     {
-					    		    	 Log.i("file container", f.getName());
-					    		     } 
-			    				   Log.i("file manager size", Integer.toString( FileManagerActivity.getFinalAttachFiles().size()));
 			    			   }
 			    		}
 			    	else if (item == 2)
 			    	{
-			    		File file = FileManagerActivity.getFinalAttachFiles().get(position.intValue());
+			    		File file = FileManagerActivity.getFinalMessageFiles().get(position.intValue());
 			    		final AlertDialog.Builder builder = new AlertDialog.Builder(NewMessageActivity.this);
 			  		    builder.setTitle(file.getName());
 			  		  FileInputStream fis;
@@ -344,6 +412,8 @@ public class NewMessageActivity extends Activity{
 			return false;
 		}
 	};
+	private ArrayAdapter<File> adapter;
+	private boolean trigger =false;
 	public void updateFileList(ArrayList<File> fileList)
 	{
 		Log.i("linear layout count", Integer.toString(layout.getChildCount()));
@@ -358,36 +428,78 @@ public class NewMessageActivity extends Activity{
 			}
 		}
 	}
+	public boolean getTrigger()
+	{return this.trigger;}
+	public void setTrigger(boolean trigger)
+	{this.trigger = trigger;}
 	public void addFiles()
-	 {
-
-	    if(!FileManagerActivity.getFinalAttachFiles().isEmpty())
-	    {
-	    	TextView tv[] = new TextView[FileManagerActivity.getFinalAttachFiles().size()];
-		         for (int i = 0; i< FileManagerActivity.getFinalAttachFiles().size();i++)
-		          {
-		            	View line = new View(this);
-		                line.setLayoutParams(new LayoutParams(1, LayoutParams.MATCH_PARENT));
-		                line.setBackgroundColor(0xAA345556);
-		                tv[i] = new TextView(this);
-		                tv[i].setId(i);
-		                tv[i].setTag(i);
-		                tv[i].setTextColor(Color.BLACK);
-		                tv[i].setTextSize(12);
-		                tv[i].setCompoundDrawablesWithIntrinsicBounds(
-		                        0, R.drawable.file_icon, 0, 0);
-		                tv[i].setText(FileManagerActivity.getFinalAttachFiles().get(i).getName().toString());
-		                tv[i].setOnLongClickListener(onclicklistener);
-		                layout.addView(tv[i], 0);
-		                layout.addView(line, 1);
-	
-		          }
-		       
-	      }
-	  
-	    
-
-	}
+    {
+		try{
+		messageFileList.setVisibility(View.VISIBLE);
+		
+		test1TextView.setTextSize(17);
+		test1TextView.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+       long wholeSize = 0;
+       for (File file: FileManagerActivity.getFinalMessageFiles())
+       {
+       	wholeSize += file.length();
+       }
+       
+       fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
+		adapter = new ArrayAdapter<File>(this,
+				R.layout.new_message2, R.id.fileCheck,
+				FileManagerActivity.getFinalMessageFiles()) 
+				{
+			@Override
+			public View getView(final int position, View convertView, ViewGroup parent) 
+			{
+//				CheckBox textView = (CheckBox) view
+//						.findViewById(R.id.fileCheck);
+				LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		        View view = inflater.inflate(R.layout.file, null);
+	            CustomTextView textView = (CustomTextView)view
+						.findViewById(android.R.id.title); 
+	            CustomTextView fileSize = (CustomTextView)view
+						.findViewById(R.id.fileSize); 
+	            final CheckBox checkBox = (CheckBox)view
+						.findViewById(R.id.fileCheck);
+				textView.setClickable(true);
+				
+				textView.setText(FileManagerActivity.getFinalMessageFiles().get(position).getName().toString());
+				
+				fileSize.setText(Long.toString(FileManagerActivity.getFinalMessageFiles().get(position).length())+ " Mb");
+				for (int i = 0; i< FileManagerActivity.getFinalMessageFiles().size();i++)
+		         {
+						textView.setTag(i);
+		         }
+				
+				view.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						
+						if (!getTrigger())
+							setTrigger(true);
+						else 
+							setTrigger(false);
+						checkBox.setChecked(getTrigger());
+						Log.i("checkable state", Boolean.toString(checkBox.isChecked()));
+						if (checkBox.isChecked())
+							  checks.set(position, 1);
+						else
+							  checks.set(position, 0);
+		            }
+		        });
+				
+				textView.setOnLongClickListener(onclicklistener);
+				return view;
+			}
+		};
+		fileslist.setAdapter(adapter);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+    }
     private class SendMessageTask extends AsyncTask<Void, Void, JSONObject > {
     
     	JSONObject response ;
@@ -400,10 +512,20 @@ public class NewMessageActivity extends Activity{
        	try 
        	{
        		UserFunctions userFunc = new UserFunctions();
-       		response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
+       		if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
+       		{
+       			response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
        				DashboardActivityAlt.listItem.getDeadline().toString(),
        				Float.toString(DashboardActivityAlt.listItem.getPrice()), editMessage.getText().toString(), 
-       				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalAttachFiles());
+       				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
+       		}
+       		else if(DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("writing"))
+       		{
+       			response = userFunc.sendMessage("0", 
+           				DashboardActivityAlt.listItem.getDeadline().toString(),
+           				Float.toString(DashboardActivityAlt.listItem.getPrice()), editMessage.getText().toString(), 
+           				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
+       		}
 			
 			Log.i("send message response",response.toString());
 		} catch (Exception e) {
@@ -417,17 +539,14 @@ public class NewMessageActivity extends Activity{
         protected void onPostExecute(JSONObject  forPrint) {
 //        	Toast mToast =  Toast.makeText(getApplicationContext(),"qwerty"+forPrint.toString(), Toast.LENGTH_LONG);
 // 	  	      mToast.show();
- 	  	   progDailog.dismiss();
- 	  	   Intent i = new Intent(getApplicationContext(),
-                InteractionsActivityViewPager.class);
- 	  	   	Bundle mBundle = new Bundle();
- 	  		mBundle.putString("NewMessage", "wasAdded");
-        	i.putExtras(mBundle);
- 	  	   startActivity(i);
-            // Pass the result data back to the main activity
-
-  
-            
+        	
+        	   progDailog.dismiss();
+	 	  	   Intent i = new Intent(getApplicationContext(),
+	                InteractionsActivityViewPager.class);
+	 	  	   	Bundle mBundle = new Bundle();
+	 	  		mBundle.putString("NewMessage", "wasAdded");
+	        	i.putExtras(mBundle);
+	 	  	   startActivity(i);
         }
 
 		
@@ -436,14 +555,14 @@ public class NewMessageActivity extends Activity{
     	if(requestCode != request)
     		return;
     	switch(resultCode){
-  case Activity.RESULT_OK:
+    case Activity.RESULT_OK:
+    	
 		resultTitle = "SUCCESS";
 		resultInfo = "You have successfully completed this payment.";
 		Toast.makeText(NewMessageActivity.this, "Your payment was proceeded successfully", Toast.LENGTH_SHORT).show();
 		Intent i = new Intent(getApplicationContext(),
                 DashboardActivityAlt.class);
  	  	   startActivity(i);
-	
 		break;
 	case Activity.RESULT_CANCELED:
 		resultTitle = "CANCELED";
@@ -456,6 +575,17 @@ public class NewMessageActivity extends Activity{
 		resultInfo = data.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
 		resultExtra = "Error ID: " + data.getStringExtra(PayPalActivity.EXTRA_ERROR_ID);
 		Toast.makeText(NewMessageActivity.this, "Failure! "+ resultInfo, Toast.LENGTH_SHORT).show();
+	case 4:
+		//addFiles();
+		Log.i("messages files length", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
+		break;
+	case 5:
+		Intent intent = getIntent();
+		finish();
+		startActivity(intent);
+		addFiles();
+		
+		
     	}
     
     }
@@ -501,6 +631,45 @@ public class NewMessageActivity extends Activity{
         }
 		
    }
+	
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+	}
+	@Override
+    public void onBackPressed() {
+		Intent i = new Intent(getApplicationContext(),
+                InteractionsActivityViewPager.class);
+        startActivity(i);
+    }
+	public void onLoadFinished(Object data) {
+		
+			faq.setupButtons(NewMessageActivity.this, panelInteractions);
+		
+	}
+	public void onCancelLoad() {
+		
+		 	faq.showFailure(NewMessageActivity.this);
+		
+	}
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		 InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    updateLayout();
+	    if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
+	     {
+	    	 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
+		 		{ 
+		 			checks.add(b,0);
+		 	    } 
+	    	 addFiles();
+	     }
+	}
 
 
 }

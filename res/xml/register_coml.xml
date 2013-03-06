@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+      android:key="orderScreen">
+	      
+    			<ListPreference
+                        android:title="Name"
+                        android:key="registerName"
+                        android:enabled="true"
+                        android:layout="@layout/custom_edit_preference"
+                        android:widgetLayout="@null"
+                         />
+    			 
+    			<ListPreference
+                        android:title="Email"
+                        android:enabled="true"
+                        android:layout="@layout/custom_edit_preference"
+                        android:key="registerEmail"
+                        android:widgetLayout="@null"
+                         />
+    </PreferenceScreen>
+
+    

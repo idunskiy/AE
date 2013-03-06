@@ -11,6 +11,8 @@ import com.datamodel.Category;
 import com.datamodel.EssayCreationStyle;
 import com.datamodel.EssayType;
 import com.datamodel.Level;
+import com.datamodel.NumberOfReferences;
+import com.datamodel.NumberPages;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -117,10 +119,33 @@ public class ContentRepository {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
 	    	Dao<EssayCreationStyle, Integer> daoContact=dbHelper.getDao(EssayCreationStyle.class);
 	      
-	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
 	        for (EssayCreationStyle essayType : esssayTypes) {
 	        	
 	            HelperFactory.GetHelper().getEssayCreationStyleDao().create(essayType);
+	        }
+	        dbHelper.close();
+	    }
+	    public void saveNumberPages(List<NumberPages> esssayTypes) throws SQLException
+	    {
+	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
+	    	Dao<NumberPages, Integer> daoContact=dbHelper.getDao(NumberPages.class);
+	      
+	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
+	        for (NumberPages essayType : esssayTypes) {
+	        	
+	            HelperFactory.GetHelper().getNumberPagesDao().create(essayType);
+	        }
+	        dbHelper.close();
+	    }
+	    public void saveNumberReferences(List<NumberOfReferences> esssayTypes) throws SQLException
+	    {
+	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
+	    	Dao<NumberOfReferences, Integer> daoContact=dbHelper.getDao(NumberOfReferences.class);
+	      
+	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
+	        for (NumberOfReferences essayType : esssayTypes) {
+	        	
+	            HelperFactory.GetHelper().getNumberReferencesDao().create(essayType);
 	        }
 	        dbHelper.close();
 	    }

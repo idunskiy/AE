@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="#000000">
  
+    
     <ListView
         android:id="@+id/altOrderslist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:divider="#b5b5b5"
+        android:cacheColorHint="@android:color/transparent"
+        android:scrollingCache="false"
+        android:background="#000000"
+        android:divider="#323232"
         android:layout_below="@+id/dashboardHeader"
         android:dividerHeight="1dp"
          />
+    
+    
      <TextView
         android:id="@+id/empty_list_view1"
         android:layout_width="wrap_content"
@@ -28,85 +34,21 @@
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:id="@+id/dashboardHeader"
-		    android:orientation="vertical">
-   <LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="50dp"
-		    android:id="@+id/buttonsPanel"
-		    android:orientation="horizontal"
-		    android:weightSum="1.0" >
-
-            <Button
-                android:id="@+id/btnNewOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#838B83"
-                android:gravity="center|center_horizontal"
-                android:text="New order"   
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".25"/>
-
-            <Button
-                android:id="@+id/btnOrdersHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:background="#007FFF"
-                android:gravity="center|center_horizontal"
-                android:text="Orders history"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold" 
-                android:layout_weight=".25"/>
-
-            <Button
-                android:id="@+id/btnProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" 
-                android:background="#838B83"
-                android:gravity="center|center_horizontal"
-                android:text="Profile"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold"
-                android:layout_weight=".25" />
-
-            <Button
-                android:id="@+id/btnClose"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" 
-                android:background="#CD0000"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Log out"
-                android:textColor="#FFFFFF"
-                android:textSize="17dp"
-                android:textStyle="bold"
-                android:layout_weight=".25" />
-
-     </LinearLayout>
-     <LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:id="@+id/layoutLabel"
 		    android:orientation="vertical"
-		   >
+		    android:background="#000000">
+  
+ 
 		   
-   <TextView
-	            android:id="@+id/textLabel"
-	            android:text="Swipe entries to see order's details"
-	            android:layout_width="fill_parent"
-	            android:background="#D3D3D3"
-	            android:gravity="center_vertical|center_horizontal"
-	            android:layout_height="40dp"
-	            android:padding="10dip"
-	            android:textColor="#545454"
-	            android:textStyle="bold" />
+  <com.customitems.CustomTextView
+        android:id="@+id/textlabel"
+        style="@style/custom_textview"
+        android:text="Swipe entries to see order's details"
+        android:layout_width="fill_parent"
+        android:gravity="center"
+        foo:customFont="Roboto-Medium.ttf"/>
 
-    
-
-   </LinearLayout>
-
+	<TextView  android:layout_height="1dp" 
+             android:layout_width="fill_parent" android:text=""/>
   </LinearLayout>
  
 </RelativeLayout>

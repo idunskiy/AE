@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyCustomButton">
+        <attr name="button" format="string"/>
+        <attr name="myText" format="string"/>
+        <attr name="fancyColors" format="boolean"/>
+        <attr name="onAction" format="string"/>
+    </declare-styleable>
+   
+	
+    <declare-styleable name="MyCustomView">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>            
+        <attr name="extraInformation" format="string" />
+        <attr name="android:layout_marginTop" />
+    </declare-styleable>
+    
+    <declare-styleable name="CustomTextView">
+    	<attr name="customFont" format="string" />
+    	<attr name="android:text"   	     />
+    	<attr name="android:textColor"   	     />
+    	<attr name="android:gravity"   	     />
+	</declare-styleable>
+	 <declare-styleable name="CustomEditText">
+    	<attr name="customFont"  />
+    	<attr name="android:text"   	     />
+    	<attr name="android:textColor"   	     />
+    	<attr name="android:hint"/> 
+	</declare-styleable>
+	 <declare-styleable name="CustomMenuButton">
+    	<attr name="customFont"  />
+    	<attr name="android:text"   	     />
+    	<attr name="android:textColor"   	     />
+	</declare-styleable>
+	
+	 <declare-styleable name="CustomEditPreference">
+    	<attr name="customFont"  />
+        <attr name="android:title"	     />
+	</declare-styleable>
+</resources>

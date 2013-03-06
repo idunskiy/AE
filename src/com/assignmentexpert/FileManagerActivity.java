@@ -2,14 +2,6 @@ package com.assignmentexpert;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -30,10 +22,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.library.Constants;
 import com.library.Item;
+import com.tabscreens.DashboardTabScreen;
+import com.tabscreens.OrderInfoTabScreen;
 
 @SuppressLint("ParserError")
 public class FileManagerActivity extends Activity {
@@ -42,6 +38,7 @@ public class FileManagerActivity extends Activity {
 	ArrayList<String> str = new ArrayList<String>();
 	ArrayList<File> resFiles = new ArrayList<File>();
 	private static ArrayList<File> finalAttachFiles = new ArrayList<File>();
+	private static ArrayList<File> finalMessageFiles = new ArrayList<File>();
 	// Check if the first level of the directory structure is the one showing
 	private Boolean firstLvl = true;
 	Dialog dialog = null;
@@ -189,42 +186,95 @@ public class FileManagerActivity extends Activity {
 		
 		 btnAttach.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
-	        	
-	        	   if (getFinalAttachFiles().isEmpty())
-	        		   {
-	        		   		setFinalAttachFiles(resFiles);
-	        		   }
-	        	   else 
-	        	   {
-	        		   for (File it: resFiles)
-	        		   getFinalAttachFiles().add(it);
-	        	   }
 	        	   if (!resFiles.isEmpty())
-	        	   {  
-	        		   String value = getIntent().getExtras().getString("FileManager");
-	        		   if (value.equals("NewOrder"))
-	        		   {	        		
-	        			   Intent i = new Intent(getApplicationContext(),
-	                       NewOrderActivity.class);
-	               		startActivity(i);
-	                 	}
-	        		   else if(value.equals("NewMessage"))
-	        		   {	        		  
-	        			   Intent i = new Intent(getApplicationContext(),
-		                       NewMessageActivity.class);
+		        	   {  
+		        		   String value = getIntent().getExtras().getString("FileManager");
+		        		   if (value.equals("NewOrder"))
+		        		   {	      
+		        			  if (getFinalAttachFiles().isEmpty())
+		        			   setOrderAttachFiles(resFiles);
+		        			  else
+		        			  {
+		        				  for (File it: resFiles)
+		       	        		  getFinalAttachFiles().add(it);
+		        			  }
+		        			   LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		        			   Intent i = new Intent(getApplicationContext(),
+		                       DashboardTabScreen.class);
+		        			   Bundle mBundle = new Bundle();
+			   	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
+			   	                  i.putExtras(mBundle);
 		               		startActivity(i);
-		               	}
-	        		   else if(value.equals("NewEssay"))
-	        		   {	        		   Intent i = new Intent(getApplicationContext(),
-		                       NewEssayActivity.class);
-		               		startActivity(i);
-		               	}
-	               }
-	        	   else
-	        	   {
-	        		   Toast toast = Toast.makeText(getApplicationContext(), "You should choose at least one file", Toast.LENGTH_SHORT);
-	        		   toast.show();
-	        	   }
+		               		
+		                 	}
+		        		   else if(value.equals("NewMessage"))
+		        		   {	        		
+		        			   if (getFinalMessageFiles().isEmpty())
+		        			     setMessageAttachFiles(resFiles);
+		        			   else 
+		        			   {
+		        				   for (File it: resFiles)
+		        					   getFinalMessageFiles().add(it);
+		        			   }
+		        			   
+//		        			   Intent i = new Intent(getApplicationContext(),
+//			                       OrderInfoTabScreen.class);
+//		        			   Bundle mBundle = new Bundle();
+//			   	                  mBundle.putString("OrderInfoTabGroup", "FilesMessages");
+//			   	                
+//			   	                  i.putExtras(mBundle);
+//			               		startActivity(i);
+//			               		Intent intent = new Intent(Constants.MESSAGE_FILES);
+//			               		intent.setAction(Constants.MESSAGE_FILES);
+//	                           FileManagerActivity.this.sendBroadcast(intent);
+		        			   Intent returnIntent = new Intent(getApplicationContext(),
+		    	                       NewMessageActivity.class);
+		        			   setResult(5,returnIntent);     
+		        			   FileManagerActivity.this.finish();
+			               	}
+		        		 
+		               }
+		        	   else
+		        	   {
+		        		   Toast toast = Toast.makeText(getApplicationContext(), "You should choose at least one file", Toast.LENGTH_SHORT);
+		        		   toast.show();
+		        	   }
+	        	
+//	        	   if (getFinalAttachFiles().isEmpty())
+//	        		   {
+//	        		   		setFinalAttachFiles(resFiles);
+//	        		   }
+//	        	   else 
+//	        	   {
+//	        		   for (File it: resFiles)
+//	        		   getFinalAttachFiles().add(it);
+//	        	   }
+//	        	   if (!resFiles.isEmpty())
+//	        	   {  
+//	        		   String value = getIntent().getExtras().getString("FileManager");
+//	        		   if (value.equals("NewOrder"))
+//	        		   {	        		
+//	        			   Intent i = new Intent(getApplicationContext(),
+//	                       NewOrderActivity.class);
+//	               		startActivity(i);
+//	                 	}
+//	        		   else if(value.equals("NewMessage"))
+//	        		   {	        		  
+//	        			   Intent i = new Intent(getApplicationContext(),
+//		                       NewMessageActivity.class);
+//		               		startActivity(i);
+//		               	}
+//	        		   else if(value.equals("NewEssay"))
+//	        		   {	        		   Intent i = new Intent(getApplicationContext(),
+//		                       NewEssayActivity.class);
+//		               		startActivity(i);
+//		               	}
+//	               }
+//	        	   else
+//	        	   {
+//	        		   Toast toast = Toast.makeText(getApplicationContext(), "You should choose at least one file", Toast.LENGTH_SHORT);
+//	        		   toast.show();
+//	        	   }
 	               
 	           }
 	       });
@@ -235,19 +285,24 @@ public class FileManagerActivity extends Activity {
 	        	   String value = getIntent().getExtras().getString("FileManager");
         		   if (value.equals("NewOrder"))
         		   {	        		   Intent i = new Intent(getApplicationContext(),
-                       NewOrderActivity.class);
-               		startActivity(i);
+	                       DashboardTabScreen.class);
+        		     Bundle mBundle = new Bundle();
+	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
+	                  i.putExtras(mBundle);
+	               		startActivity(i);
                  	}
         		   else if(value.equals("NewMessage"))
-        		   {	        		   Intent i = new Intent(getApplicationContext(),
-	                       NewMessageActivity.class);
-	               		startActivity(i);
+        		   {	        		   
+//        			   Intent i = new Intent(getApplicationContext(),
+//	                       OrderInfoTabScreen.class);
+//	               		startActivity(i);
+        			   
+        			   Intent returnIntent = new Intent(getApplicationContext(),
+    	                       NewMessageActivity.class);
+        			   setResult(4,returnIntent);     
+        			   FileManagerActivity.this.finish();
 	               	}
-        		   else if(value.equals("NewEssay"))
-        		   {	        		   Intent i = new Intent(getApplicationContext(),
-	                       NewEssayActivity.class);
-	               		startActivity(i);
-	               	}
+        		  
 	           }
 	       });
 	
@@ -283,7 +338,7 @@ public class FileManagerActivity extends Activity {
 			for (int i = 0; i < fList.length; i++) {
 				File sel = null;
 				
-					fileList[i] = new Item(fList[i], R.drawable.file_icon, false);
+					fileList[i] = new Item(fList[i], R.drawable.file, false);
 					sel = new File(path, fList[i]);
 				
 				// Convert into file path
@@ -386,10 +441,18 @@ public class FileManagerActivity extends Activity {
 	public static ArrayList<File> getFinalAttachFiles() {
 		return finalAttachFiles;
 	}
+	public static ArrayList<File> getFinalMessageFiles() {
+		return finalMessageFiles;
+	}
 
-	public static void setFinalAttachFiles(ArrayList<File> finalAttachFiles) {
+	
+	public static void setOrderAttachFiles(ArrayList<File> finalAttachFiles) {
 		FileManagerActivity.finalAttachFiles = finalAttachFiles;
 	}
+	public static void setMessageAttachFiles(ArrayList<File> finalAttachFiles) {
+		FileManagerActivity.finalMessageFiles = finalAttachFiles;
+	}
+	
 
 	
 //	@Override

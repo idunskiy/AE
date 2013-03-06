@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.assignmentexpert"
     android:versionCode="1"
+    android:installLocation="preferExternal"
     android:versionName="1.0" >
-   
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+    <supports-screens     
+        android:resizeable="true" />
+    <uses-sdk    android:minSdkVersion="8"
+        android:targetSdkVersion="15" 
+        android:maxSdkVersion="17"/>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
   <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
@@ -13,47 +15,49 @@
   <uses-permission android:name="android.permission.READ_CALENDAR"> </uses-permission>
 <uses-permission android:name="android.permission.WRITE_CALENDAR"> </uses-permission>
 <uses-permission android:name="android.permission.GET_TASKS"> </uses-permission>
+ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+ <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+ <uses-permission android:name="android.permission.GET_TASKS"></uses-permission>
     <application
        android:name="com.assignmentexpert.ApplicationMemory"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/launcher_xdpi"
         android:label="@string/app_name"
-         android:theme="@android:style/Theme.Black.NoTitleBar">
+         android:theme="@android:style/Theme.Black.NoTitleBar"
+         android:allowBackup="true"
+         >
+         
         <activity 
-            
-            android:name="com.assignmentexpert.LoginActivity"
-             android:windowSoftInputMode="stateAlwaysHidden" >
-             
-           <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-            
+            android:name=".LoginActivity"
+             android:configChanges="keyboardHidden|orientation"
+             android:windowSoftInputMode="adjustPan"
+             > 
         </activity>
         <activity
             android:name="com.assignmentexpert.RegisterActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="keyboardHidden|orientation"
             android:label="Register" >
         </activity>
         <activity
             android:name="com.assignmentexpert.RestoreActivity"
             android:label="Restore"
+            android:configChanges="keyboardHidden|orientation"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         
           <activity
-           
             android:name="com.assignmentexpert.NewOrderActivity"
             android:label="NewOrder"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-             
-            
-             
+            android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
         </activity>
         
           <activity
             android:name="com.assignmentexpert.FileManagerActivity"
             android:label="File Manager"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:noHistory="true"
+            android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
         </activity>
         <activity
             android:name="com.assignmentexpert.DashboardActivityAlt"
@@ -78,45 +82,128 @@
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
-            android:name="com.assignmentexpert.InteractionsActivityAlt"
-            android:label="InteractionsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
-        <activity
             android:name="com.assignmentexpert.InteractionsActivityViewPager"
             android:label="InteractionsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="keyboardHidden|orientation" >
         </activity>
         <activity
             android:name="com.assignmentexpert.NewMessageActivity"
             android:label="NewMessageActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden" 
+             android:configChanges="keyboardHidden|orientation">
              
         </activity>
         <activity
             android:name="com.assignmentexpert.ProfileActivity"
             android:label="ProfileActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
              
         </activity>
-         <activity
-            android:name="com.assignmentexpert.PreOrderActivity"
-            android:label="PreOrderActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-             
-        </activity>
+        
         <activity
             android:name="com.assignmentexpert.NewEssayActivity"
             android:label="NewEssayActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="keyboardHidden|orientation" >
              
         </activity>
-        <service android:name="com.library.ServiceMessages">
+     
+        <service android:name="com.library.ServiceIntentMessages">
+        </service>
+         <service android:name="com.library.ServiceMessages">
         </service>
         <activity android:name="com.paypal.android.MEP.PayPalActivity"
    android:theme="@android:style/Theme.Translucent.NoTitleBar"
    android:configChanges="keyboardHidden|orientation"/>
-      
+        <activity
+       		 android:name=".AssignmentPref"
+        	 android:label="Assignment"
+        	  android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
+        	 
+        </activity>
+      <activity
+       		 android:name="com.tabscreens.LoginTabScreen"
+        	 android:label="LoginTabGroup"
+  		    android:windowSoftInputMode="adjustPan"           
+  		     android:configChanges="keyboardHidden|orientation">
+        	    <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER"
+                     />
+             </intent-filter>
+             
+      </activity>
+              <activity
+       		 android:name="com.tabscreens.DashboardTabScreen"
+        	 android:label="Assignment"
+        	  android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
+        	
+        </activity>
+          <activity
+       		 android:name=".ProfilePref"
+        	 android:label="Profile"
+        	  android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
+        	
+        </activity>
+         <activity
+       		 android:name=".RegisterActivityCompl"
+        	 android:label="Register completion"
+        	  android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation">
+        	
+        </activity>
+         
+         <activity
+       		 android:name="com.activitygroups.MainTabGroup"
+        	 android:label="MainTabGroup"
+        	  android:windowSoftInputMode="stateHidden" 
+            android:configChanges="keyboardHidden|orientation"
+        	>
+        </activity>
+        <activity        		
+             android:name="com.activitygroups.TabGroup2Activity"
+               android:windowSoftInputMode="stateHidden" 
+            android:configChanges="keyboardHidden|orientation"/>
+        	    
+        <activity        	
+            	 android:name="com.activitygroups.TabGroup1Activity"
+                 android:windowSoftInputMode="adjustPan"
+            android:configChanges="keyboardHidden|orientation"/> 
+            <activity        	
+            	 android:name="com.activitygroups.ProfileGroup"
+               android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation"/> 
+             <activity        	
+            	 android:name=".ProfilePrefCompl"
+               android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation"/> 
+              <activity        	
+            	 android:name=".ExitActivity"
+               android:windowSoftInputMode="stateAlwaysHidden" 
+            android:configChanges="keyboardHidden|orientation"/>
+               <activity        	
+            	 android:name="com.activitygroups.InteractionTabGroup"
+               android:windowSoftInputMode="stateHidden" 
+            android:configChanges="keyboardHidden|orientation"/>
+                <activity        	
+            	 android:name="com.tabscreens.OrderInfoTabScreen"
+               android:windowSoftInputMode="stateHidden" 
+            android:configChanges="keyboardHidden|orientation"/>
+       <activity        	
+            	 android:name="com.activitygroups.OrderInfoTabGroup"
+               android:windowSoftInputMode="stateHidden" 
+            android:configChanges="keyboardHidden|orientation"/>
+       
+       <activity        	
+            	 android:name=".ProfileCompl"
+                 android:windowSoftInputMode="stateHidden" 
+           	     android:configChanges="keyboardHidden|orientation"/>
+       
     </application>
 
 </manifest>

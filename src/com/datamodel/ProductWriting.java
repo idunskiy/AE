@@ -9,7 +9,7 @@ public class ProductWriting extends ProductType{
 		@SerializedName("title")
 		String title;
 		@SerializedName("pages_number")
-		int pages_number;
+		String pages_number;
 		@SerializedName("number_of_references")
 		String number_of_references;
 		@SerializedName("dtl_expl")
@@ -24,7 +24,7 @@ public class ProductWriting extends ProductType{
 		public ProductWriting()
 		{}
 		public ProductWriting(String title, String info, boolean dtl_expl, 
-				int pages_number , EssayType essayType, EssayCreationStyle essayStyle,
+				String pages_number , EssayType essayType, EssayCreationStyle essayStyle,
 				int id,String number_of_references)
 		{
 			this.title = title;
@@ -56,7 +56,7 @@ public class ProductWriting extends ProductType{
 		{
 			 return this.dtl_expl;
 	    }
-		public int getEssayPagesNumb() 
+		public String getEssayPagesNumb() 
 		{
 			 return this.pages_number;
 	    }
@@ -88,7 +88,7 @@ public class ProductWriting extends ProductType{
 		{
 			 this.dtl_expl = dtl_expl;
 	    }
-		public void setEssayPagesNumb(int pages_number) 
+		public void setEssayPagesNumb(String pages_number) 
 		{
 			this.pages_number = pages_number ;
 	    }
@@ -108,6 +108,13 @@ public class ProductWriting extends ProductType{
 	     public ProductType returnObject() {
 	             return new ProductWriting();
 	     }
+		 @Override
+			public String toString() {
+				return "title=" + title + "info " + "=" + info
+						+ " " + "profile=" + dtl_expl+  " essay type = "+essayType +" essay style"+essayStyle
+						+" number references " + number_of_references +" number pages "+pages_number+"}";
+			
+			}
 		
 	
 

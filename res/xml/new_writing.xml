@@ -1,0 +1,27 @@
+ <PreferenceScreen
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+      android:key="new_writing">
+     
+  			<ListPreference
+	                        android:title="Type of essay"
+	                        android:summary="Type of essay"
+	                        android:key="typePref"
+	                         />
+        	<ListPreference
+	                        android:title="Number of pages"
+	                        android:summary="Number of pages"
+	                        android:key="nmbPages"
+	                         />
+        	 <ListPreference
+	                        android:title="Creation style"
+	                        android:summary="Creation style"
+	                        android:key="crStyle"
+	                         />
+           <ListPreference
+	                        android:title="Number of references"
+	                        android:summary="Number of references"
+	                        android:key="nmbRefs"
+	                         />
+    
+</PreferenceScreen>

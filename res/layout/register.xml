@@ -1,133 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF" >
-
-    <RelativeLayout
+    android:background="#000000" 
+    android:focusableInTouchMode="true"
+    android:focusable="true">
+   
+ <TableLayout 
+    android:id="@+id/tableLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="*"
+    android:shrinkColumns="1"
+    android:focusableInTouchMode="true">
+          <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1">
+   	<com.customitems.CustomTextView
+        android:id="@+id/textViewPlus1"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:padding="10dip" >
-
-        <!-- View Title Label -->
-		<ImageView
-           android:id="@+id/imageView1"
-           android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
-            android:background="#000000"
-           android:src="@drawable/stand_logo" />
-        <TextView
-            android:id="@+id/login_error"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dip"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <!-- Login Button -->
-		
-
-      <EditText
-            android:id="@+id/registerName"
-            android:layout_width="fill_parent"
-            android:text="FirstName"
-            android:layout_height="wrap_content"
-             android:layout_marginTop="110dp" />
- 
-        <!--  Email TextField -->
-        <EditText
-            android:id="@+id/registerEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="E-mail(Login in future)"
-            android:layout_marginTop="175dp" />
- 
-       
-        <!--  Password TextField -->
-        <EditText
-            android:id="@+id/registerPassword"
-            android:layout_width="fill_parent"
-            android:text="Password(min 6 symbols)"
-            android:layout_height="wrap_content"
-            
-            android:layout_marginTop="240dp" />
-        
-             <EditText
-            android:id="@+id/registerPasswordconf"
-            android:layout_width="fill_parent"
-            android:text="Password confirmation"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="305dp" />
-             
-            <EditText
-            android:id="@+id/captcha"
-            android:layout_width="150dp"
-            android:text=""
-            android:layout_height="wrap_content"
-            android:layout_marginTop="370dp"
-            android:layout_alignParentRight="true" />
- 			
-            <ImageView android:id="@+id/captchaView" 
-                android:layout_marginTop="370dp"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+        style="@style/custom_textview"
+        android:text="Fill the form to sign in"
+        foo:customFont="Roboto-Medium.ttf">
+    </com.customitems.CustomTextView>
+		 </TableRow>
+		 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow2"
+         style="@style/edit_row"
+       >
+   	<com.customitems.CustomEditText
+        android:id="@+id/registerName"
+        style="@style/custom_edittext"
+        foo:customFont="Roboto-Regular.ttf"
+        android:focusable="true"
+		android:focusableInTouchMode="true"
+        android:hint="First name">
+    </com.customitems.CustomEditText>
+         </TableRow>
+         	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow1"
+         style="@style/edit_row"
+        >
+   	<com.customitems.CustomEditText
+        android:id="@+id/registerEmail"
+        style="@style/custom_edittext"
+        foo:customFont="Roboto-Regular.ttf"
+        android:focusable="true"
+android:focusableInTouchMode="true"
+        android:hint="Email">
+    </com.customitems.CustomEditText>
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow1"
+         style="@style/edit_row"
+        >
+   	<com.customitems.CustomEditText
+        android:id="@+id/registerPassword"
+        style="@style/custom_edittext"
+        android:focusable="true"
+android:focusableInTouchMode="true"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Password">
+    </com.customitems.CustomEditText>
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow1"
+         style="@style/edit_row"
+        >
+   	<com.customitems.CustomEditText
+        android:id="@+id/registerPasswordconf"
+        style="@style/custom_edittext"
+        android:focusable="true"
+android:focusableInTouchMode="true"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Password confirmation">
+    </com.customitems.CustomEditText>
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+         <TableRow
+        android:id="@+id/tableRow1"
+         style="@style/edit_row"
+        >
+   		<LinearLayout
+            android:id="@+id/linearLayout2"
+            android:orientation="horizontal"
+            android:weightSum="1.0" 
+            android:layout_width="fill_parent">
+          <ImageView android:id="@+id/captchaView" 
+                android:layout_width="101dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="23dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/captcha_image"
                 >
             </ImageView>
+   	<com.customitems.CustomEditText
+        android:id="@+id/captcha"
+        android:layout_width="fill_parent"
+        android:layout_marginLeft="10dp"
+        android:focusable="true"
+android:focusableInTouchMode="true"
+        style="@style/custom_edittext"
+        foo:customFont="Roboto-Regular.ttf"
+        android:hint="Captcha">
+    </com.customitems.CustomEditText>
      
-
+   	</LinearLayout>
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+ 	<TableRow
+        android:id="@+id/tableRow3"
+        style="@style/button_row"
+        >
         <Button
+            
             android:id="@+id/btnProceed"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
+            style="@style/custom_button"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="435dip"
-            android:text="Proceed" />
- 		
-        <!-- Link to Registration Screen -->
-<LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="50dp"
-    android:layout_below="@+id/imageView1"
-    android:orientation="horizontal"
-    android:weightSum="1.0" >
-        <Button
-            android:id="@+id/btnLogin"
+            android:text="Sign In"
+            android:background="@drawable/button" />
+	    </TableRow>
+	
+		<TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        >
+        <RelativeLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#838B83"
-            android:text="Login"
-            android:gravity="center|center_horizontal" 
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold" 
-             android:layout_weight=".33"
-           />
-
-        <Button
-            android:id="@+id/btnLinkToRegisterScreen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#007FFF"
-            android:text="Register"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold"
-             android:layout_weight=".33" />
-        <Button
-            android:id="@+id/btnClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal" 
-            android:background="#CD0000"
-            android:text="Close"
-            android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:textStyle="bold" 
-             android:layout_weight=".34"/>
-	</LinearLayout>
-    </RelativeLayout>
- 
+            >
+   	<com.customitems.CustomTextView
+        android:id="@+id/registerHelpText"
+        style="@style/custom_textview"
+        android:text="By signing in, I accept Assignmentexpert's "
+        android:layout_width="fill_parent"
+        android:gravity="center"
+        android:textColor="#a5a5a5"
+        foo:customFont="Roboto-Medium.ttf"/>
+   	
+   	<com.customitems.CustomTextView
+        android:id="@+id/btnTermsService"
+        style="@style/custom_textview"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="50dp"
+        android:text="Terms of Service "
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:textColor="#42aeff"
+        foo:customFont="Roboto-Medium.ttf"/>
+   <com.customitems.CustomTextView
+        android:id="@+id/registerHelpText2"
+        android:text="and "
+           style="@style/custom_textview"
+        android:layout_width="wrap_content"
+        android:layout_toLeftOf="@+id/btnTermsService"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="153dp"
+        android:textColor="#a5a5a5"
+        foo:customFont="Roboto-Medium.ttf"/>
+   <com.customitems.CustomTextView
+        android:id="@+id/btnPrivatePolicy"
+        style="@style/custom_textview"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="180dp"
+        android:text="Privacy Policy "
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:textColor="#42aeff"
+        foo:customFont="Roboto-Medium.ttf"/>
+	</RelativeLayout>
+   		</TableRow>
+		
+		 
+	</TableLayout>
 </ScrollView>
