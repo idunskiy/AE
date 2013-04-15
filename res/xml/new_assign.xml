@@ -3,20 +3,23 @@
       xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
       android:key="new_assign">
-  		<CheckBoxPreference
+  		<com.customitems.CustomCheckBoxPref
                 android:name="Detail information"
                 android:title="Detailed explanation required"
-                android:layout="@layout/custom_checkbox_preference"
-                android:key="dtlInfo" />
-        <CheckBoxPreference
+                android:key="dtlInfo" 
+				android:textSize = "11sp"
+				 android:layout_marginLeft = "15dp"               />
+  		
+  	
+        <com.customitems.CustomCheckBoxPref
             
                 android:name="Exclusive video"
                 android:title="Shoot exclusive video"
-                 android:layout="@layout/custom_checkbox_preference"
-                android:key="ExcVideo" />
-         <CheckBoxPreference
+                android:key="ExcVideo"
+                android:textSize = "11sp" />
+         <com.customitems.CustomCheckBoxPref
                 android:name="Common video"
                 android:title="Shoot common video"
-                 android:layout="@layout/custom_checkbox_preference"
-                android:key="commVideo" />
+                android:key="commVideo" 
+                android:textSize = "11sp"/>
 </PreferenceScreen>

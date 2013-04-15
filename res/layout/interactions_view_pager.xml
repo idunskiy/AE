@@ -4,14 +4,17 @@
     android:id="@+id/new_order"
     android:layout_width="fill_parent"
     android:background="#000000"
+     android:focusableInTouchMode="true"
+    android:focusable="true"
     android:layout_height="fill_parent">
 
 	<RelativeLayout
 	    android:id="@+id/panelInteractions"
 	    android:layout_width="wrap_content"
 	    android:layout_height="75dp"
-	    android:layout_below="@+id/panelButtons"
 	    android:background="#738495"
+	     android:focusableInTouchMode="true"
+    	android:focusable="true"
 	    android:orientation="horizontal" >
 		
 
@@ -19,6 +22,8 @@
                android:id="@+id/deadlineLayout"
                android:layout_width="170dp"
                android:layout_height="fill_parent"
+                android:focusableInTouchMode="true"
+  			  android:focusable="true"
                android:orientation="vertical"
                android:weightSum="1.0" >
 		   
@@ -28,6 +33,8 @@
 	            android:layout_height="fill_parent"
 	            android:layout_width="115dp"
 	            android:layout_marginRight="10dp"
+	             android:focusableInTouchMode="true"
+    android:focusable="true"
 	            foo:customFont="Roboto-Regular.ttf"
 	            android:textSize="14sp"
 	            android:layout_weight=".50" 
@@ -42,6 +49,8 @@
 	               android:layout_height="fill_parent"
 	               android:layout_marginRight="10dp"
 	               foo:customFont="Roboto-Regular.ttf"
+	                android:focusableInTouchMode="true"
+    android:focusable="true"
 	               android:layout_weight=".50"
 	               android:gravity="left|center_horizontal"
 	               android:padding="10dip"
@@ -57,6 +66,8 @@
 	                android:layout_height="40dp"
 				      android:layout_centerVertical="true"
 	                android:layout_marginLeft="5dp"
+	                 android:focusableInTouchMode="true"
+   					 android:focusable="true"
 	                android:layout_marginRight="30dp"
 	               	android:visibility="gone"
 	                android:layout_toRightOf="@+id/deadlineLayout"
@@ -79,13 +90,70 @@
 	            android:textStyle="bold" />
 	           
    </RelativeLayout>
-  
+   <RelativeLayout android:id="@+id/messagesPanel"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+        android:layout_below="@+id/panelInteractions">
+  <LinearLayout 
+        android:layout_height="26dp"
+         android:id="@+id/interactionsCursor"
+	            android:layout_width="fill_parent"
+	            android:background="#1b324b"
+	            android:weightSum="1.0"
+	           
+	            >
+	    <!--  -->       
+        <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess1"
+	            android:text=""
+	            android:layout_weight="0.25"
+	             android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:gravity="center|center"
+	            android:textColor="#738495"
+	            foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+         <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess2"
+	            android:text=""
+	            android:layout_weight="0.5"
+	              android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:gravity="center|center"
+	            android:textColor="#FFFFFF"
+	             foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+          <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess3"
+	            android:text=""
+	            android:layout_weight="0.25"
+	              android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:gravity="center|center"
+	            android:textColor="#738495"
+	            foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+     		  
+   </LinearLayout> 
+    <ImageView 
+         android:id="@+id/panelCursor"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@drawable/arrow"
+	    android:layout_centerHorizontal="true"
+	    android:layout_below="@+id/interactionsCursor"
+       
+       />
+    </RelativeLayout>
 <android.support.v4.view.ViewPager
     android:id="@+id/conpageslider"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     
-    android:layout_below="@+id/panelInteractions"
+    android:layout_below="@+id/messagesPanel"
     android:layout_above="@+id/interactionsFooterLayout"
     android:background="#000000" />
   <LinearLayout 
@@ -97,7 +165,9 @@
 	          <ListView   
 	          android:layout_width="fill_parent"
               android:layout_height="0dp"
-              android:id="@+id/interactionsFileList">
+              android:id="@+id/interactionsFileList"
+               android:focusableInTouchMode="true"
+   			 android:focusable="true">
 	              
 	          </ListView>
   <LinearLayout 
@@ -109,13 +179,13 @@
               android:weightSum="1.0"
              >
     <Button android:text="Reply"
-          android:id="@+id/saveProfile"
+          android:id="@+id/btnReply"
             android:layout_weight="0.47"
             style="@style/custom_button"
             android:layout_width="fill_parent"
              />
     <Button android:text="Inactivate"
-        android:id="@+id/cancelProfile"
+        android:id="@+id/btnInactivate"
         	style="@style/custom_button"
         	android:layout_weight="0.53"
         	android:layout_marginLeft="5dp"

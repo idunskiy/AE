@@ -10,10 +10,12 @@ import com.assignmentexpert.LoginActivity;
 public class TabGroup1Activity extends MainTabGroup {
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
 			InputMethodManager imm = (InputMethodManager)getSystemService(
 				      Context.INPUT_METHOD_SERVICE);
-		    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		    
+			super.onCreate(savedInstanceState);
+			imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
 			startChildActivity("LoginActivity", new Intent(getParent(),LoginActivity.class));
 			
 	}
@@ -24,6 +26,7 @@ public class TabGroup1Activity extends MainTabGroup {
 			InputMethodManager imm = (InputMethodManager)getSystemService(
 				      Context.INPUT_METHOD_SERVICE);
 		    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
 			super.onResume();
 			
 		}

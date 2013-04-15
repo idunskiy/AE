@@ -1,8 +1,10 @@
 package com.library;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -13,6 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Handler;
 import android.preference.ListPreference;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.assignmentexpert.DashboardActivityAlt;
@@ -43,8 +48,12 @@ public class FrequentlyUsedMethods {
 	public static CheckoutButton launchSimplePayment;
 	Context context;
 	Activity activity;
+	private Handler mHandler;
 	public FrequentlyUsedMethods(Context ctx)
-	{ this.context = ctx;}
+	{ 
+		this.context = ctx;
+		mHandler = new Handler();
+	}
 	public void setContext(Context ctx)
 	{
 		this.context = ctx;
@@ -59,6 +68,7 @@ public class FrequentlyUsedMethods {
 	}
 	public Activity getActivity()
 	{
+		Log.i("freq method", activity.getClass().toString());
 		return this.activity;
 	}
 	
@@ -106,20 +116,18 @@ public class FrequentlyUsedMethods {
 		lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 		lp.leftMargin =(int) getContext().getResources().getDimension(R.dimen.paypal_left_margin); 
 		lp.topMargin = (int) getContext().getResources().getDimension(R.dimen.paypal_top_margin);
-		
+		setActivity((Activity)arg);
 		launchSimplePayment.setOnClickListener(mCorkyListener);
 		// The CheckoutButton is an android LinearLayout so we can add it to our display like any other View.
 		panelInteractions.addView(launchSimplePayment,lp);
-		
-		
-		
-		
 		
 	}
   public void showFailure(Context ctx) {
 	  Toast.makeText(ctx, "Sorry, could not initialize the PayPal library. Try to make it later",  Toast.LENGTH_LONG).show();
 		
 	}
+  
+  
   private OnClickListener mCorkyListener = new OnClickListener() {
 	    public void onClick(View v) {
 	    	PayPalPayment newPayment = new PayPalPayment();
@@ -141,12 +149,45 @@ public class FrequentlyUsedMethods {
       	 item.setQuantity(1);
       	 invoice.getInvoiceItems().add(item);
       	 newPayment.setInvoiceData(invoice);
+      	Log.i("btnListener click", ((Activity)getContext()).getClass().toString());
       	
-      	
-      	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getContext(),new ResultPayPalDelegate());
+      	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getActivity(),new ResultPayPalDelegate());
 	    getActivity().startActivityForResult(paypalIntent, request);
 	    }
    };
+   
+   public OnClickListener fileInfoListenter = new OnClickListener() {
+	    public void onClick(View v) {
+	    	  File choosed = findFile(((TextView)v).getText().toString());
+              Intent intent = new Intent();
+  			intent.setAction(android.content.Intent.ACTION_VIEW);
+  			intent.setDataAndType(Uri.fromFile(choosed), "text/plain");
+  			getContext().startActivity(intent);
+     	
+   }};
+   
+   public File findFile(String name)
+   {
+	   List<String> paths = new ArrayList<String>();
+	   File directory = new File("/mnt/sdcard/download/AssignmentExpert");
+	   File choosedFile = null;
+	   File[] files = directory.listFiles();
+	   try
+	   {
+	   for (int i = 0; i < files.length; ++i) {
+	      if (files[i].getName().equals(name))
+	    	  choosedFile = files[i];
+	   }
+	   }
+	   catch(NullPointerException e)
+	   {
+		   someMethod("current file can't be find");
+		   e.printStackTrace();
+		   
+		   
+	   }
+	   return choosedFile;
+   }
    private int savedPosition;
    private int savedListTop;
    public boolean payPalActivate()
@@ -287,7 +328,20 @@ public class FrequentlyUsedMethods {
 		    Log.i("RegisterAct curr context", context.getClass().toString());
 		        return context;
 		}
-	 
+	 private class ToastRunnable implements Runnable {
+		    String mText;
+
+		    public ToastRunnable(String text) {
+		        mText = text;
+		    }
+
+		    public void run(){
+		         Toast.makeText(getContext(), mText, Toast.LENGTH_SHORT).show();
+		    }
+		}
+	 public void someMethod(String message) {
+		    mHandler.post(new ToastRunnable(message));
+		}
 	 
 //	 public static List<Order> cloneList(List<Order> dogList) {
 //		    List<Order> clonedList = new ArrayList<Order>(dogList.size());

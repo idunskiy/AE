@@ -15,6 +15,7 @@ import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.activitygroups.MainTabGroup;
 import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.CaptchaAsync;
 import com.customitems.CustomTextView;
 import com.library.FrequentlyUsedMethods;
 
@@ -64,11 +66,11 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	InputMethodManager imm = (InputMethodManager)getSystemService(
+    		      Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
-        InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         final FrequentlyUsedMethods faq = new FrequentlyUsedMethods(RegisterActivity.this);
         // Importing all assets like buttons, text fields
         inputFullName = (EditText) findViewById(R.id.registerName);
@@ -79,39 +81,21 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
         btnProceed = (Button) findViewById(R.id.btnProceed);
         btnTermsService = (CustomTextView)findViewById(R.id.btnTermsService);
         btnPrivatePolicy = (CustomTextView)findViewById(R.id.btnPrivatePolicy);
-//        btnLinkToLogin = (CustomMenuButton) findViewById(R.id.btnLogin);
-//        btnClose = (CustomMenuButton) findViewById(R.id.btnClose);
-//        btnLinkToRegisterScreen = (CustomMenuButton) findViewById(R.id.btnLinkToRegisterScreen);
-     
-        // downloading the image
-       // new DownloadCaptchaTask().execute();
         btnProceed.getBackground().setAlpha(120);
-        
-        
-        
-//        Drawable drawable= getResources().getDrawable(R.drawable.login);
-//        drawable.setAlpha(80);
-//        btnLinkToLogin.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
-//      
-//        
-//        Drawable drawable2= getResources().getDrawable(R.drawable.signup);
-//        drawable2.setAlpha(100);
-//        drawable2.setBounds(0, 0, (int)(drawable.getIntrinsicWidth()), 
-//                (int)(drawable.getIntrinsicHeight()));
-//        btnLinkToRegisterScreen.setCompoundDrawables(null, drawable2, null, null);
-//        Drawable drawable3= getResources().getDrawable(R.drawable.close);
-//        drawable3.setBounds(0, 0, (int)(drawable.getIntrinsicWidth()), 
-//                (int)(drawable.getIntrinsicHeight()));
-//        drawable3.setAlpha(80);
-//        btnClose.setCompoundDrawables(null, drawable3, null, null);
-        
-        
-//        CaptchaAsync.execute(this, this);
+      
 
         inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
 				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				if (inputPassword.getText().toString().equals("At least 5 charachters"))
+					inputPassword.getText().clear();
+				if(inputPassword.getText().toString().equalsIgnoreCase("Should be equal"))
+				{
+					inputPassword.getText().clear();
+					confPassword.getText().clear();
+				}
+				
 				inputPassword.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -131,6 +115,8 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
 				
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
+				if (inputEmail.getText().toString().equals("You have to enter correct email"))
+					inputEmail.getText().clear();
 				inputEmail.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -140,6 +126,8 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
 				
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputFullName, 0); 
+				if (inputFullName.getText().toString().equals("At least 2 charachters"))
+					inputFullName.getText().clear();
 				inputFullName.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -148,6 +136,8 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(captchaEdit, 0); 
+				if (captchaEdit.getText().toString().equals("Incorrect"))
+					captchaEdit.getText().clear();
 				captchaEdit.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -174,7 +164,7 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
         // Register Button Click event
         btnProceed.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-//               boolean errorFlag = false;
+               boolean errorFlag = false;
 //               String name = inputFullName.getText().toString();
 //               String email = inputEmail.getText().toString();
 //               String password = inputPassword.getText().toString();
@@ -243,53 +233,35 @@ public class RegisterActivity extends FragmentActivity implements ITaskLoaderLis
 //                	errorFlag = true;
 //                	
 //                }
-//                // register data processing
-//                
 //                if (errorFlag == false)
 //                {	
-//			    	 
+//                	btnProceed.getBackground().setAlpha(255);
 //			    		 userName = name;
 //			    		 userEmail  = email;
 //			    		 userPass = password;
 //			    		 userConf = confpassword;
 //			    		 userCaptcha = captcha;
-//			    		
-//			             
-//			    		// new RegisterTask().execute(name, email, password, confpassword, captcha);
-//			    		 
-////			    		 (((TabActivity) getParent()).getTabHost().getCurrentTabView()).setIntent(i);
-////			    		 LoginTabScreen myTabs = (LoginTabScreen) RegisterActivity.this.getParent();
-////			    		 myTabs.getCurrentActivity();
-////			    		 Intent i = new Intent(getApplicationContext(),
-////		                        RegisterActivityCompl.class);
-//			    			
-////			    		 
-//			    		 
-//			    		 //RegisterAsync.execute(RegisterActivity.this, RegisterActivity.this);
-//			    		 
+//			    		 Intent frequentMessages = new Intent(getParent(), RegisterActivityCompl.class);
+//				         MainTabGroup parentActivity = (MainTabGroup)getParent();
+//				         parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
 //                }
-            	
-              
-                Intent frequentMessages = new Intent(getParent(), RegisterActivityCompl.class);
-	             MainTabGroup parentActivity = (MainTabGroup)getParent();
-	             parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
-    		
-    		 
+               Intent frequentMessages = new Intent(getParent(), RegisterActivityCompl.class);
+		         MainTabGroup parentActivity = (MainTabGroup)getParent();
+		         parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
             
             }
         });
-
+       
     }
     @Override 
     public void onResume()
     {
-    	
+    	InputMethodManager imm = (InputMethodManager)getSystemService(
+    		      Context.INPUT_METHOD_SERVICE);
+        	imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     	super.onResume();
     	getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    	InputMethodManager imm = (InputMethodManager)getSystemService(
-  		      Context.INPUT_METHOD_SERVICE);
-      	imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-    	  
+    	  CaptchaAsync.execute(this, this);
     
     }
     boolean EmailValidate(String email)

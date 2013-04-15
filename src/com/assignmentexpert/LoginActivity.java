@@ -22,14 +22,16 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
-import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -47,6 +49,7 @@ import com.datamodel.Order;
 import com.library.ContentRepository;
 import com.library.DatabaseHandler;
 import com.library.FrequentlyUsedMethods;
+import com.library.SharedPrefs;
 import com.tabscreens.DashboardTabScreen;
 import com.tabscreens.LoginTabScreen;
 
@@ -71,7 +74,7 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
     private static Context instance;
     public static String passUserId = null;
     static List<Order> orders;
-    private static Context _context;
+    public static Context _context;
 	
  
     // JSON Response node names
@@ -97,16 +100,17 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
     SharedPreferences.Editor editor;
 	private TextView imageHeader;
 	public static String restorePass ="";
-	
+	public static String currentPass ="";
 	final FrequentlyUsedMethods faq = new FrequentlyUsedMethods(LoginActivity.this);
     @Override
     public void onCreate(Bundle savedInstanceState) {
+//    	InputMethodManager imm = (InputMethodManager)getSystemService(
+//			      Context.INPUT_METHOD_SERVICE);
+//	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 		super.onCreate(savedInstanceState);
 		
         setContentView(R.layout.login);
-    	InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    	
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         CustomTextView a = new CustomTextView(this);
          // Importing all assets like buttons, text fields
@@ -127,10 +131,12 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
         sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
         _context = this;
         editor = sharedPreferences.edit();
-        btnProceed.getBackground().setAlpha(120);
         
-     
         
+        File directory = new File(Environment.getExternalStorageDirectory()+ "/download/AssignmentExpert");
+        Log.i("downloads directory", directory.getPath());
+        if (!directory.exists())
+        	directory.mkdirs();
        
     	Log.d("user while login",sharedPreferences.getString("username", ""));
     	Log.d("password while login",sharedPreferences.getString("password", ""));
@@ -145,67 +151,43 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
         	  
         }
         
-    	inputPassword.setOnTouchListener(new OnTouchListener() {
-			public boolean onTouch(View arg0, MotionEvent arg1) {
-				inputPassword.setText("");
-				inputPassword.setHint("Password");
+    	inputPassword.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputPassword, 0); 
 				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				return false;
+				if (inputEmail.getText().toString().equals("Login (E-mail)") |inputEmail.getText().toString().equalsIgnoreCase("Wrong E-mail"))
+				inputPassword.setText("");
+				inputPassword.setHint("Password");
+				
+				inputPassword.setTextColor(Color.BLACK);
+				
 			}
     		
     	});
-    	inputEmail.setOnTouchListener(new OnTouchListener() {
-			public boolean onTouch(View arg0, MotionEvent arg1) {
-				if (inputEmail.getText().toString().equals("Login (E-mail)") |inputEmail.getText().toString().equals("Wrong E-mail"))
-				inputEmail.setText("");
-				inputEmail.setHint("E-mail");
+    	inputEmail.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
+				inputEmail.setText("");
+				inputEmail.setHint("E-mail");
 				inputEmail.setTextColor(Color.BLACK);
-				return false;
+				
 			}
-			
     		
     	});
-//    	btnClose.setOnClickListener(new View.OnClickListener() {
-//  	       
-//            public void onClick(View view) {
-//            	moveTaskToBack(true);
-//            } 
-//    	});
-    	
-//    	checkboxSignMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
-//            {           
-//            	if (isChecked == true)
-//            	{
-//            	 boolean isOnline = faq.isOnline();
-//			    	 if (isOnline)
-//			    	 {
-//			    		 
-//		            	editor.putString("username",inputEmail.getText().toString());
-//				        editor.putString("password",inputPassword.getText().toString());
-//				        editor.putBoolean("isChecked", checkboxSignMe.isChecked());
-//				        editor.commit();
-//				        
-//			    	 }
-//            	}
-//            }
-//            });
-    	
     	inputEmail.setText("shurko@ukr.net");
-    	inputPassword.setText("123456");
-
-        if(sharedPreferences.getBoolean("isChecked", signMe)) 
+    	inputPassword.setText("11111");
+    	SharedPrefs.getInstance().Initialize(getApplicationContext());
+    	if (SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false)==true)
         {
+        	
         	forFragmentLogin = sharedPreferences.getString("username", "");
    		 	forFragmentPassword = sharedPreferences.getString("password", "");
    		 	LoginAsync.execute(this, this);
         }
-
-    	// Login button Click Event
+        Log.i("isChecked in LoginAct", Boolean.toString(SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false)));
         btnProceed.setOnClickListener(new View.OnClickListener() {
  	       
             private ContentRepository _contactRepo;
@@ -227,8 +209,6 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 			    	 inputPassword.setText("Should be not empty");
         			 errorFlag = true;
         		 }
-			     
-			     
 			     if(inputPassword.length()<5)
         		 {
 			    	 inputPassword.setText(" ");
@@ -244,13 +224,11 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 	                	inputEmail.setTextColor(Color.RED);
 	                	inputEmail.setText("Wrong E-mail");
 	                	errorFlag = true;
-			    	 
 			     }
 			     
 			     if(errorFlag == false)
 				  {	
 			    	 signMe = true;
-			    	 
 			    	 if (!sharedPreferences.getString("username", "").equals(email))
 			    	 {
 			    	   newUser = true;
@@ -279,19 +257,34 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 			
         });
        
-	
-
-   
        btnRestore.setOnClickListener(new View.OnClickListener() {
     	   
            public void onClick(View view) {
         	    showDialog(DLG_EXAMPLE1);
-
-               
            }
        });
+       final View activityRootView = findViewById(R.id.scrollViewLogin);
+       activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+           public void onGlobalLayout() {
+               int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+               if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+               	if (inputPassword.getText().toString().length()!=0 & inputEmail.getText().toString().length()!=0)
+                  	 btnProceed.getBackground().setAlpha(255);
+               	else 
+               		btnProceed.getBackground().setAlpha(120);
+               }
+            }
+       });
     }
-
+    
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+      if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+        if (inputPassword.getText().toString().length()!=0 & inputEmail.getText().toString().length()!=0)
+        	 btnProceed.getBackground().setAlpha(255);
+        return true;  // So it is not propagated.
+      }
+      return super.dispatchKeyEvent(event);
+    }
     private DatabaseHandler getHelper1() {
 		if (databaseHandler == null) {
 			
@@ -308,7 +301,6 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 //    	editor.commit();
     	
     	signMe = false;
-    	//checkboxSignMe.setChecked(false);
     	inputEmail.setText(sharedPreferences.getString("username", ""));
     	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     	inputPassword.setText(sharedPreferences.getString("password", ""));
@@ -317,9 +309,6 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
     	toast.show();
     	
     }
-   
-    
-    	
     
     public static void appendLog(String text)
     {       
@@ -373,7 +362,6 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 			if (getHelper1() != null) {
 				getHelper1().close();
 				databaseHandler = null;
-				Log.i("destroy","destroy");
 			}
 			
 		}
@@ -395,52 +383,45 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 	  
 
 	public void onLoadFinished(Object data) {
-		if (data instanceof String & ((String)data).equalsIgnoreCase("success"))
+		if (data instanceof String)
 		{
-			Log.i("LoginAsync in LoginActivity result", "success");
-//			Intent i = new Intent(getApplicationContext(),
-//                DashboardActivityAlt.class);
-//                startActivity(i);
-			Intent i = new Intent(getApplicationContext(),
-	                DashboardTabScreen.class);
-	                startActivity(i);
-                }
-		else if(data instanceof String & ((String)data).equalsIgnoreCase("error"))
-		{
-			
-		     Toast.makeText(LoginActivity.this, LoginAsync.loginErrorMess, Toast.LENGTH_LONG).show();
-		     finish();
-	    	 Intent i = new Intent(getApplicationContext(),
-		                LoginTabScreen.class);      
-	    	 startActivity(i);
-	    	 
+			if (((String)data).equalsIgnoreCase("success"))
+			{
+				Log.i("LoginAsync in LoginActivity result", "success");
+	//			Intent i = new Intent(getApplicationContext(),
+	//                DashboardActivityAlt.class);
+	//                startActivity(i);
+				currentPass = inputPassword.getText().toString();
+				Intent i = new Intent(getApplicationContext(),
+		                DashboardTabScreen.class);
+		                startActivity(i);
+	                }
+			else if(data.toString().equalsIgnoreCase("error"))
+			{
+				 btnProceed.getBackground().setAlpha(120);
+			     Toast.makeText(LoginActivity.this, LoginAsync.loginErrorMess, Toast.LENGTH_LONG).show();
+		    	 
+			}
+			else if(data.toString().equalsIgnoreCase("restoreSuccess"))
+			{
+			     Toast.makeText(LoginActivity.this, RestoreAsync.restoreRes, Toast.LENGTH_LONG).show();
+			}
+			Log.i("LoginActivity data received", data.toString());
 		}
 	}
 	@Override
 	public void onResume()
 	{
-		
-		
 	    super.onResume();
-	    InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-//        Drawable drawable= getResources().getDrawable(R.drawable.login);
-//        drawable.setAlpha(255);
-//        Drawable drawable2= getResources().getDrawable(R.drawable.signup);
-//        drawable2.setAlpha(80);
-//        Drawable drawable3= getResources().getDrawable(R.drawable.close);
-//        drawable3.setAlpha(80);
-//		getResources().getDrawable(R.drawable.login).setAlpha(255);
-//        getResources().getDrawable(R.drawable.signup).setAlpha(80);
-//        getResources().getDrawable(R.drawable.close).setAlpha(80);
+	    
 	}
 
 	public void onCancelLoad() {
-		 Toast.makeText(LoginActivity.this, LoginAsync.loginErrorMess, Toast.LENGTH_LONG).show();
+		Log.i("LoginaAct", "onCancelled");
+		 Toast.makeText(LoginActivity.this, "Interrupted.", Toast.LENGTH_LONG).show();
 	     finish();
-    	 Intent i = getIntent();      
+    	 Intent i = new Intent(getApplicationContext(),
+	                LoginTabScreen.class); 
     	 startActivity(i);
     	 
 	}
@@ -460,6 +441,8 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 	    //Don't forget this
 	    a.recycle();
 	}
+	
+	
 	 @Override
 	    protected Dialog onCreateDialog(int id) {
 	 
@@ -471,11 +454,6 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 	        }
 	    }
 	 
-	    /**
-	     * If a dialog has already been created,
-	     * this is called to reset the dialog
-	     * before showing it a 2nd time. Optional.
-	     */
 	    @Override
 	    protected void onPrepareDialog(int id, Dialog dialog) {
 	 
@@ -499,22 +477,23 @@ public class LoginActivity extends FragmentActivity implements Runnable, ITaskLo
 	         input.setHint("Email Address");
 	         builder.setView(input);
 	         final String pass = input.getText().toString();
-	        
 	        builder.setPositiveButton("Reset", new DialogInterface.OnClickListener() {
 	 
 	            public void onClick(DialogInterface dialog, int whichButton) {
-	            	boolean isOnline = faq.isOnline();
-			    	 if (isOnline  & EmailValidate(input.getText().toString()))
+	            	
+			    	 if (EmailValidate(input.getText().toString()))
 			    	 {
-			    		 
-			    		 Log.i("restore password", pass);
-			    		 restorePass = input.getText().toString();
-			    		 RestoreAsync.execute(LoginActivity.this, LoginActivity.this);
+			    		 boolean isOnline = faq.isOnline();
+			    		 if (isOnline) 
+			    		 {
+				    		 Log.i("restore password", pass);
+				    		 restorePass = input.getText().toString();
+				    		 RestoreAsync.execute(LoginActivity.this, LoginActivity.this);
+			    		 }
 			    	 }
 			    	 else 
 			    	 {
-			    		 
-			    		 Toast.makeText(LoginActivity.this, "Some error occurs", Toast.LENGTH_SHORT).show();
+			    		 Toast.makeText(LoginActivity.this, "Format of email is wrong.", Toast.LENGTH_SHORT).show();
 			    		 
 			    	 }
 	                return;

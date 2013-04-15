@@ -12,14 +12,19 @@ import com.assignmentexpert.LoginActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class RestoreAsync  extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
 	private static String KEY_MESSAGE = "message";
 	private static String KEY_EXCEPTION= "exception";
+	private Context context;
+	private boolean errorFlag = false;
+	public static String restoreRes =  "";
 	protected RestoreAsync(Context context) {
 		super(context);
+		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -53,32 +58,43 @@ public class RestoreAsync  extends AbstractTaskLoader{
 			try {
 				a = reg.restorePassword(LoginActivity.restorePass, null);
 				Log.i("restore email", LoginActivity.restorePass);
+			
+			
+				try {
+					
+					String b = a.get(KEY_STATUS).toString();
+					
+					if(Integer.parseInt(b)==1)
+						{
+						restoreRes = "A message has been send to"+"\r\n"+ LoginActivity.restorePass+ 
+									"\r\n"+"Follow the link within message to restore password";
+						res = "restoreSuccess";
+						}
+					else 
+					{
+						 restoreRes = "Restoring failed. Please try later";
+						 res = "restoreError";
+					}
+				} catch (JSONException e) 
+				{
+					e.printStackTrace();
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				errorFlag = true;
+				onStopLoading();
 			}
-			
-			try {
-				
-				String b = a.get(KEY_STATUS).toString();
-				
-				if(Integer.parseInt(b)==1)
-					{
-						res = "A message has been send to"+"\r\n"+ LoginActivity.restorePass+ 
-								"\r\n"+"Follow the link within message to restore password";
-					}
-				else 
-				{
-					String mainMess = "Restoring failed. Please try later";
-					  res = mainMess;
-				}
-			} catch (JSONException e) 
-			{
-				e.printStackTrace();
-			}
-	     
 	
 	    return res;
 	}
-
+	@Override 
+	 protected void onStopLoading() {
+	        Log.i("LoginAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 }

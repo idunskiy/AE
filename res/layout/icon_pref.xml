@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:minHeight="?android:attr/listPreferredItemHeight"
+     android:paddingRight="?android:attr/scrollbarSize">
+     <RelativeLayout
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="2dip"
+         android:layout_marginRight="6dip"
+         android:layout_marginTop="6dip"
+         android:layout_marginBottom="6dip"
+         android:layout_weight="1">
+         <com.customitems.CustomTextView android:id="@+android:id/title"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:singleLine="true"
+             foo:customFont="Roboto-Medium.ttf"
+             android:layout_marginLeft="25dp"
+             android:textAppearance="?android:attr/textAppearanceLarge"
+             android:ellipsize="marquee"
+             android:fadingEdge="horizontal" />
+         <com.customitems.CustomTextView
+              android:id="@+android:id/summary"
+              foo:customFont="Roboto-Medium.ttf"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="25dp"
+             android:textColor="#42aeff"
+             android:layout_below="@android:id/title"
+             android:textAppearance="?android:attr/textAppearanceSmall"
+             android:maxLines="2" />
+     </RelativeLayout>
+     <ImageView
+         android:id="@+id/icon"
+         android:layout_width="wrap_content"
+         android:src="@drawable/list_pointer"
+         android:layout_alignParentRight="true"
+         android:layout_height="wrap_content"
+         android:layout_marginRight="10dp"
+         android:layout_centerVertical="true"/>
+</RelativeLayout>

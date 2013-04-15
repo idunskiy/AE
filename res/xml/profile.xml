@@ -4,39 +4,49 @@
       android:key="orderScreen"
       android:focusableInTouchMode="true"
       android:focusable="true">
-        <ListPreference
+    <ListPreference
                         android:title="Login (email)"
                         android:key="loginPref"
+                         android:selectable="false"
+                         android:focusableInTouchMode="true"
+    					   android:focusable="true"
+                         
                         android:defaultValue="digiGreen"
                         android:widgetLayout="@null"
-                         />
-          <ListPreference
-                        android:title="Balance"
-                        android:key="balancePref"
-                        android:widgetLayout="@null"
-                        android:defaultValue="digiGreen"
                          />
     <ListPreference
                         android:title="First name"
                         android:key="firstNamePref"
                         android:defaultValue="digiGreen"
+                        android:focusableInTouchMode="true"
+   					     android:focusable="true"
+  	                      android:selectable="false"
                         android:widgetLayout="@null"
                          />
     <ListPreference
                         android:title="Country"
                         android:key="countryPref"
                         android:defaultValue="digiGreen"
+                        android:focusableInTouchMode="true"
+     					 android:focusable="true"
+                        android:selectable="false"
                         android:widgetLayout="@null"
                          />
     <ListPreference
                         android:title="Phone"
                         android:key="phonePref"
+                         android:selectable="false"
+                         android:focusableInTouchMode="true"
+  					    android:focusable="true"
                         android:widgetLayout="@null"
                         android:defaultValue="digiGreen"
                          />
     <ListPreference
                         android:title="Time zone"
+                         android:selectable="false"
                         android:key="timezonePref"
+                        android:focusableInTouchMode="true"
+     					 android:focusable="true"
                         android:defaultValue="digiGreen"
                         android:widgetLayout="@null"
                          />
@@ -44,54 +54,13 @@
     <ListPreference
                         android:title="Password"
                         android:key="passwordPref"
+                        android:focusableInTouchMode="true"
+      					android:focusable="true"
+                         android:selectable="false"
                         android:defaultValue="digiGreen"
                         android:widgetLayout="@null"
                          />
-	<!--       
-    <EditTextPreference
-                        android:title="Login (email)"
-                        android:key="loginPref"
-                        android:defaultValue="digiGreen"
-                        android:enabled="false"
-                        android:layout="@layout/custom_edit_preference"
-                         />
-    <EditTextPreference
-                        android:title="Balance"
-                        android:key="balancePref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
-    <EditTextPreference
-                        android:title="First name"
-                        android:key="firstNamePref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
-    <EditTextPreference
-                        android:title="Country"
-                        android:key="countryPref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
-    <EditTextPreference
-                        android:title="Phone"
-                        android:key="phonePref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
-    <EditTextPreference
-                        android:title="Time zone"
-                        android:key="timezonePref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
-    
-    <EditTextPreference
-                        android:title="Password"
-                        android:key="passwordPref"
-                        android:defaultValue="digiGreen"
-                         android:layout="@layout/custom_edit_preference"
-                         />
+
     
     
      -->

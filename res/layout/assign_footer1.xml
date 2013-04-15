@@ -17,8 +17,10 @@
           android:layout_weight="1"
           >
   <com.customitems.CustomEditText
-        android:id="@+id/loginEmail"
+        android:id="@+id/orderTitle"
         android:layout_marginRight="10dp"
+        android:singleLine="true"
+      	android:imeOptions="actionNext"
         style="@style/custom_edittext"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
@@ -48,10 +50,11 @@
           android:layout_weight="1"
           >
   <com.customitems.CustomEditText
-        android:id="@+id/loginEmail"
+        android:id="@+id/taskText"
         style="@style/custom_edittext"
         android:gravity="top|left"
         android:layout_height="110dp"
+        android:imeOptions="actionDone"
         android:layout_width="fill_parent"
         android:layout_marginRight="10dp"
         foo:customFont="Roboto-Regular.ttf"

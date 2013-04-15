@@ -9,15 +9,14 @@
     <RelativeLayout
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip"
         android:padding="3dip" >
 
         <com.customitems.CustomTextView
             android:id="@+id/altOrderId"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="ID"
             android:gravity="center|center"
@@ -27,10 +26,12 @@
             foo:customFont="Roboto-Regular.ttf"/>
         <com.customitems.CustomTextView
         android:id="@+id/altOrderStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_below="@+id/altOrderId"
+         android:gravity="center|center"
+        android:layout_height="wrap_content"
         android:textColor="#838B8B"
+        android:text="discuss"
         android:textSize="14sp"
         android:textStyle="bold" 
         foo:customFont="Roboto-Regular.ttf"/>
@@ -64,27 +65,27 @@
         android:textSize="17sp"
         android:textStyle="bold"
         foo:customFont="Roboto-Medium.ttf" />
-    
      <TextView
 			    android:layout_width="1dp"
+			     android:layout_toLeftOf="@+id/thumbnail"
 			    android:id="@+id/menu_sep2"
-			    android:layout_marginRight="8dp"
 			    android:layout_alignRight="@+id/altOrderTitle"
+			    android:layout_marginRight="8dp"
 			    android:layout_height="50dp"
 			   android:background="#565656"
 			/>	
-    <com.customitems.CustomTextView
-        android:id="@+id/altOrderPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="8dp"
-        android:layout_alignTop="@+id/thumbnail"
-        android:text="$"
-        android:textColor="#4da400"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        foo:customFont="Roboto-Medium.ttf" />
-
+ 
+		    <com.customitems.CustomTextView
+		        android:id="@+id/altOrderPrice"
+		        android:layout_width="wrap_content"
+		        android:layout_marginTop="12dp"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentRight="true"
+		        android:layout_marginRight="5dp"
+		        android:layout_marginLeft="8dp"
+		        android:text="$"
+		        android:textColor="#4da400"
+		        android:textSize="18sp"
+		        android:textStyle="bold"
+		        foo:customFont="Roboto-Medium.ttf" />
 </RelativeLayout>

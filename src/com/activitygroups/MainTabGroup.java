@@ -20,25 +20,24 @@ private ArrayList<String> mIdList;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 	    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		final InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), imm.HIDE_NOT_ALWAYS);
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getApplicationWindowToken(), imm.HIDE_NOT_ALWAYS);
 		super.onCreate(savedInstanceState);
 		if (mIdList == null) mIdList = new ArrayList<String>();
-		
 	}
 	
 	@Override
 	public void onResume()
 	{
-		
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-		super.onResume();
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), imm.HIDE_NOT_ALWAYS);
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getApplicationWindowToken(), imm.HIDE_NOT_ALWAYS);
 		
+		super.onResume();
 	}
 
 		/**
@@ -50,33 +49,36 @@ private ArrayList<String> mIdList;
 		*/
 		@Override
 		public void finishFromChild(Activity child) {
-		LocalActivityManager manager = getLocalActivityManager();
-		int index = mIdList.size()-1;
-		
-		if (index < 1) {
-		finish();
-		return;
+			LocalActivityManager manager = getLocalActivityManager();
+			int index = mIdList.size()-1;
+			
+			if (index < 1) {
+			finish();
+			return;
+			}
+	
+			manager.destroyActivity(mIdList.get(index), true);
+			mIdList.remove(index);
+			index--;
+			String lastId = mIdList.get(index);
+			Intent lastIntent = manager.getActivity(lastId).getIntent();
+			
+			InputMethodManager inputMethodManager = (InputMethodManager)  child.getSystemService(Activity.INPUT_METHOD_SERVICE);
+			inputMethodManager.hideSoftInputFromWindow(child.getCurrentFocus().getWindowToken(), 0);
+			inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getApplicationWindowToken(), inputMethodManager.HIDE_NOT_ALWAYS);
+			hideSoftKeyboard(child);
+			
+			Window newWindow = manager.startActivity(lastId, lastIntent);
+			newWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+			setContentView(newWindow.getDecorView());
+			
 		}
-
-		manager.destroyActivity(mIdList.get(index), true);
-		mIdList.remove(index);
-		index--;
-		String lastId = mIdList.get(index);
-		Intent lastIntent = manager.getActivity(lastId).getIntent();
 		
-		 InputMethodManager inputMethodManager = (InputMethodManager)  child.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		 inputMethodManager.hideSoftInputFromWindow(child.getCurrentFocus().getWindowToken(), 0);
-		
-		
-		Window newWindow = manager.startActivity(lastId, lastIntent);
-		newWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		//InputMethodManager imm = (InputMethodManager)getSystemService(
-		//	      Context.INPUT_METHOD_SERVICE);
-		//imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-		Log.i("ActivityGroup","finishFromChild method");
-		setContentView(newWindow.getDecorView());
-}
+		public static void hideSoftKeyboard(Activity activity) {
+		    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+		    inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+		}
 
 /**
 * Starts an Activity as a child Activity to this.
@@ -86,42 +88,49 @@ private ArrayList<String> mIdList;
 */
 public void startChildActivity(String Id, Intent intent) 
 {
+	Activity  a =  getLocalActivityManager().getActivity(Id);
+	
 	Window window = getLocalActivityManager().startActivity(Id,intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-	window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+	window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 	Log.i("ActivityGroup","startActivity method");
+	
 	if (window != null) {
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-	    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+	    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		mIdList.add(Id);
+		Log.i("startActivity method","before setContent");
 		setContentView(window.getDecorView());
+		Log.i("startActivity method","after setContent");
 	}
+	
+	
 }
 
 /**
 * The primary purpose is to prevent systems before android.os.Build.VERSION_CODES.ECLAIR
 * from calling their default KeyEvent.KEYCODE_BACK during onKeyDown.
 */
-@Override
-public boolean onKeyDown(int keyCode, KeyEvent event) {
-	if (keyCode == KeyEvent.KEYCODE_BACK) {
-	//preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
-	return true;
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		//preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+		return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
-	return super.onKeyDown(keyCode, event);
-}
 
 /**
 * Overrides the default implementation for KeyEvent.KEYCODE_BACK
 * so that all systems call onBackPressed().
 */
-@Override
-public boolean onKeyUp(int keyCode, KeyEvent event) {
-	if (keyCode == KeyEvent.KEYCODE_BACK) {
-	onBackPressed();
-	return true;
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		onBackPressed();
+		return true;
+		}
+		return super.onKeyUp(keyCode, event);
 	}
-	return super.onKeyUp(keyCode, event);
-}
 
 /**
 * If a Child Activity handles KeyEvent.KEYCODE_BACK.
@@ -132,6 +141,7 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 			int length = mIdList.size();
 			if ( length > 1) {
 			Activity current = getLocalActivityManager().getActivity(mIdList.get(length-1));
+			Log.i("MainTabGroup", "onBackPressed");
 			current.finish();
 			}
 		}

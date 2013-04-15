@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -17,12 +18,12 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 
-import com.activitygroups.InteractionTabGroup;
-import com.activitygroups.OrderInfoTabGroup;
 import com.activitygroups.TabsManager;
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.ExitActivity;
 import com.assignmentexpert.R;
+import com.fragmentactivities.InteractionsFragmentActivity;
+import com.fragmentactivities.OrderInfoFragmentActivity;
 
 public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListener, OnTabReselectListener
 {
@@ -36,8 +37,8 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
 	 boolean flag=  false;
    public void onCreate(Bundle savedInstanceState) 
    {
+	   
        super.onCreate(savedInstanceState);
-
        setContentView(R.layout.dashboard_menu);
        InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
@@ -45,21 +46,17 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
        view = getLayoutInflater().inflate(R.layout.root_menu, null);
        tabHost = getTabHost();//(TabHost)view.findViewById(android.R.id.tabhost); 
        context = this;
-       intent = new Intent().setClass(this, OrderInfoTabGroup.class);
-       // Initialize a TabSpec for each tab and add it to the TabHost
-       spec = tabHost.newTabSpec("tab_1").setIndicator(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),getResources().getDrawable(R.drawable.info)).setContent(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-       tabHost.addTab(spec);
-       intent = new Intent().setClass(this, InteractionTabGroup.class);
-       // Initialize a TabSpec for each tab and add it to the TabHost
-       spec = tabHost.newTabSpec("tab_2").setIndicator(DashboardActivityAlt.listItem.getTitle()).setContent(intent);
-       tabHost.addTab(spec);
-
-//       intent = new Intent().setClass(this, TabGroup2Activity.class);;
-       // Initialize a TabSpec for each tab and add it to the TabHost
-       spec = tabHost.newTabSpec("tab_3").setIndicator("Close",getResources().getDrawable(R.drawable.close)).setContent(new Intent().setClass(this,ExitActivity.class));
-       tabHost.addTab(spec);
-//       mTabManager.addTab(tabHost.newTabSpec("tab_3").setIndicator("Close",getResources().getDrawable(R.drawable.close)),
-//       		LoginActivity.class, null);
+       
+       Log.i("info tabHost count", Integer.toString(tabHost.getChildCount()));
+	       intent = new Intent().setClass(this, OrderInfoFragmentActivity.class);
+	       spec = tabHost.newTabSpec("tab_1").setIndicator(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),getResources().getDrawable(R.drawable.info)).setContent(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+	       tabHost.addTab(spec);
+	       intent = new Intent().setClass(this, InteractionsFragmentActivity.class);
+	       spec = tabHost.newTabSpec("tab_2").setIndicator(DashboardActivityAlt.listItem.getTitle()).setContent(intent);
+	       tabHost.addTab(spec);
+	
+	       spec = tabHost.newTabSpec("tab_3").setIndicator("Close",getResources().getDrawable(R.drawable.close)).setContent(new Intent().setClass(this,ExitActivity.class));
+	       tabHost.addTab(spec);
        Typeface localTypeface1 = Typeface.createFromAsset(getAssets(),
                "Roboto-Medium.ttf");
        for (int i=0;i< tabHost.getTabWidget().getChildCount();i++)
@@ -76,10 +73,11 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
        	}
        if (this.getIntent().getExtras()!=null)
        {
-    	   if (this.getIntent().getExtras().getString("OrderInfoTabGroup").equals("FilesMessages"))
-    	   {
-	            //new InteractionTabGroup().replaceContentView(); 
-    	   }
+    	   
+    	   if (getIntent().getExtras().getString("OrderSwiping").equalsIgnoreCase("lr"))
+  				getTabHost().setCurrentTab(1);
+  			else if(getIntent().getExtras().getString("OrderSwiping").equalsIgnoreCase("rl"))
+  				getTabHost().setCurrentTab(0);
     	   
        }
        getTabHost().setOnTabChangedListener(new OnTabChangeListener() {
@@ -87,32 +85,17 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
 
        int i = getTabHost().getCurrentTab();
         
-        		if (i == 0) {
-//        			if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
-//        	            {
-//        	
-//        	            Intent frequentMessages = new Intent(getParent(), OrderInfoActivityAA.class);
-//        	             MainTabGroup parentActivity = (MainTabGroup)getParent();
-//        	             parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
-//        	            }
-//        	     	    else if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("writing"))
-//        	     	    {
-//        	
-//        	               Intent frequentMessages = new Intent(getParent(), OrderInfoActivityEW.class);
-//        		             MainTabGroup parentActivity = (MainTabGroup)getParent();
-//        		             parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
-//        	            }
-
-                           }
-              else if (i ==1) {
-                           Log.i("@@@@@@@@@@ Inside onClick tab 1", "onClick tab");
-                }
-              else if(i==2)
-              {
-            	  finish();
-        		  Intent intent = new Intent(OrderInfoTabScreen.this, DashboardTabScreen.class);
-        		  startActivity(intent);   	   
-              }
+		        		if (i == 0) {
+		
+		                           }
+		              else if (i ==1) 
+		                {
+		            	  
+		                }
+		              else if(i==2)
+		              {
+		            	  finish();
+		              }
 
                    }
 
@@ -168,11 +151,24 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
 	    ((Activity) context).setContentView(view);
 
 	}
+   @Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	    	  Intent i = new Intent(getApplicationContext(),
+                     DashboardTabScreen.class);
+             startActivity(i);
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
 
    @Override 
    public void onResume()
    {
-   	super.onResume();
-   	 getTabHost().setCurrentTab(1);
+   		super.onResume();
+//   		if (getIntent().getExtras()!=null)
+//   		{
+//   			
+//   		}	
+   	 
    }
 }

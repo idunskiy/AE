@@ -36,5 +36,25 @@
 	 <declare-styleable name="CustomEditPreference">
     	<attr name="customFont"  />
         <attr name="android:title"	     />
+        <attr name="iconDisable"	format="integer"     />
+	</declare-styleable>
+	
+	 <declare-styleable name="IconPreference">
+    	<attr name="customFont"  />
+    	<attr name="icon" format="reference" />
+    	<attr name="android:text"   	     />
+    	<attr name="android:textColor"   	     />
+    	<attr name="android:gravity"   	     />
+	</declare-styleable>
+	
+	  <declare-styleable name="CustomCheckBoxRelative">
+    	<attr name="android:title"   	     	 />
+    	<attr name="android:textSize"   	     />
+    	<attr name="android:layout_marginLeft"   />
+	</declare-styleable>
+	<declare-styleable name="CustomCheckBoxPref">
+    	<attr name="android:title"   	     />
+    	<attr name="android:textSize"   	     />
+    	<attr name="android:layout_marginLeft"   	     />
 	</declare-styleable>
 </resources>

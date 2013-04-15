@@ -47,6 +47,18 @@ theme attribute (in the form
 containing a value of this type.
          */
         public static final int fancyColors=0x7f010002;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int icon=0x7f010007;
+        /** <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int iconDisable=0x7f010006;
         /** <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
 <p>This may also be a reference to a resource (in the form
 "<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
@@ -76,302 +88,304 @@ containing a value of this type.
         public static final int arrow=0x7f020000;
         public static final int assign_icon=0x7f020001;
         public static final int button=0x7f020002;
-        public static final int captcha_image=0x7f020003;
-        public static final int checkbox=0x7f020004;
-        public static final int clip=0x7f020005;
-        public static final int close=0x7f020006;
-        public static final int closei=0x7f020007;
-        public static final int custom_button=0x7f020008;
-        public static final int custom_edittext=0x7f020009;
-        public static final int directory_icon=0x7f02000a;
-        public static final int directory_up=0x7f02000b;
-        public static final int file=0x7f02000c;
-        public static final int file_icon=0x7f02000d;
-        public static final int gray_button=0x7f02000e;
-        public static final int header=0x7f02000f;
-        public static final int history=0x7f020010;
-        public static final int ic_action_search=0x7f020011;
-        public static final int ic_launcher=0x7f020012;
-        public static final int info=0x7f020013;
-        public static final int info_big=0x7f020014;
-        public static final int info_button=0x7f020015;
-        public static final int launcher=0x7f020016;
-        public static final int launcher_xdpi=0x7f020017;
-        public static final int login=0x7f020018;
-        public static final int logini=0x7f020019;
-        public static final int logo=0x7f02001a;
-        public static final int logout=0x7f02001b;
-        public static final int menu_button=0x7f02001c;
-        public static final int menu_separator=0x7f02001d;
-        public static final int order=0x7f02001e;
-        public static final int orderi=0x7f02001f;
-        public static final int profile=0x7f020020;
-        public static final int profilei=0x7f020021;
-        public static final int row_property=0x7f020022;
-        public static final int signup=0x7f020023;
-        public static final int stand_logo=0x7f020024;
-        public static final int tab_divider=0x7f020025;
+        public static final int button_active=0x7f020003;
+        public static final int captcha_image=0x7f020004;
+        public static final int checkbox=0x7f020005;
+        public static final int clip=0x7f020006;
+        public static final int close=0x7f020007;
+        public static final int closei=0x7f020008;
+        public static final int custom_button=0x7f020009;
+        public static final int custom_edittext=0x7f02000a;
+        public static final int directory_icon=0x7f02000b;
+        public static final int directory_up=0x7f02000c;
+        public static final int file=0x7f02000d;
+        public static final int file_icon=0x7f02000e;
+        public static final int folder=0x7f02000f;
+        public static final int gray_button=0x7f020010;
+        public static final int header=0x7f020011;
+        public static final int history=0x7f020012;
+        public static final int ic_action_search=0x7f020013;
+        public static final int ic_launcher=0x7f020014;
+        public static final int info=0x7f020015;
+        public static final int info_big=0x7f020016;
+        public static final int info_button=0x7f020017;
+        public static final int launcher=0x7f020018;
+        public static final int list_pointer=0x7f020019;
+        public static final int list_pointer_1=0x7f02001a;
+        public static final int login=0x7f02001b;
+        public static final int logini=0x7f02001c;
+        public static final int logo=0x7f02001d;
+        public static final int logout=0x7f02001e;
+        public static final int menu_button=0x7f02001f;
+        public static final int menu_separator=0x7f020020;
+        public static final int order=0x7f020021;
+        public static final int orderi=0x7f020022;
+        public static final int profile=0x7f020023;
+        public static final int profilei=0x7f020024;
+        public static final int row_property=0x7f020025;
+        public static final int signup=0x7f020026;
+        public static final int stand_logo=0x7f020027;
+        public static final int tab_divider=0x7f020028;
     }
     public static final class id {
-        public static final int CategoryLabel=0x7f0b007d;
-        public static final int altOrderId=0x7f0b000f;
-        public static final int altOrderPrice=0x7f0b0014;
-        public static final int altOrderStatus=0x7f0b0010;
-        public static final int altOrderTitle=0x7f0b0013;
-        public static final int altOrderslist=0x7f0b000a;
-        public static final int btnAddFilesMessage=0x7f0b0064;
-        public static final int btnAttach=0x7f0b0031;
-        public static final int btnCancelAttach=0x7f0b0032;
-        public static final int btnCancelNewMessage=0x7f0b0068;
-        public static final int btnCancelProfileUpdate=0x7f0b00b1;
-        public static final int btnClose=0x7f0b003d;
-        public static final int btnEditProfile=0x7f0b00ae;
-        public static final int btnInfoOrder=0x7f0b003b;
-        public static final int btnInteractions=0x7f0b003c;
+        public static final int CategoryLabel=0x7f0b007f;
+        public static final int ExcVideo=0x7f0b000c;
+        public static final int altOrderId=0x7f0b0014;
+        public static final int altOrderPrice=0x7f0b0019;
+        public static final int altOrderStatus=0x7f0b0015;
+        public static final int altOrderTitle=0x7f0b0018;
+        public static final int altOrderslist=0x7f0b000f;
+        public static final int btnAddFilesMessage=0x7f0b0066;
+        public static final int btnAttach=0x7f0b0027;
+        public static final int btnCancelAttach=0x7f0b0028;
+        public static final int btnCancelNewMessage=0x7f0b006a;
+        public static final int btnClose=0x7f0b003c;
+        public static final int btnInactivate=0x7f0b0058;
+        public static final int btnInfoOrder=0x7f0b003a;
+        public static final int btnInteractions=0x7f0b003b;
         public static final int btnLinkToRegisterScreen=0x7f0b00c9;
         public static final int btnLogin=0x7f0b00c8;
-        public static final int btnNewOrder=0x7f0b006a;
-        public static final int btnOrdersHistory=0x7f0b006b;
-        public static final int btnPay=0x7f0b0042;
-        public static final int btnPrivatePolicy=0x7f0b00c3;
-        public static final int btnProceed=0x7f0b005f;
-        public static final int btnProfile=0x7f0b006c;
-        public static final int btnRemoveFiles=0x7f0b002d;
-        public static final int btnRestore=0x7f0b0060;
-        public static final int btnSaveProfileUpdate=0x7f0b00b0;
-        public static final int btnSelectFiles=0x7f0b0006;
-        public static final int btnSendMessage=0x7f0b0067;
-        public static final int btnSubmitOrder=0x7f0b0008;
-        public static final int btnTermsService=0x7f0b00c1;
-        public static final int buttonsPanel=0x7f0b00a3;
-        public static final int cancelProfile=0x7f0b0058;
-        public static final int captcha=0x7f0b00be;
-        public static final int captchaView=0x7f0b00bd;
-        public static final int categoryLayout=0x7f0b007c;
-        public static final int categoryPostedLayout=0x7f0b007b;
-        public static final int categoryPriceLayout=0x7f0b0092;
-        public static final int categorySpin=0x7f0b001d;
-        public static final int categoryTextView=0x7f0b007e;
+        public static final int btnNewOrder=0x7f0b006c;
+        public static final int btnOrdersHistory=0x7f0b006d;
+        public static final int btnPay=0x7f0b0041;
+        public static final int btnPrivatePolicy=0x7f0b00c2;
+        public static final int btnProceed=0x7f0b0061;
+        public static final int btnProfile=0x7f0b006e;
+        public static final int btnRemoveFiles=0x7f0b0023;
+        public static final int btnReply=0x7f0b0057;
+        public static final int btnRestore=0x7f0b0062;
+        public static final int btnSelectFiles=0x7f0b0007;
+        public static final int btnSendMessage=0x7f0b0069;
+        public static final int btnSubmitOrder=0x7f0b0009;
+        public static final int btnTermsService=0x7f0b00c0;
+        public static final int cancelProfile=0x7f0b00ad;
+        public static final int captcha=0x7f0b00bd;
+        public static final int captchaView=0x7f0b00bc;
+        public static final int categoryLayout=0x7f0b007e;
+        public static final int categoryPostedLayout=0x7f0b007d;
+        public static final int categoryPriceLayout=0x7f0b0094;
+        public static final int categorySpin=0x7f0b002e;
+        public static final int categoryTextView=0x7f0b0080;
         public static final int checkedTextItem=0x7f0b005b;
-        public static final int citationLabel=0x7f0b008c;
-        public static final int citationLayout=0x7f0b0072;
-        public static final int citationStyleSpin=0x7f0b0024;
-        public static final int citationTextView=0x7f0b008d;
-        public static final int closecalmlayout=0x7f0b0030;
-        public static final int commVideo=0x7f0b0038;
+        public static final int citationLabel=0x7f0b008e;
+        public static final int citationLayout=0x7f0b0074;
+        public static final int citationTextView=0x7f0b008f;
+        public static final int closecalmlayout=0x7f0b0026;
+        public static final int commVideo=0x7f0b000d;
+        public static final int confPassTextView=0x7f0b00aa;
         public static final int conpageslider=0x7f0b0053;
-        public static final int counrtyEditPref=0x7f0b00b4;
-        public static final int cursorMess1=0x7f0b004e;
-        public static final int cursorMess2=0x7f0b004f;
-        public static final int cursorMess3=0x7f0b0050;
-        public static final int dashboardHeader=0x7f0b000b;
-        public static final int deadlineLabel=0x7f0b0041;
-        public static final int deadlineLayout=0x7f0b003f;
-        public static final int deadlineSpin=0x7f0b001f;
-        public static final int deadlineTextView=0x7f0b0085;
-        public static final int diff=0x7f0b0027;
-        public static final int editMessage=0x7f0b0063;
+        public static final int counrtyEditPref=0x7f0b00a6;
+        public static final int countryPref=0x7f0b00b0;
+        public static final int cursorMess1=0x7f0b0050;
+        public static final int cursorMess2=0x7f0b0051;
+        public static final int cursorMess3=0x7f0b0052;
+        public static final int custom_checkbox=0x7f0b000e;
+        public static final int dashboardHeader=0x7f0b0010;
+        public static final int deadlineLabel=0x7f0b0040;
+        public static final int deadlineLayout=0x7f0b003e;
+        public static final int deadlineSpin=0x7f0b0030;
+        public static final int deadlineTextView=0x7f0b0087;
+        public static final int diff=0x7f0b0036;
+        public static final int dtlInfo=0x7f0b000b;
+        public static final int editMessage=0x7f0b0065;
         public static final int emptyResult=0x7f0b0059;
-        public static final int empty_list_view1=0x7f0b000c;
-        public static final int empty_view_layout=0x7f0b0016;
-        public static final int empty_view_textview=0x7f0b0017;
-        public static final int essayScroll=0x7f0b0018;
-        public static final int essayTypeSpin=0x7f0b0021;
-        public static final int exclVideo=0x7f0b0037;
-        public static final int explanationReq=0x7f0b0036;
-        public static final int fileCheck=0x7f0b002b;
-        public static final int fileLayout=0x7f0b0028;
-        public static final int fileManager=0x7f0b002e;
-        public static final int fileManagerList=0x7f0b002f;
-        public static final int fileSize=0x7f0b002a;
-        public static final int fileicon=0x7f0b0029;
-        public static final int fileslist=0x7f0b002c;
+        public static final int empty_list_view1=0x7f0b0011;
+        public static final int empty_view_layout=0x7f0b001b;
+        public static final int empty_view_textview=0x7f0b001c;
+        public static final int exclVideo=0x7f0b0035;
+        public static final int explanationReq=0x7f0b0034;
+        public static final int fileCheck=0x7f0b0021;
+        public static final int fileLayout=0x7f0b001e;
+        public static final int fileManager=0x7f0b0024;
+        public static final int fileManagerList=0x7f0b0025;
+        public static final int fileSize=0x7f0b0020;
+        public static final int fileicon=0x7f0b001f;
+        public static final int fileslist=0x7f0b0022;
+        public static final int firstNamePref=0x7f0b00af;
         public static final int firstnameTextView=0x7f0b00a5;
-        public static final int footerList=0x7f0b0007;
-        public static final int headerList=0x7f0b0019;
-        public static final int headerPanel=0x7f0b0069;
-        public static final int icon=0x7f0b00cd;
+        public static final int footerList=0x7f0b0008;
+        public static final int headerList=0x7f0b001d;
+        public static final int headerPanel=0x7f0b006b;
+        public static final int icon=0x7f0b0037;
         public static final int imageView1=0x7f0b00c5;
-        public static final int infoMessageListLayout=0x7f0b008a;
-        public static final int interactionAbove=0x7f0b0045;
-        public static final int interactionBelow=0x7f0b004a;
-        public static final int interactionDate=0x7f0b0047;
-        public static final int interactionFilesPanel=0x7f0b0049;
-        public static final int interactionId=0x7f0b0046;
-        public static final int interactionMessage=0x7f0b0048;
-        public static final int interactionsCursor=0x7f0b004d;
+        public static final int infoMessageListLayout=0x7f0b008c;
+        public static final int interactionAbove=0x7f0b0044;
+        public static final int interactionBelow=0x7f0b0049;
+        public static final int interactionDate=0x7f0b0046;
+        public static final int interactionFilesPanel=0x7f0b0048;
+        public static final int interactionId=0x7f0b0045;
+        public static final int interactionMessage=0x7f0b0047;
+        public static final int interactionsCursor=0x7f0b004f;
         public static final int interactionsFileList=0x7f0b0055;
-        public static final int interactionsFilesPanel=0x7f0b0052;
+        public static final int interactionsFilesPanel=0x7f0b004d;
         public static final int interactionsFooter=0x7f0b0056;
         public static final int interactionsFooterLayout=0x7f0b0054;
-        public static final int interactionsLayout=0x7f0b004b;
-        public static final int interactions_item_parent=0x7f0b004c;
-        public static final int lastnameLabel=0x7f0b00a7;
-        public static final int lastnameLayout=0x7f0b00a6;
-        public static final int lastnameTextView=0x7f0b00a8;
-        public static final int layoutLabel=0x7f0b00a2;
-        public static final int levelDeadlineLayout=0x7f0b0081;
-        public static final int levelLabel=0x7f0b0083;
-        public static final int levelLayout=0x7f0b0082;
-        public static final int levelSpin=0x7f0b001c;
-        public static final int levelTextView=0x7f0b0084;
-        public static final int levelTimezoneLayout=0x7f0b0094;
+        public static final int interactionsLayout=0x7f0b004a;
+        public static final int interactions_item_parent=0x7f0b004b;
+        public static final int levelDeadlineLayout=0x7f0b0083;
+        public static final int levelLabel=0x7f0b0085;
+        public static final int levelLayout=0x7f0b0084;
+        public static final int levelSpin=0x7f0b002f;
+        public static final int levelTextView=0x7f0b0086;
+        public static final int levelTimezoneLayout=0x7f0b0096;
         public static final int linearForChecked=0x7f0b005a;
-        public static final int linearLayout2=0x7f0b00bc;
-        public static final int linearLayout3=0x7f0b00bf;
-        public static final int loginEmail=0x7f0b0002;
-        public static final int loginPassword=0x7f0b005e;
-        public static final int loginTextView=0x7f0b00a4;
+        public static final int linearLayout2=0x7f0b00bb;
+        public static final int linearLayout3=0x7f0b00be;
+        public static final int loginEmail=0x7f0b005f;
+        public static final int loginPassword=0x7f0b0060;
+        public static final int loginPref=0x7f0b00ae;
         public static final int login_error=0x7f0b00c6;
-        public static final int menu_sep1=0x7f0b0012;
-        public static final int menu_sep2=0x7f0b0015;
-        public static final int messageFileList=0x7f0b0065;
-        public static final int messagesInteractions=0x7f0b0044;
-        public static final int newMessagePanel=0x7f0b0062;
-        public static final int new_order=0x7f0b0039;
+        public static final int menu_sep1=0x7f0b0017;
+        public static final int menu_sep2=0x7f0b001a;
+        public static final int messageFileList=0x7f0b0067;
+        public static final int messagesInteractions=0x7f0b0043;
+        public static final int messagesPanel=0x7f0b004e;
+        public static final int myfragment=0x7f0b00b5;
+        public static final int newMessagePanel=0x7f0b0064;
+        public static final int new_order=0x7f0b0038;
         public static final int notificationText=0x7f0b00ca;
-        public static final int numberPagesEssay=0x7f0b0022;
-        public static final int numberReferences=0x7f0b0025;
-        public static final int optInAct=0x7f0b00d0;
-        public static final int optReply=0x7f0b00cf;
+        public static final int optInAct=0x7f0b00cf;
+        public static final int optReply=0x7f0b00ce;
         public static final int orderInfo=0x7f0b0003;
-        public static final int orderScroll=0x7f0b0035;
-        public static final int orderTitle=0x7f0b001e;
-        public static final int orderid=0x7f0b009e;
-        public static final int orderprice=0x7f0b00a0;
-        public static final int orderstatus=0x7f0b00a1;
-        public static final int ordertitle=0x7f0b009f;
-        public static final int pagesDeadlineLayout=0x7f0b009c;
-        public static final int pagesLabel=0x7f0b0099;
-        public static final int pagesLayout=0x7f0b009d;
-        public static final int pagesTextView=0x7f0b009a;
-        public static final int panelButtons=0x7f0b003a;
-        public static final int panelCursor=0x7f0b0051;
-        public static final int panelInteractions=0x7f0b003e;
-        public static final int panelMessage2=0x7f0b0066;
-        public static final int passLabel=0x7f0b00ac;
-        public static final int passTextView=0x7f0b00ad;
-        public static final int passwordLayout=0x7f0b00ab;
-        public static final int phoneInfo=0x7f0b00ba;
-        public static final int phoneTextView=0x7f0b00a9;
-        public static final int postedLabel=0x7f0b007f;
-        public static final int postedLayout=0x7f0b009b;
-        public static final int postedTextView=0x7f0b0080;
-        public static final int priceLabel=0x7f0b0043;
-        public static final int priceLayout=0x7f0b0093;
-        public static final int priceTextView=0x7f0b0073;
-        public static final int productCitationLayout=0x7f0b008b;
-        public static final int productLabel=0x7f0b0070;
-        public static final int productLayout=0x7f0b006f;
-        public static final int productPriceLayout=0x7f0b006e;
-        public static final int productSpin=0x7f0b001a;
-        public static final int productTextView=0x7f0b0071;
-        public static final int profileEdit=0x7f0b00bb;
-        public static final int referenceLabel=0x7f0b0090;
-        public static final int referenceLayout=0x7f0b008f;
-        public static final int referenceTextView=0x7f0b0091;
-        public static final int registerEmail=0x7f0b00b9;
-        public static final int registerHelpText=0x7f0b00c0;
-        public static final int registerHelpText2=0x7f0b00c2;
-        public static final int registerName=0x7f0b00b3;
-        public static final int registerPassword=0x7f0b00b7;
-        public static final int registerPasswordconf=0x7f0b00b8;
-        public static final int registerPhone=0x7f0b00b5;
+        public static final int orderScroll=0x7f0b002b;
+        public static final int orderTitle=0x7f0b0002;
+        public static final int orderid=0x7f0b00a0;
+        public static final int orderprice=0x7f0b00a2;
+        public static final int orderstatus=0x7f0b00a3;
+        public static final int ordertitle=0x7f0b00a1;
+        public static final int pagesDeadlineLayout=0x7f0b009e;
+        public static final int pagesLabel=0x7f0b009b;
+        public static final int pagesLayout=0x7f0b009f;
+        public static final int pagesTextView=0x7f0b009c;
+        public static final int panelButtons=0x7f0b0039;
+        public static final int panelCursor=0x7f0b004c;
+        public static final int panelInteractions=0x7f0b003d;
+        public static final int panelMessage2=0x7f0b0068;
+        public static final int passTextView=0x7f0b00a9;
+        public static final int passwordPref=0x7f0b00b3;
+        public static final int phonePref=0x7f0b00b1;
+        public static final int phoneTextView=0x7f0b00a7;
+        public static final int postedLabel=0x7f0b0081;
+        public static final int postedLayout=0x7f0b009d;
+        public static final int postedTextView=0x7f0b0082;
+        public static final int priceLabel=0x7f0b0042;
+        public static final int priceLayout=0x7f0b0095;
+        public static final int priceTextView=0x7f0b0075;
+        public static final int productCitationLayout=0x7f0b008d;
+        public static final int productLabel=0x7f0b0072;
+        public static final int productLayout=0x7f0b0071;
+        public static final int productPriceLayout=0x7f0b0070;
+        public static final int productSpin=0x7f0b002c;
+        public static final int productTextView=0x7f0b0073;
+        public static final int profileEdit=0x7f0b00b4;
+        public static final int referenceLabel=0x7f0b0092;
+        public static final int referenceLayout=0x7f0b0091;
+        public static final int referenceTextView=0x7f0b0093;
+        public static final int registerEmail=0x7f0b00b8;
+        public static final int registerHelpText=0x7f0b00bf;
+        public static final int registerHelpText2=0x7f0b00c1;
+        public static final int registerName=0x7f0b00b7;
+        public static final int registerPassword=0x7f0b00b9;
+        public static final int registerPasswordconf=0x7f0b00ba;
+        public static final int registerPhone=0x7f0b00c3;
         public static final int relativeRestore=0x7f0b00c4;
-        public static final int requireLabel=0x7f0b0086;
-        public static final int requireTextView=0x7f0b0087;
+        public static final int requireLabel=0x7f0b0088;
+        public static final int requireTextView=0x7f0b0089;
         public static final int restoreEmail=0x7f0b00c7;
-        public static final int saveProfile=0x7f0b0057;
-        public static final int savingLayout=0x7f0b00af;
-        public static final int scrollNewMessage=0x7f0b0061;
-        public static final int scrollOrderInfo=0x7f0b006d;
-        public static final int scrolltableLayout1=0x7f0b00b2;
-        public static final int simple_fragment=0x7f0b0034;
+        public static final int saveProfile=0x7f0b00ac;
+        public static final int scrollNewMessage=0x7f0b0063;
+        public static final int scrollOrderInfo=0x7f0b006f;
+        public static final int scrollViewLogin=0x7f0b005c;
+        public static final int scrollViewRegister=0x7f0b00b6;
+        public static final int scrolltableLayout1=0x7f0b00a4;
+        public static final int signMeCheck=0x7f0b00ab;
+        public static final int simple_fragment=0x7f0b002a;
         public static final int spinnerTarget=0x7f0b00cb;
-        public static final int subjLabel=0x7f0b0076;
-        public static final int subjReferenceLayout=0x7f0b008e;
-        public static final int subjTextView=0x7f0b0077;
-        public static final int subjTimezoneLayout=0x7f0b0074;
-        public static final int subjectLayout=0x7f0b0075;
-        public static final int subjectSpin=0x7f0b001b;
-        public static final int tabTextView=0x7f0b00ce;
+        public static final int subjLabel=0x7f0b0078;
+        public static final int subjReferenceLayout=0x7f0b0090;
+        public static final int subjTextView=0x7f0b0079;
+        public static final int subjTimezoneLayout=0x7f0b0076;
+        public static final int subjectLayout=0x7f0b0077;
+        public static final int subjectSpin=0x7f0b002d;
+        public static final int tabTextView=0x7f0b00cd;
         public static final int tableLayout1=0x7f0b0000;
         public static final int tableRow1=0x7f0b0001;
-        public static final int tableRow2=0x7f0b005d;
-        public static final int tableRow3=0x7f0b0005;
+        public static final int tableRow2=0x7f0b005e;
+        public static final int tableRow3=0x7f0b0006;
         public static final int tabsLayout=0x7f0b00cc;
-        public static final int taskInfo=0x7f0b0004;
-        public static final int taskRequirements=0x7f0b0026;
-        public static final int taskTextView=0x7f0b0089;
-        public static final int tasklabel=0x7f0b0088;
-        public static final int textDoneWell=0x7f0b0009;
-        public static final int textLabel=0x7f0b0040;
-        public static final int textViewPlus1=0x7f0b005c;
-        public static final int textlabel=0x7f0b000d;
-        public static final int thumbnail=0x7f0b000e;
-        public static final int thumbnail2=0x7f0b0011;
-        public static final int timeZonePref=0x7f0b00b6;
-        public static final int timezone=0x7f0b0023;
-        public static final int timezoneLabel=0x7f0b0079;
-        public static final int timezoneLayout=0x7f0b0078;
-        public static final int timezoneProfileSpin=0x7f0b00aa;
-        public static final int timezoneSpin=0x7f0b0020;
-        public static final int timezoneTextView=0x7f0b007a;
-        public static final int typeLabel=0x7f0b0095;
-        public static final int typeLayout=0x7f0b0098;
-        public static final int typePostedLayout=0x7f0b0097;
-        public static final int typeTextView=0x7f0b0096;
-        public static final int wrapper_for_simple_fragment=0x7f0b0033;
+        public static final int taskInfo=0x7f0b0005;
+        public static final int taskRequirements=0x7f0b0032;
+        public static final int taskText=0x7f0b0004;
+        public static final int taskTextView=0x7f0b008b;
+        public static final int tasklabel=0x7f0b008a;
+        public static final int textDoneWell=0x7f0b000a;
+        public static final int textLabel=0x7f0b003f;
+        public static final int textViewPlus1=0x7f0b005d;
+        public static final int textlabel=0x7f0b0012;
+        public static final int thumbnail=0x7f0b0013;
+        public static final int thumbnail2=0x7f0b0016;
+        public static final int timeZonePref=0x7f0b00a8;
+        public static final int timezone=0x7f0b0033;
+        public static final int timezoneLabel=0x7f0b007b;
+        public static final int timezoneLayout=0x7f0b007a;
+        public static final int timezonePref=0x7f0b00b2;
+        public static final int timezoneSpin=0x7f0b0031;
+        public static final int timezoneTextView=0x7f0b007c;
+        public static final int typeLabel=0x7f0b0097;
+        public static final int typeLayout=0x7f0b009a;
+        public static final int typePostedLayout=0x7f0b0099;
+        public static final int typeTextView=0x7f0b0098;
+        public static final int wrapper_for_simple_fragment=0x7f0b0029;
     }
     public static final class layout {
         public static final int assign_footer1=0x7f030000;
         public static final int assign_footer2=0x7f030001;
-        public static final int custom_checkbox_preference=0x7f030002;
-        public static final int custom_edit_preference=0x7f030003;
-        public static final int custom_listpref=0x7f030004;
-        public static final int dash_alt=0x7f030005;
-        public static final int dash_alt_item=0x7f030006;
-        public static final int dashboard_menu=0x7f030007;
-        public static final int empty_item=0x7f030008;
-        public static final int essay_header=0x7f030009;
-        public static final int exit=0x7f03000a;
-        public static final int file=0x7f03000b;
-        public static final int file_checkbox=0x7f03000c;
-        public static final int file_list=0x7f03000d;
-        public static final int file_manager=0x7f03000e;
-        public static final int fragmentstackactivity=0x7f03000f;
-        public static final int header_listview=0x7f030010;
-        public static final int interactions=0x7f030011;
-        public static final int interactions_empty=0x7f030012;
-        public static final int interactions_item=0x7f030013;
-        public static final int interactions_view_pager=0x7f030014;
-        public static final int item=0x7f030015;
-        public static final int login=0x7f030016;
-        public static final int new_message2=0x7f030017;
-        public static final int new_order=0x7f030018;
-        public static final int order_info_aa=0x7f030019;
-        public static final int order_info_ew=0x7f03001a;
-        public static final int orderitems=0x7f03001b;
-        public static final int profile=0x7f03001c;
-        public static final int profile_compl=0x7f03001d;
-        public static final int profile_compl_footer=0x7f03001e;
-        public static final int profile_compl_header=0x7f03001f;
-        public static final int profile_footer=0x7f030020;
+        public static final int assignment_order=0x7f030002;
+        public static final int custom_checkbox_preference=0x7f030003;
+        public static final int custom_edit_preference=0x7f030004;
+        public static final int custom_listpref=0x7f030005;
+        public static final int dash_alt=0x7f030006;
+        public static final int dash_alt_item=0x7f030007;
+        public static final int dash_alt_item_open=0x7f030008;
+        public static final int dashboard_menu=0x7f030009;
+        public static final int empty_item=0x7f03000a;
+        public static final int exit=0x7f03000b;
+        public static final int file=0x7f03000c;
+        public static final int file_checkbox=0x7f03000d;
+        public static final int file_list=0x7f03000e;
+        public static final int file_manager=0x7f03000f;
+        public static final int fragmentstackactivity=0x7f030010;
+        public static final int header_listview=0x7f030011;
+        public static final int icon_pref=0x7f030012;
+        public static final int interactions=0x7f030013;
+        public static final int interactions_empty=0x7f030014;
+        public static final int interactions_item=0x7f030015;
+        public static final int interactions_view_pager=0x7f030016;
+        public static final int item=0x7f030017;
+        public static final int login=0x7f030018;
+        public static final int new_message2=0x7f030019;
+        public static final int new_order=0x7f03001a;
+        public static final int order_info_aa=0x7f03001b;
+        public static final int order_info_ew=0x7f03001c;
+        public static final int orderitems=0x7f03001d;
+        public static final int profile_compl=0x7f03001e;
+        public static final int profile_footer=0x7f03001f;
+        public static final int profile_fragment=0x7f030020;
         public static final int profile_header=0x7f030021;
         public static final int register=0x7f030022;
-        public static final int register_compl_footer=0x7f030023;
-        public static final int register_compl_header=0x7f030024;
-        public static final int restore=0x7f030025;
-        public static final int root_menu=0x7f030026;
-        public static final int spinner_hint=0x7f030027;
-        public static final int swipe_layout=0x7f030028;
-        public static final int tabs_bg=0x7f030029;
+        public static final int register_compl=0x7f030023;
+        public static final int restore=0x7f030024;
+        public static final int root_menu=0x7f030025;
+        public static final int spinner_hint=0x7f030026;
+        public static final int swipe_layout=0x7f030027;
+        public static final int tabs_bg=0x7f030028;
     }
     public static final class menu {
         public static final int menu_option=0x7f0a0000;
     }
     public static final class raw {
-        public static final int ormlite_config=0x7f050000;
+        public static final int gestures=0x7f050000;
+        public static final int ormlite_config=0x7f050001;
     }
     public static final class string {
         public static final int Password=0x7f080004;
@@ -394,13 +408,16 @@ containing a value of this type.
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;
+        public static final int FullHeightDialog=0x7f09000d;
         public static final int button_row=0x7f090007;
         public static final int custom_button=0x7f090001;
         public static final int custom_edittext=0x7f090002;
         public static final int custom_textview=0x7f090003;
         public static final int edit_row=0x7f090008;
         public static final int filePreferencesTheme=0x7f090009;
-        public static final int headerStyle=0x7f09000a;
+        public static final int headerStyle=0x7f09000c;
+        public static final int list_pref=0x7f09000b;
+        public static final int list_pref_row=0x7f09000a;
         public static final int menu_item=0x7f090004;
         public static final int separator=0x7f090005;
         public static final int text_row=0x7f090006;
@@ -411,9 +428,78 @@ containing a value of this type.
         public static final int new_writing=0x7f040002;
         public static final int profile=0x7f040003;
         public static final int profile_compl=0x7f040004;
-        public static final int register_coml=0x7f040005;
     }
     public static final class styleable {
+        /** Attributes that can be used with a CustomCheckBoxPref.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #CustomCheckBoxPref_android_layout_marginLeft com.assignmentexpert:android_layout_marginLeft}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomCheckBoxPref_android_textSize com.assignmentexpert:android_textSize}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomCheckBoxPref_android_title com.assignmentexpert:android_title}</code></td><td></td></tr>
+           </table>
+           @see #CustomCheckBoxPref_android_layout_marginLeft
+           @see #CustomCheckBoxPref_android_textSize
+           @see #CustomCheckBoxPref_android_title
+         */
+        public static final int[] CustomCheckBoxPref = {
+            0x01010095, 0x010100f7, 0x010101e1
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_layout_marginLeft}
+          attribute's value can be found in the {@link #CustomCheckBoxPref} array.
+          @attr name android:android_layout_marginLeft
+        */
+        public static final int CustomCheckBoxPref_android_layout_marginLeft = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_textSize}
+          attribute's value can be found in the {@link #CustomCheckBoxPref} array.
+          @attr name android:android_textSize
+        */
+        public static final int CustomCheckBoxPref_android_textSize = 0;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_title}
+          attribute's value can be found in the {@link #CustomCheckBoxPref} array.
+          @attr name android:android_title
+        */
+        public static final int CustomCheckBoxPref_android_title = 2;
+        /** Attributes that can be used with a CustomCheckBoxRelative.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #CustomCheckBoxRelative_android_layout_marginLeft com.assignmentexpert:android_layout_marginLeft}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomCheckBoxRelative_android_textSize com.assignmentexpert:android_textSize}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomCheckBoxRelative_android_title com.assignmentexpert:android_title}</code></td><td></td></tr>
+           </table>
+           @see #CustomCheckBoxRelative_android_layout_marginLeft
+           @see #CustomCheckBoxRelative_android_textSize
+           @see #CustomCheckBoxRelative_android_title
+         */
+        public static final int[] CustomCheckBoxRelative = {
+            0x01010095, 0x010100f7, 0x010101e1
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_layout_marginLeft}
+          attribute's value can be found in the {@link #CustomCheckBoxRelative} array.
+          @attr name android:android_layout_marginLeft
+        */
+        public static final int CustomCheckBoxRelative_android_layout_marginLeft = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_textSize}
+          attribute's value can be found in the {@link #CustomCheckBoxRelative} array.
+          @attr name android:android_textSize
+        */
+        public static final int CustomCheckBoxRelative_android_textSize = 0;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_title}
+          attribute's value can be found in the {@link #CustomCheckBoxRelative} array.
+          @attr name android:android_title
+        */
+        public static final int CustomCheckBoxRelative_android_title = 2;
         /** Attributes that can be used with a CustomEditPreference.
            <p>Includes the following attributes:</p>
            <table>
@@ -422,12 +508,14 @@ containing a value of this type.
            <tr><th>Attribute</th><th>Description</th></tr>
            <tr><td><code>{@link #CustomEditPreference_android_title com.assignmentexpert:android_title}</code></td><td></td></tr>
            <tr><td><code>{@link #CustomEditPreference_customFont com.assignmentexpert:customFont}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomEditPreference_iconDisable com.assignmentexpert:iconDisable}</code></td><td></td></tr>
            </table>
            @see #CustomEditPreference_android_title
            @see #CustomEditPreference_customFont
+           @see #CustomEditPreference_iconDisable
          */
         public static final int[] CustomEditPreference = {
-            0x010101e1, 0x7f010005
+            0x010101e1, 0x7f010005, 0x7f010006
         };
         /**
           <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_title}
@@ -449,6 +537,20 @@ containing a value of this type.
           @attr name android:customFont
         */
         public static final int CustomEditPreference_customFont = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#iconDisable}
+          attribute's value can be found in the {@link #CustomEditPreference} array.
+
+
+          <p>Must be an integer value, such as "<code>100</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:iconDisable
+        */
+        public static final int CustomEditPreference_iconDisable = 2;
         /** Attributes that can be used with a CustomEditText.
            <p>Includes the following attributes:</p>
            <table>
@@ -594,6 +696,70 @@ containing a value of this type.
           @attr name android:customFont
         */
         public static final int CustomTextView_customFont = 3;
+        /** Attributes that can be used with a IconPreference.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #IconPreference_android_gravity com.assignmentexpert:android_gravity}</code></td><td></td></tr>
+           <tr><td><code>{@link #IconPreference_android_text com.assignmentexpert:android_text}</code></td><td></td></tr>
+           <tr><td><code>{@link #IconPreference_android_textColor com.assignmentexpert:android_textColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #IconPreference_customFont com.assignmentexpert:customFont}</code></td><td></td></tr>
+           <tr><td><code>{@link #IconPreference_icon com.assignmentexpert:icon}</code></td><td></td></tr>
+           </table>
+           @see #IconPreference_android_gravity
+           @see #IconPreference_android_text
+           @see #IconPreference_android_textColor
+           @see #IconPreference_customFont
+           @see #IconPreference_icon
+         */
+        public static final int[] IconPreference = {
+            0x01010098, 0x010100af, 0x0101014f, 0x7f010005,
+            0x7f010007
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_gravity}
+          attribute's value can be found in the {@link #IconPreference} array.
+          @attr name android:android_gravity
+        */
+        public static final int IconPreference_android_gravity = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_text}
+          attribute's value can be found in the {@link #IconPreference} array.
+          @attr name android:android_text
+        */
+        public static final int IconPreference_android_text = 2;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#android_textColor}
+          attribute's value can be found in the {@link #IconPreference} array.
+          @attr name android:android_textColor
+        */
+        public static final int IconPreference_android_textColor = 0;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#customFont}
+          attribute's value can be found in the {@link #IconPreference} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:customFont
+        */
+        public static final int IconPreference_customFont = 3;
+        /**
+          <p>This symbol is the offset where the {@link com.assignmentexpert.R.attr#icon}
+          attribute's value can be found in the {@link #IconPreference} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name android:icon
+        */
+        public static final int IconPreference_icon = 4;
         /** Attributes that can be used with a MyCustomButton.
            <p>Includes the following attributes:</p>
            <table>

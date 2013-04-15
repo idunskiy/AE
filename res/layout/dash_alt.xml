@@ -6,8 +6,12 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="#000000">
- 
-    
+ <!-- <android.gesture.GestureOverlayView
+                android:id="@+id/gestures"
+                android:layout_width="fill_parent" 
+                android:layout_height="fill_parent" 
+                android:layout_weight="1.0">
+     -->
     <ListView
         android:id="@+id/altOrderslist"
         android:layout_width="fill_parent"
@@ -19,8 +23,18 @@
         android:layout_below="@+id/dashboardHeader"
         android:dividerHeight="1dp"
          />
-    
-    
+     <!-- 
+    <com.library.PullToRefreshListView
+        android:id="@+id/altOrderslist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="@android:color/transparent"
+        android:scrollingCache="false"
+        android:background="#000000"
+        android:divider="#323232"
+        android:layout_below="@+id/dashboardHeader"
+        android:dividerHeight="1dp"
+         />-->
      <TextView
         android:id="@+id/empty_list_view1"
         android:layout_width="wrap_content"
@@ -38,18 +52,33 @@
 		    android:background="#000000">
   
  
-		   
+		  <TableLayout 
+    android:id="@+id/tableLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:stretchColumns="*">
+     <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1"
+          > 
   <com.customitems.CustomTextView
         android:id="@+id/textlabel"
         style="@style/custom_textview"
-        android:text="Swipe entries to see order's details"
+        android:text="Tap to open | Swipe to see details"
         android:layout_width="fill_parent"
         android:gravity="center"
         foo:customFont="Roboto-Medium.ttf"/>
-
-	<TextView  android:layout_height="1dp" 
-             android:layout_width="fill_parent" android:text=""/>
+	</TableRow>
+	<TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		</TableLayout>
   </LinearLayout>
- 
+ <!-- </android.gesture.GestureOverlayView>-->
 </RelativeLayout>
 

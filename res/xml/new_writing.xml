@@ -3,24 +3,24 @@
       xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
       android:key="new_writing">
      
-  			<ListPreference
+  			<com.customitems.IconPreference
 	                        android:title="Type of essay"
-	                        android:summary="Type of essay"
+	                        android:summary="Not selected"
 	                        android:key="typePref"
 	                         />
-        	<ListPreference
+        	<com.customitems.IconPreference
 	                        android:title="Number of pages"
-	                        android:summary="Number of pages"
+	                        android:summary="Not selected"
 	                        android:key="nmbPages"
 	                         />
-        	 <ListPreference
+        	 <com.customitems.IconPreference
 	                        android:title="Creation style"
-	                        android:summary="Creation style"
+	                        android:summary="Not selected"
 	                        android:key="crStyle"
 	                         />
-           <ListPreference
+            <com.customitems.IconPreference
 	                        android:title="Number of references"
-	                        android:summary="Number of references"
+	                        android:summary="Not selected"
 	                        android:key="nmbRefs"
 	                         />
     

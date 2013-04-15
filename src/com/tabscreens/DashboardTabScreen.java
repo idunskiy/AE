@@ -2,22 +2,24 @@ package com.tabscreens;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 
-import com.activitygroups.MainTabGroup;
-import com.activitygroups.ProfileGroup;
 import com.assignmentexpert.AssignmentPref;
 import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.ExitActivity;
 import com.assignmentexpert.R;
-import com.assignmentexpert.R.drawable;
-import com.assignmentexpert.R.layout;
+import com.fragmentactivities.ProfileFragmentActivity;
 
 public class DashboardTabScreen extends TabActivity
 {
-    public void onCreate(Bundle savedInstanceState) 
+    private SharedPreferences sharedPreferences;
+	private Editor editor;
+	public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
 
@@ -38,25 +40,30 @@ public class DashboardTabScreen extends TabActivity
         spec = tabHost.newTabSpec("tab_2").setIndicator("Orders",getResources().getDrawable(R.drawable.history)).setContent(intent);
         tabHost.addTab(spec);
         
-        intent = new Intent().setClass(this, ProfileGroup.class);
+        intent = new Intent().setClass(this, ProfileFragmentActivity.class);
         // Initialize a TabSpec for each tab and add it to the TabHost
         spec = tabHost.newTabSpec("tab_3").setIndicator("Profile",getResources().getDrawable(R.drawable.profile)).setContent(intent);
         tabHost.addTab(spec);
         
 
         intent = new Intent().setClass(this, LoginTabScreen.class);
-        spec = tabHost.newTabSpec("tab_4").setIndicator("Log out",getResources().getDrawable(R.drawable.logout)).setContent(intent);
+        spec = tabHost.newTabSpec("tab_4").setIndicator("Log out",getResources().getDrawable(R.drawable.logout)).setContent(new Intent().setClass(this,ExitActivity.class));
         tabHost.addTab(spec);
+        sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
+        editor = sharedPreferences.edit();
         
         tabHost.setOnTabChangedListener(new OnTabChangeListener(){
             public void onTabChanged(String tabId) {
-            	String current = tabHost.getCurrentTabTag();
-            	if (current.equalsIgnoreCase("tab_4"))
+            	//String current = tabHost.getCurrentTabTag();
+            	 int i = getTabHost().getCurrentTab();
+            	 Log.i("choosed dashboard", Integer.toString(i));
+            	if (i==3)
             	{
             		Log.i("dashboardTab screen", "it was clicked");
+            		editor.remove("isChecked").commit();
             		  finish();
-//            		  Intent intent = new Intent(DashboardTabScreen.this, LoginTabScreen.class);
-//            		  startActivity(intent);
+            		  Intent intent = new Intent(DashboardTabScreen.this, LoginTabScreen.class);
+            		  startActivity(intent);
             	}
             }
             });
@@ -65,7 +72,6 @@ public class DashboardTabScreen extends TabActivity
         {
      	   if (getIntent().getExtras().getString("DashboardTabScreen").equalsIgnoreCase("FilesOrder"))
      	   {
-     		  Log.i("DashboardTabScreen", "setMessageActivity");
      		  getTabHost().setCurrentTab(0);
      	   }
      	   

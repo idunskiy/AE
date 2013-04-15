@@ -11,10 +11,12 @@ import com.assignmentexpert.RegisterActivity;
 public class TabGroup2Activity extends MainTabGroup{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    
+		super.onCreate(savedInstanceState);
+		imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
 		startChildActivity("RegisterActivity", new Intent(getParent(),RegisterActivity.class));
 		
 		
@@ -28,6 +30,7 @@ public class TabGroup2Activity extends MainTabGroup{
 		InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
 		super.onResume();
 		
 	}

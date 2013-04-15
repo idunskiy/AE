@@ -8,44 +8,52 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.xmlpull.v1.XmlPullParser;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Resources;
 import android.database.SQLException;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Xml;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -56,8 +64,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.asynctasks.LoginAsync;
+import com.customitems.CustomCheckBoxPref;
+import com.customitems.CustomEditPreference;
+import com.customitems.CustomEditText;
 import com.customitems.CustomTextView;
-import com.customitems.DatePreference;
+import com.customitems.IconPreference;
 import com.datamodel.Category;
 import com.datamodel.EssayCreationStyle;
 import com.datamodel.EssayType;
@@ -69,7 +80,11 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.library.DatabaseHandler;
 import com.library.FrequentlyUsedMethods;
+import com.library.OrderPreferences;
+import com.library.UserFunctions;
+import com.tabscreens.DashboardTabScreen;
 
+@SuppressLint("NewApi")
 public class AssignmentPref extends PreferenceActivity {
     private ListView fileList;
 	private Button btnSelectFiles;
@@ -89,15 +104,16 @@ public class AssignmentPref extends PreferenceActivity {
 	
 	 ListView customfileList;
 	private Button btnSubmitOrder;
-	private ListPreference subjectPref;
-	private ListPreference categoryPref;
-	private ListPreference levelPref;
-	private DatePreference deadlinePref;
-	private ListPreference timezonePref;
+	private IconPreference subjectPref;
+	private IconPreference categoryPref;
+	private IconPreference levelPref;
+	private IconPreference timezonePref;
 	
 	 static final int DATE_DIALOG_ID = 1;
 	 static final int TIME_DIALOG_ID = 0;
 	 
+	 
+	 private static String KEY_STATUS = "status";
 	 
 	 private int mDay;
 	 private int mHour;
@@ -113,6 +129,44 @@ public class AssignmentPref extends PreferenceActivity {
 	boolean trigger = false;
 	 CustomTextView textHead;
 	 CustomTextView fileSizeHead;
+	private CustomEditText orderTitle;
+	private CustomEditText taskText;
+	UserFunctions launch = new UserFunctions();
+	private ListPreference productPref;
+	CustomEditPreference deadlineCus;
+	ArrayAdapter<Subject> subjectDataAdapter ;
+	ArrayAdapter<Category> categoryDataAdapter;
+	ArrayAdapter<Level> levelDataAdapter;
+	
+//	final ArrayList<Integer> prefValues =  new ArrayList<Integer>(5);
+	
+	String[] prefValues;// = new String[8];
+	
+	
+	Object[] essayPref = new Object[4];
+	//final ArrayList<Object> essayPref = new ArrayList<Object>(5);
+	
+//	CheckBoxPreference dtlInfo;
+//	CheckBoxPreference ExcVideo;
+//	CheckBoxPreference commVideo;
+	
+//	CustomCheckBoxRelative dtlInfo;
+//	CustomCheckBoxRelative ExcVideo;
+//	CustomCheckBoxRelative commVideo;
+	
+	CustomCheckBoxPref dtlInfo;
+	CustomCheckBoxPref ExcVideo;
+	CustomCheckBoxPref commVideo;
+	
+	ArrayAdapter<NumberPages> nmbPageDataAdapter;
+	ArrayAdapter<NumberOfReferences> nmbRefsDataAdapter ;
+	ArrayAdapter<EssayType> essayTypeDataAdapter;
+	ArrayAdapter<EssayCreationStyle> essayCrDataAdapter;
+	
+	 private int explanationReqInt;
+	 private int commVideoInt;
+	 private int exclVideoInt;
+	private View assignmentFoot;
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -120,36 +174,54 @@ public class AssignmentPref extends PreferenceActivity {
            // setContentView(R.layout.footer_listview);
             context  = this;
             
-        	
             final Calendar c = Calendar.getInstance();
             mYear = c.get(Calendar.YEAR);
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
             mHour = c.get(Calendar.HOUR);
             mMinute = c.get(Calendar.MINUTE);
-
             
+          
             mFilterShow =
                     (PreferenceScreen)getPreferenceScreen().findPreference("orderScreen");
             final ListPreference productList = (ListPreference) findPreference("productPref");
             
             assignfooter = getLayoutInflater().inflate(R.layout.assign_footer2, null);
             editsfooter = getLayoutInflater().inflate(R.layout.assign_footer1, null);
+            assignmentFoot = getLayoutInflater().inflate(R.layout.assignment_order, null);
+            deadlineCus = new CustomEditPreference(this);
+            deadlineCus.setTitle("Deadline");
+            deadlineCus.setSummary("Not selected");
+            deadlineCus.setIcon(R.drawable.list_pointer);
+            deadlineCus.setOnTouchListener(new OnTouchListener()
+            {
+  
+  			public boolean onTouch(View arg0, MotionEvent arg1) 
+  			
+  			{
+  				  showDialog(DATE_DIALOG_ID);
+  				  return false;
+  			}
+  			
+          });
+            
             filesList = getLayoutInflater().inflate(R.layout.file_list, null);
             
-          //  newAssign = getLayoutInflater().inflate(R.xml.new_assign, null);
             
             orderInfo = (ImageView)editsfooter.findViewById(R.id.orderInfo);
             taskInfo = (ImageView)editsfooter.findViewById(R.id.taskInfo);
             
             customfileList = (ListView) filesList.findViewById(R.id.fileslist);
             btnSubmitOrder = (Button)assignfooter.findViewById(R.id.btnSubmitOrder);
-            
-            subjectPref =  (ListPreference)findPreference("subjectPref");
-            categoryPref = (ListPreference)findPreference("categoryPref");
-            levelPref =    (ListPreference)findPreference("levelPref");
-            deadlinePref = (DatePreference)findPreference("deadlinePref");
-            timezonePref = (ListPreference)findPreference("timezonePref");
+            btnSubmitOrder.getBackground().setAlpha(120);
+            subjectPref =  (IconPreference)findPreference("subjectPref");
+            categoryPref = (IconPreference)findPreference("categoryPref");
+            levelPref =    (IconPreference)findPreference("levelPref");
+            timezonePref = (IconPreference)findPreference("timezonePref");
+            productPref = (ListPreference)findPreference("productPref");
+
+            orderTitle = (CustomEditText)editsfooter.findViewById(R.id.orderTitle);
+            taskText = (CustomEditText)editsfooter.findViewById(R.id.taskText);
             
             nmbPages  = (ListPreference)findPreference("nmbPages");
             typePref = (ListPreference)findPreference("typePref");
@@ -158,10 +230,10 @@ public class AssignmentPref extends PreferenceActivity {
             
             categoryPref.setEnabled(false);
             
+            
             mainList = getListView();
             mainList.setCacheColorHint(Color.BLACK);
             getListView().setBackgroundColor(Color.BLACK);
-          //  mainList.addFooterView(footer,null,true);
             fileList = getListView();
             btnSelectFiles = (Button) editsfooter.findViewById(R.id.btnSelectFiles);
             btnFilesRemove = (Button) filesList.findViewById(R.id.btnRemoveFiles);
@@ -170,99 +242,144 @@ public class AssignmentPref extends PreferenceActivity {
             btnFilesRemove.setVisibility(View.INVISIBLE);
             textHead  = (CustomTextView)filesList
     				.findViewById(android.R.id.title); 
+            
             fileSizeHead = (CustomTextView)filesList
     				.findViewById(R.id.fileSize); 
             prefs = getSharedPreferences("newOrder", MODE_PRIVATE);
     		prefEditor = prefs.edit();
+    		mainList.addFooterView(deadlineCus);
     	    mainList.addFooterView(editsfooter,null,true);
     	    mainList.addFooterView(assignfooter);
-    		//mainList.addFooterView(essayfooter,null,true);
+    	    
     		for(int b=0;b<FileManagerActivity.getFinalAttachFiles().size();b++)
     		{ 
-    			Log.i("files to add assign prefs", FileManagerActivity.getFinalAttachFiles().get(b).toString());
     			checks.add(b,0);
     	    } 
     		mainList.setAdapter(adapter);
             // Get the custom preference
     		addSubjects();
     		addLevels();
-//    		addTimeZones();
     		new FrequentlyUsedMethods(this).addTimeZones(timezonePref);
             productList.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                 	productList.setSummary((CharSequence) newValue);
                 	if (productList.getSummary().equals("Assignment"))
                 		{
-                		 assignmentFieldsAdd();
-                		 categoryPref.setEnabled(true);
-                	
+                		  if ( getPreferenceScreen().findPreference("dtlInfo") ==null)
+                			  {
+                			  			assignmentFieldsAdd();
+                			  }
 	                 		if (getPreferenceScreen().findPreference("nmbPages")!=null)
 	                 		 {
 	                 		    	writingFieldsDelete();
 	                 		 }
                 		}
-                	else 
+                	else if (productList.getSummary().equals("Writing"))
 	                	{
                 		 
-	                	if ( getPreferenceScreen().findPreference("dtlInfo")!=null)
-                		 {
-                			 assignmentFieldsDelete();
-                		 }
-                		writingFieldsAdd();
-                		categoryPref.setEnabled(false);
-                   		addEssayCreationStyles();
-                   		addNumberPages();
-                   		addNumberReferences();
-                   		addEssayTypes();
+		                	if ( getPreferenceScreen().findPreference("dtlInfo")!=null)
+	                		 {
+	                			 assignmentFieldsDelete();
+	                		 }
+	                	 	if ( getPreferenceScreen().findPreference("nmbPages") ==null)
+	                	 	 { 
+		                		 writingFieldsAdd();
+		                		 addEssayCreationStyles();
+		                		 addNumberPages();
+		                		 addNumberReferences();
+		                		 addEssayTypes();
+	                		 }
+	                	 	categoryPref.setSummary("Not selected");
+	                	 	categoryPref.setEnabled(false);
 	                	}
                 		
                 	return true;
                 }
 
             });
+            
             orderInfo.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    Toast.makeText(AssignmentPref.this,
-                            "The favorite list would appear on clicking this icon",
-                            Toast.LENGTH_LONG).show();
+                	Dialog dialog = new Dialog(context, R.style.FullHeightDialog);
+                	TextView myMsg = new TextView(AssignmentPref.this);
+                	myMsg.setText("Specify suitable title to identify your order in the future.");
+                	myMsg.setTextColor(Color.WHITE);
+                	myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+                	dialog.setContentView(myMsg);
+                	dialog.show();
+            		dialog.setCanceledOnTouchOutside(true);
+                    
                 }
             });
+            
+            
             taskInfo.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    Toast.makeText(AssignmentPref.this,
-                            "The favorite list would appear on clicking this icon",
-                            Toast.LENGTH_LONG).show();
+                	Dialog dialog = new Dialog(context, R.style.FullHeightDialog);
+                	TextView myMsg = new TextView(AssignmentPref.this);
+                	myMsg.setText("Specify suitable task to identify your order in the future.");
+                	myMsg.setTextColor(Color.WHITE);
+                	myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+                	dialog.setContentView(myMsg);
+                	dialog.show();
+            		dialog.setCanceledOnTouchOutside(true);
                 }
             });
+            
+            
+            categoryPref.setEnabled(false);
             subjectPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                 	int index = subjectPref.findIndexOfValue(newValue.toString()) ;
                 	subjectPref.setSummary(subjectPref.getEntries()[index]);
+                	Subject a = subjectDataAdapter.getItem(index);
+                	Log.i("choosed subject item",a.getSubjectTitle());
+                	 OrderPreferences.getInstance().getArrayList()[0]=Integer.toString(a.getSubjectId());
                 	if (productList.getSummary().equals("Assignment"))
-                	 addCategories(index) ;
+                	 {
+                		addCategories(index) ;
+                		categoryPref.setEnabled(true);
+                		categoryPref.setSummary("Not selected");
+                	 }
                 	return true;
                 }
 
             });
             
-            
-            categoryPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                	int index = categoryPref.findIndexOfValue(newValue.toString()) ;
-                	categoryPref.setSummary(categoryPref.getEntries()[index]);
-                	return true;
-                }
-            });
-            
+            try{
+	            categoryPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+	                public boolean onPreferenceChange(Preference preference, Object newValue) {
+	                	if (!subjectPref.getSummary().toString().equalsIgnoreCase("Not selected") )
+	                	{
+	                		int index = categoryPref.findIndexOfValue(newValue.toString()) ;
+	                	    categoryPref.setSummary(categoryPref.getEntries()[index]);
+	                	    Category a = categoryDataAdapter.getItem(index);
+	                	    if (categoryPref.isEnabled())
+	                	    	 OrderPreferences.getInstance().getArrayList()[1]=Integer.toString(a.getCategoryId());
+	                	}
+	                	else 
+	                	{
+	                		Toast.makeText(AssignmentPref.this, "Choose the subject before", Toast.LENGTH_LONG).show();
+	                	}
+	                	return true;
+	                }
+	            });
+            }
+            catch(Exception e)
+            {
+            	Toast.makeText(AssignmentPref.this, "Choose the subject before", Toast.LENGTH_LONG).show();
+            }
             levelPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                 	int index = levelPref.findIndexOfValue(newValue.toString()) ;
                 	levelPref.setSummary(levelPref.getEntries()[index]);
+                	Level a = levelDataAdapter.getItem(index);
+                		//prefValues[2] = Integer.toString(a.getLevelId());
+                	  OrderPreferences.getInstance().getArrayList()[2]= Integer.toString(a.getLevelId());
                 	return true;
                 }
 
             });
-            
             timezonePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                 	int index = timezonePref.findIndexOfValue(newValue.toString()) ;
@@ -271,16 +388,6 @@ public class AssignmentPref extends PreferenceActivity {
                 }
 
             });
-//            deadlinePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-//                public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                	int index = deadlinePref.findIndexOfValue(newValue.toString()) ;
-//                	deadlinePref.setSummary(deadlinePref.getEntries()[index]);
-//                	if (productList.getSummary().equals("Assignment"))
-//                	 addCategories(index) ;
-//                	return true;
-//                }
-//
-//            });
            
             btnSelectFiles.setOnClickListener(new View.OnClickListener() {
              	 
@@ -307,20 +414,8 @@ public class AssignmentPref extends PreferenceActivity {
              	  }
             btnFilesRemove.setOnClickListener(new View.OnClickListener() {
               	 
-                public void onClick(View view) {
-//                	 LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//     		        View view3 = inflater.inflate(R.layout.file, null);
-//     		       final CheckBox checkBox = (CheckBox)view3
-//   						.findViewById(R.id.fileCheck); 
-//                	if (checkBox.isChecked())
-//						  checks.set(position, 1);
-//					else
-//						  checks.set(position, 0);
+            public void onClick(View view) {
              for(int i=0;i<checks.size();i++){
-            	 
-            	Log.i("cheks state", Integer.toString(checks.get(i)));
-            	
-            	 
               if(checks.get(i)==1){
             	   adapter.remove(adapter.getItem(i));
                     checks.remove(i);
@@ -334,62 +429,214 @@ public class AssignmentPref extends PreferenceActivity {
                     
                      i--;
                   }
-              if( !FileManagerActivity.getFinalAttachFiles().isEmpty())
-               	  {
-            	  btnFilesRemove.setVisibility(View.VISIBLE);
-            	 
-               	  }
+             
               
                  else 
                  {
-               	  //btnFilesRemove.setVisibility(View.INVISIBLE);
                	 mainList.removeFooterView(filesList);
                  }
               	
                   }
-             //adapter.notifyDataSetChanged();
                 }
             });
             
-            btnSubmitOrder.setOnClickListener(new View.OnClickListener() {
-             	 
-               public void onClick(View view) {
-            	   Resources resources = AssignmentPref.this.getResources();
-            	    XmlPullParser parser = resources.getXml(R.layout.assign_footer2);
-            	    AttributeSet attributes = Xml.asAttributeSet(parser);
-            	   new DatePreference(AssignmentPref.this, attributes).getDialog().show() ;
-            	   
-            	   
-               }
-               
-           });
-          
-//            deadlinePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-//            	 public boolean onPreferenceClick(Preference preference) {
-//			            		 	DeadLinePicker pick = new DeadLinePicker(AssignmentPref.this);
-//			            		 	pick.updateDisplay();
-//            	    				  return false;
-//            	    			}
-//            });
-//   
-    			
-           
             
-//            deadlinePref.setOnEditorActionListener(new OnEditorActionListener() {
-//               
-//                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                    	deadline.setFocusable(false);
-//                    	
-//                    }
-//                    return false;
-//                }
-//            });
-     
+          orderTitle.setOnTouchListener(new OnTouchListener() 
+          {
+  			public boolean onTouch(View arg0, MotionEvent arg1) {
+  				
+  				if (orderTitle.getText().toString().equalsIgnoreCase("Put more than 5 symbols") )
+  				{
+  				 orderTitle.getText().clear();
+  				 orderTitle.setHint("Order title");
+  				 orderTitle.setTextColor(Color.BLACK);
+  				}
+  				return false;
+  			}
+          });
+            
+
+       	 DatePickerDialog.OnDateSetListener mDateSetListener =
+                    new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                    int dayOfMonth) {
+                            mYear = year;
+                            mMonth = monthOfYear;
+                            mDay = dayOfMonth;
+                           
+                            updateDisplay();
+                    }
+            };
+            TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+           	    public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
+           	      mHour = hourOfDay;
+           	      mMinute = minuteOfHour;
+           	      updateDisplay();
+       
+           	    }
+           	  };
+          
+           	  btnSubmitOrder.setOnTouchListener(new OnTouchListener() {
+        		
+        		    		    public boolean onTouch(View v, MotionEvent event) {
+        		    		    	 if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        		    		    		
+        		    		    		 boolean errorFlag=false;
+        		    		         	   if(deadlineCus.getSummary().toString().equalsIgnoreCase("Not selected"))
+        		    		         	   {
+        		    		         		   Toast toast = Toast.makeText(getApplicationContext(),"You have to choose deadline", Toast.LENGTH_SHORT);
+        		    		         		   toast.show();
+        		    		         		   errorFlag = true;
+        		    		         	   }
+        		    		         	   if(orderTitle.getText().length()<5)
+        		    		         	   {
+        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "Title have to be longer than 5 symbols", Toast.LENGTH_SHORT);
+        		    		         		   toast.show();
+        		    		         		   orderTitle.setText("");
+        		    		         		   orderTitle.setTextColor(Color.RED);
+        		    		         		   orderTitle.setText("Put more than 5 symbols");
+        		    		         		   errorFlag = true;
+        		    		         	   }
+	        		    		           if (productPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+	       		    		         	   {
+	       		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the product", Toast.LENGTH_SHORT);
+	       		    		         		   toast.show();
+	       		    		         		   errorFlag = true;
+	       		    		         	   }
+        		    		         	   if (subjectPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+        		    		         	   {
+        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the subject", Toast.LENGTH_SHORT);
+        		    		         		   toast.show();
+        		    		         		   errorFlag = true;
+        		    		         	   }
+        		    		         	  if (productPref.getSummary().toString().equalsIgnoreCase("Assignment")) 
+        		    		         	  {
+	        								  if (categoryPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+	        			   		         	   {
+	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the category", Toast.LENGTH_SHORT);
+	        			   		         		   toast.show();
+	        			   		         		   errorFlag = true;
+	        			   		         	   }
+        		    		         	  }
+        		    		         	 if (productPref.getSummary().toString().equalsIgnoreCase("Writing")) 
+        		    		         	 {
+        		    		         		 
+	        								  if (nmbPages.getSummary().toString().equalsIgnoreCase("Not selected"))
+	        			   		         	   {
+	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of pages", Toast.LENGTH_SHORT);
+	        			   		         		   toast.show();
+	        			   		         		   errorFlag = true;
+	        			   		         	   }
+	        								  if (typePref.getSummary().toString().equalsIgnoreCase("Not selected"))
+	        			   		         	   {
+	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose type of essay", Toast.LENGTH_SHORT);
+	        			   		         		   toast.show();
+	        			   		         		   errorFlag = true;
+	        			   		         	   }
+	        								  if (nmbRefs.getSummary().toString().equalsIgnoreCase("Not selected"))
+	        			   		         	   {
+	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of references", Toast.LENGTH_SHORT);
+	        			   		         		   toast.show();
+	        			   		         		   errorFlag = true;
+	        			   		         	   }
+	        								  if (crStyle.getSummary().toString().equalsIgnoreCase("Not selected"))
+	        			   		         	   {
+	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose creation style", Toast.LENGTH_SHORT);
+	        			   		         		   toast.show();
+	        			   		         		   errorFlag = true;
+	        			   		         	   }
+	        								  
+        		    		         	 }
+        		    		         	   if (levelPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+        		    		         	   {
+        		    		         		   
+        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the level", Toast.LENGTH_SHORT);
+        		    		         		   toast.show();
+        		    		         		   errorFlag = true;
+        		    		         	   }
+        		    		         	 
+        		    		         	   if (errorFlag == false)
+        		    		         	   {
+        		    		         		 boolean isOnline = new FrequentlyUsedMethods(AssignmentPref.this).isOnline();
+        		    		         		 if (isOnline)
+        		    		         		 {  
+        		    		         			 btnSubmitOrder.getBackground().setAlpha(255);
+        		    		         			if (productPref.getSummary().toString().equalsIgnoreCase("Assignment"))
+        		    		         			  new SendAssignment().execute();
+        		    		         			else if (productPref.getSummary().toString().equalsIgnoreCase("Writing"))
+        		    		         			new SendEssay().execute();
+        		    		         			
+        		    		         			
+        		    		         			 Log.i("deadline",deadlineCus.getSummary().toString());
+        		    		         			Log.i("orderTitle",orderTitle.getText().toString());
+        		    		         		 }
+        		    		         		   
+        		    		 					
+        		    		 				} 
+        		    		         		  
+        		    		         	   }
+        		    		    	
+        		    		    	 return false;
+        		    		    	 }
+        		    		    
+        		    		    });
+           	 
     }
+	
 	public void assignmentFieldsAdd()
 	{
 		addPreferencesFromResource(R.xml.new_assign);
+		  dtlInfo = (CustomCheckBoxPref)  getPreferenceScreen().findPreference("dtlInfo");
+		ExcVideo = (CustomCheckBoxPref)  getPreferenceScreen().findPreference("ExcVideo");
+		commVideo = (CustomCheckBoxPref)  getPreferenceScreen().findPreference("commVideo");
+    		dtlInfo.setTitle("Detailed explanation required");
+    	//	dtlInfo.setTextSize(9);
+    		ExcVideo.setTitle("Shoot exclusive video");
+//    		ExcVideo.setTextSize(9);
+    		commVideo.setTitle("Shoot common video");
+//    		commVideo.setTextSize(9);
+		dtlInfo.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+				Log.i("dtlInfo","onPreferenceChange");
+                boolean checked = Boolean.valueOf(newValue.toString());
+                Log.i("dtlInfo value",Boolean.toString(checked));
+                if (checked)
+                	explanationReqInt = 1;
+                else 
+                	explanationReqInt = 0;
+                Log.i("dtlInfo value",Integer.toString(explanationReqInt));
+                return true;
+                
+            }
+        });
+    	ExcVideo.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                boolean checked = Boolean.valueOf(newValue.toString());
+                if (checked)
+                	exclVideoInt = 1;
+                else 
+                	exclVideoInt = 0;
+                return true;
+            }
+        });
+    	commVideo.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                boolean checked = Boolean.valueOf(newValue.toString());
+                Log.i("checked state",Boolean.toString(checked));
+                if (checked)
+                	commVideoInt = 1;
+                else 
+                	commVideoInt = 0;
+                return true;
+            }
+        });
+    	
+    	
+    	
+    	
 		
 	}
 	public void assignmentFieldsDelete()
@@ -447,7 +694,7 @@ public class AssignmentPref extends PreferenceActivity {
 				
 				textView.setText(FileManagerActivity.getFinalAttachFiles().get(position).getName().toString());
 				
-				fileSize.setText(Long.toString(FileManagerActivity.getFinalAttachFiles().get(position).length())+ " Mb");
+				fileSize.setText(Long.toString(FileManagerActivity.getFinalAttachFiles().get(position).length()/1024)+ " KB");
 				for (int i = 0; i< FileManagerActivity.getFinalAttachFiles().size();i++)
 		         {
 						textView.setTag(i);
@@ -455,9 +702,6 @@ public class AssignmentPref extends PreferenceActivity {
 				
 				view.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
-						
-//					
-						
 						if (!getTrigger())
 							setTrigger(true);
 						else 
@@ -470,21 +714,25 @@ public class AssignmentPref extends PreferenceActivity {
 							  checks.set(position, 0);
 		            }
 		        });
+				checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked){
+							checks.set(position, 1);
+			            }
+					}
+			    });
 				
-				textView.setOnLongClickListener(onclicklistener);
+				view.setOnLongClickListener(filesClicklistener);
 				return view;
 			}
 		};
-		
-		
 		LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.file, null);
         view.setFocusable(false);
         RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
         relativeParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-      
-       
-      
         
         textHead.setTextSize(17);
         textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
@@ -494,47 +742,116 @@ public class AssignmentPref extends PreferenceActivity {
         	wholeSize += file.length();
         }
         
-        fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
+        fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
 		customfileList.setAdapter(adapter);
 		mainList.addFooterView(filesList);
 		mainList.addFooterView(assignfooter);
+		Log.i("assignment pref count",Integer.toString(prefs.getAll().size()));
+      if (!prefs.getAll().isEmpty())
+      {
+    	  Log.i("AssPref", "im in pref reload");
+    	  	String LevelsValue =  prefs.getString("LevelsValue", null);
+			String CategoriesValue =  prefs.getString("CategoriesValue", null);
+			String SubjectsValue  =  prefs.getString("SubjectsValue", null);
+			String ProductsValue  =  prefs.getString("ProductValue", null);
+			String prefValues  =  prefs.getString("prefValues", null);
+			
+			
+			CharSequence charTitle = prefs.getString("orderTitle", null);
+			CharSequence charTask = prefs.getString("taskReq", null);
+		 	CharSequence charDeadline = prefs.getString("deadline", null);
+		 	
+			if (charTask!=null)
+				taskText.setText(charTask);
+				
+			
+			if (charTitle != null)
+			{
+				orderTitle.setText(charTitle);
+			}
+			else 
+				orderTitle.setHint("Order title(specify)");
+			
+			if (ProductsValue != null)
+				productPref.setSummary(ProductsValue.toString());
+				
+				
+				
+			if (charDeadline != null)
+			{
+				deadlineCus.setSummary(charDeadline.toString());
+			}
+			else
+				deadlineCus.setSummary("Not selected");
+			
+			if (LevelsValue!=null)
+				levelPref.setSummary(LevelsValue.toString());
+			if (CategoriesValue!=null)
+				{
+					categoryPref.setSummary(CategoriesValue.toString());
+					categoryPref.setEnabled(true);
+				}
+			if (SubjectsValue != null)
+				subjectPref.setSummary(SubjectsValue.toString());
+      }
+      else 
+      {
+    	  Log.i("asss", "prefs is empty");
+      }
+		
     }
-	 public void savePreferences()
+	 public void savePreferences() 
 	 {
-//		 	prefEditor.putString("taskReq",taskReq.getText().toString());
-//			prefEditor.putString("orderTitle",orderTitle.getText().toString());
-//			prefEditor.putString("deadline",deadline.getText().toString());
-//
-//			prefEditor.putInt("LevelsValue", levelSpin.getSelectedItemPosition());
-//			prefEditor.putInt("CategoriesValue", catSpin.getSelectedItemPosition());
-//			prefEditor.putInt("SubjectsValue", subjSpin.getSelectedItemPosition());
-//			
-//			prefEditor.putInt("detailedExp", explanationReqInt);
-//			prefEditor.putInt("exclVideo", exclVideoInt);
-//			prefEditor.putInt("commonVideo", commVideoInt);
-//			
-//			prefEditor.commit();
+		 Iterator it =  prefs.getAll().entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		        it.remove(); // avoids a ConcurrentModificationException
+		    }
+		 Log.i("AssignmentPRef","im in savePrefs");
+		 	prefEditor.putString("LevelsValue", levelPref.getSummary().toString());
+			prefEditor.putString("CategoriesValue", categoryPref.getSummary().toString());
+			prefEditor.putString("SubjectsValue", subjectPref.getSummary().toString());
+			prefEditor.putString("ProductValue", productPref.getSummary().toString());
+			
+		 	prefEditor.putString("taskReq",taskText.getText().toString());
+			prefEditor.putString("orderTitle",orderTitle.getText().toString());
+			prefEditor.putString("deadline",deadlineCus.getSummary().toString());
+			
+			
+			prefEditor.putInt("detailedExp", explanationReqInt);
+			prefEditor.putInt("exclVideo", exclVideoInt);
+			prefEditor.putInt("commonVideo", commVideoInt);
+			
+			JSONObject user = new JSONObject();
+			for (int i = 0; i < OrderPreferences.getInstance().getArrayList().length; i++)
+			{
+				try {
+					if (OrderPreferences.getInstance().getArrayList()[i]!=null)
+					user.put(Integer.toString(i), OrderPreferences.getInstance().getArrayList()[i].toString());
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			prefEditor.putString("prefValues", user.toString());
+			prefEditor.commit();
 		 
 	 }
-	 OnLongClickListener onclicklistener = new OnLongClickListener() {
+	 OnLongClickListener filesClicklistener = new OnLongClickListener() {
 			public boolean onLongClick(View arg0) {
 				final CharSequence[] items = {"Open", "Delete", "Details"};
 				final AlertDialog.Builder builder = new AlertDialog.Builder(AssignmentPref.this);
-			    builder.setTitle(((TextView)arg0).getText().toString());
+			    builder.setTitle((((CustomTextView)arg0.findViewById(android.R.id.title))).getText().toString());
 			    Log.i("view class", arg0.getClass().getName());
 			    final int pos = getFilePosition(arg0);
 			    Log.i("position ", Integer.toString(pos));
-			    //Log.i("view name", ((CheckBox)arg0).getText().toString());
-			 //   Log.i("view tag", (((CheckBox)arg0).getTag()).toString());
-			    Integer position  = (Integer) ((CustomTextView)arg0).getTag();
-			    setFilePosition(position.intValue());
-			    
+			    Integer position  = (Integer) ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog, int item) {
 				    	if (item == 0)
 				    	{
 				    		File file = FileManagerActivity.getFinalAttachFiles().get(pos);
-				    		
 				    			Intent intent = new Intent();
 				    			intent.setAction(android.content.Intent.ACTION_VIEW);
 				    			intent.setDataAndType(Uri.fromFile(file), "text/plain");
@@ -550,7 +867,7 @@ public class AssignmentPref extends PreferenceActivity {
 				    			   FileManagerActivity.getFinalAttachFiles().clear();
 				    			   adapter.clear();
 				    			   adapter.notifyDataSetChanged();
-				    			   btnFilesRemove.setVisibility(View.INVISIBLE);
+				                   mainList.removeFooterView(filesList);
 				    		   }
 				    		   else
 				    			   { 
@@ -558,21 +875,20 @@ public class AssignmentPref extends PreferenceActivity {
 				    				   {
 				    					   
 					    				     adapter.remove(FileManagerActivity.getFinalAttachFiles().get(pos));
-							    		     Log.i("count",Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
+					    				     textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
+					    	                    long wholeSize = 0;
+					    	                    for (File file: FileManagerActivity.getFinalAttachFiles())
+					    	                    {
+					    	                    	wholeSize += file.length();
+					    	                    }
+					    	                    fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
 							    		     adapter.notifyDataSetChanged();
 				    				   }
 				    				   catch(IndexOutOfBoundsException e)
 				    				   {
-				    					 //  FileManagerActivity.getFinalAttachFiles().remove(position.intValue());
-				    					 //  Log.i("exception deleted position",FileManagerActivity.getFinalAttachFiles().get(position.intValue()).getName() );
 				    					   e.printStackTrace();
 				    				   }
 				    				  
-				    				   for (File f :  FileManagerActivity.getFinalAttachFiles())
-						    		     {
-						    		    	 Log.i("file container", f.getName());
-						    		     } 
-				    				   Log.i("file manager size", Integer.toString( FileManagerActivity.getFinalAttachFiles().size()));
 				    			   }
 				    		}
 				    	else if (item == 2)
@@ -584,7 +900,7 @@ public class AssignmentPref extends PreferenceActivity {
 				  		  FileInputStream fis;
 						try {
 							fis = new FileInputStream(file);
-							builder2.setMessage("Size of file is: " + Long.toString(fis.getChannel().size())+ "  KB"+"\r\n"+
+							builder2.setMessage("Size of file is: " + Long.toString(fis.getChannel().size()/1024)+ "  KB"+"\r\n"+
 							"Path of file is: " +"\r\n" + file.getPath());
 
 						} catch (FileNotFoundException e) 
@@ -617,14 +933,10 @@ public class AssignmentPref extends PreferenceActivity {
 			for (int i = 0; i<adapter.getCount();i++)
 			{
 				Log.i("fileList item", adapter.getItem(i).getName());
-				if (((CustomTextView)v).getText().equals((adapter.getItem(i).getName())))
+				if (((CustomTextView)v.findViewById(android.R.id.title)).getText().equals((adapter.getItem(i).getName())))
 				 pos = i;
 			}
 			 return pos;
-		 }
-		 public void setFilePosition(int position)
-		 {
-			 this.currFilePos = position;
 		 }
 		  private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 	    	    public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
@@ -645,8 +957,6 @@ public class AssignmentPref extends PreferenceActivity {
 	    	                    
 	    	                     updateDisplay();
 	    	             }
-
-	    					
 	    	     };
 				private List<Subject> subjectsListSpinner;
 				private List<Level> levelsListSpinner;
@@ -678,14 +988,24 @@ public class AssignmentPref extends PreferenceActivity {
 					minutes = Integer.toString(mMinute);
 				else 
 					minutes = "0"+Integer.toString(mMinute);
-				deadlinePref.setSummary(
-		                new StringBuilder()
+				if (mMonth<10)
+				deadlineCus.setSummary(
+		                (new StringBuilder()
 		                // Month is 0 based so add 1
-		                .append(mYear).append("-")
+		                .append(mYear).append("-").append("0")
 		                .append(mMonth + 1).append("-")
 		                .append(mDay)
-		                .append(" ").append(mHour).append(":").append(minutes)
+		                .append(" ").append(mHour).append(":").append(minutes)).toString()
 		                );
+				else 
+					deadlineCus.setSummary(
+			                (new StringBuilder()
+			                // Month is 0 based so add 1
+			                .append(mYear).append("-")
+			                .append(mMonth + 1).append("-")
+			                .append(mDay)
+			                .append(" ").append(mHour).append(":").append(minutes)).toString()
+			                );
 				showDialog(TIME_DIALOG_ID);
 		}
 			
@@ -696,17 +1016,16 @@ public class AssignmentPref extends PreferenceActivity {
 					
 					Dao<Subject,Integer> daoSubject = db.getSubjectDao();
 					subjectsListSpinner = daoSubject.queryForAll();
-					final ArrayAdapter<Subject> dataAdapter = new ArrayAdapter<Subject>(this,
+					subjectDataAdapter= new ArrayAdapter<Subject>(this,
 					android.R.layout.simple_spinner_item, subjectsListSpinner);
-					dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-					CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-				    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+					subjectDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+					CharSequence[] entries = new CharSequence[subjectDataAdapter.getCount()];
+				    CharSequence[] entryValues = new CharSequence[subjectDataAdapter.getCount()];
 				    int i = 0;
 				    for (Subject dev : subjectsListSpinner)
 				    {
 				    	entries[i] = dev.getSubjectTitle();
 			            entryValues[i] = Integer.toString(dev.getSubjectId());
-			            Log.i("subject items", entries[i].toString() +  entryValues[i].toString());
 			            i++;
 			            
 				    }
@@ -734,11 +1053,11 @@ public class AssignmentPref extends PreferenceActivity {
 						 final List<Category> categories =
 								 daoCategory.queryBuilder().where().
 								    eq("subject_id", index+1).query();//Integer.parseInt(subjectPref.getEntry().toString())).query();
-						ArrayAdapter<Category> dataAdapter = new ArrayAdapter<Category>(this,
+						categoryDataAdapter = new ArrayAdapter<Category>(this,
 								android.R.layout.simple_spinner_item, categories);
-						dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-						CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-					    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+						categoryDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+						CharSequence[] entries = new CharSequence[categoryDataAdapter.getCount()];
+					    CharSequence[] entryValues = new CharSequence[categoryDataAdapter.getCount()];
 					    int i = 0;
 					    for (Category dev : categories)
 					    {
@@ -768,11 +1087,11 @@ public class AssignmentPref extends PreferenceActivity {
 					 try {
 						Dao<Level,Integer> daoSubject = db.getLevelDao();
 						levelsListSpinner = daoSubject.queryForAll();
-						ArrayAdapter<Level> dataAdapter = new ArrayAdapter<Level>(this,
+						levelDataAdapter = new ArrayAdapter<Level>(this,
 						android.R.layout.simple_spinner_item, levelsListSpinner);
-						dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-						CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-					    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+						levelDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+						CharSequence[] entries = new CharSequence[levelDataAdapter.getCount()];
+					    CharSequence[] entryValues = new CharSequence[levelDataAdapter.getCount()];
 					    int i = 0;
 					    for (Level dev : levelsListSpinner)
 					    {
@@ -854,12 +1173,12 @@ public class AssignmentPref extends PreferenceActivity {
 						try {
 							Dao<EssayCreationStyle, Integer> daoSubject = db.getEssayCreationStyleDao();
 							essayCreationStyleListSpinner = daoSubject.queryForAll();
-							ArrayAdapter<EssayCreationStyle> dataAdapter = new ArrayAdapter<EssayCreationStyle>(this,
+							essayCrDataAdapter = new ArrayAdapter<EssayCreationStyle>(this,
 									android.R.layout.simple_spinner_item, essayCreationStyleListSpinner);
-							dataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+							essayCrDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 							
-							CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-						    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+							CharSequence[] entries = new CharSequence[essayCrDataAdapter.getCount()];
+						    CharSequence[] entryValues = new CharSequence[essayCrDataAdapter.getCount()];
 						    int i = 0;
 						    for (EssayCreationStyle dev : essayCreationStyleListSpinner)
 						    {
@@ -869,7 +1188,7 @@ public class AssignmentPref extends PreferenceActivity {
 					            i++;
 					            
 						    }
-						    crStyle = (ListPreference)findPreference("crStyle");
+						    crStyle = (IconPreference)findPreference("crStyle");
 						    crStyle.setEntries(entries);
 						    crStyle.setEntryValues(entryValues);
 						    crStyle.setOnPreferenceChangeListener(crStyleListener);
@@ -887,7 +1206,7 @@ public class AssignmentPref extends PreferenceActivity {
 						try
 						{
 							
-							nmbPages = (ListPreference) findPreference("nmbPages");
+							nmbPages = (IconPreference) findPreference("nmbPages");
 							Collections.sort(LoginAsync.numberPagesList, new Comparator<NumberPages>() {
 							    private int fixString(NumberPages in) {
 							    	int res = 0;
@@ -925,11 +1244,16 @@ public class AssignmentPref extends PreferenceActivity {
 						{
 							e.printStackTrace();
 						}
-							ArrayAdapter<NumberPages> dataAdapter = new ArrayAdapter<NumberPages>(this,
+						catch(Exception e)
+						{
+							e.printStackTrace();
+						}
+						
+							 nmbPageDataAdapter = new ArrayAdapter<NumberPages>(this,
 									android.R.layout.simple_spinner_item, LoginAsync.numberPagesList);
-							dataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-							CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-						    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+							nmbPageDataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+							CharSequence[] entries = new CharSequence[nmbPageDataAdapter.getCount()];
+						    CharSequence[] entryValues = new CharSequence[nmbPageDataAdapter.getCount()];
 						    int i = 0;
 						    for (NumberPages dev : LoginAsync.numberPagesList)
 						    {
@@ -944,7 +1268,7 @@ public class AssignmentPref extends PreferenceActivity {
 						    nmbPages.setOnPreferenceChangeListener(nmbPagesListener);
 					}
 						public void addNumberReferences() {
-							nmbRefs = (ListPreference)findPreference("nmbRefs");
+							nmbRefs = (IconPreference)findPreference("nmbRefs");
 							Collections.sort(LoginAsync.numberReferencesList, new Comparator<NumberOfReferences>() {
 							    private int fixString(NumberOfReferences in) {
 							    	int res = 0;
@@ -979,11 +1303,11 @@ public class AssignmentPref extends PreferenceActivity {
 								}
 								
 							});
-							ArrayAdapter<NumberOfReferences> dataAdapter = new ArrayAdapter<NumberOfReferences>(this,
+							 nmbRefsDataAdapter = new ArrayAdapter<NumberOfReferences>(this,
 									android.R.layout.simple_spinner_item, LoginAsync.numberReferencesList);
-							dataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-							CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-						    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+							nmbRefsDataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+							CharSequence[] entries = new CharSequence[nmbRefsDataAdapter.getCount()];
+						    CharSequence[] entryValues = new CharSequence[nmbRefsDataAdapter.getCount()];
 						    int i = 0;
 						    for (NumberOfReferences dev : LoginAsync.numberReferencesList)
 						    {
@@ -1002,14 +1326,14 @@ public class AssignmentPref extends PreferenceActivity {
 						public void addEssayTypes() {
 							DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 							try {
-								 typePref = (ListPreference)findPreference("typePref");
+								 typePref = (IconPreference)findPreference("typePref");
 								Dao<EssayType, Integer> daoSubject = db.getEssayTypeDao();
 								essayTypeListSpinner = daoSubject.queryForAll();
-								ArrayAdapter<EssayType> dataAdapter = new ArrayAdapter<EssayType>(this,
+								essayTypeDataAdapter = new ArrayAdapter<EssayType>(this,
 										android.R.layout.simple_spinner_item, essayTypeListSpinner);
-								dataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-								CharSequence[] entries = new CharSequence[dataAdapter.getCount()];
-							    CharSequence[] entryValues = new CharSequence[dataAdapter.getCount()];
+								essayTypeDataAdapter	.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+								CharSequence[] entries = new CharSequence[essayTypeDataAdapter.getCount()];
+							    CharSequence[] entryValues = new CharSequence[essayTypeDataAdapter.getCount()];
 							    int i = 0;
 							    for (EssayType dev : essayTypeListSpinner)
 							    {
@@ -1039,12 +1363,31 @@ public class AssignmentPref extends PreferenceActivity {
 								boolean matchFound = matcher.matches();
 					    	return matchFound;
 					    }
+//					 @Override
+//					 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//
+//						  if (requestCode == 1) {
+//
+//						     if(resultCode == RESULT_OK){      
+//						         String result=data.getStringExtra("result");          
+//						     }
+//						     if (resultCode == RESULT_CANCELED) {    
+//						         //Write your code on no result return 
+//						     }
+//						  }
+//						}
+					 
+//					 (String title, String subject, String level, String deadline, String info, String explanation,
+//					    		String specInfo, String timezone, List<File> files, 
+//					    		String pages_number,String number_of_references ,String essay_type, String essay_creation_style) 
 					public OnPreferenceChangeListener crStyleListener = new OnPreferenceChangeListener() {        
 
 						public boolean onPreferenceChange(
 								Preference preference, Object newValue) {
 							int index = crStyle.findIndexOfValue(newValue.toString()) ;
 		                 	crStyle.setSummary(crStyle.getEntries()[index]);
+		                 	EssayCreationStyle a = essayCrDataAdapter.getItem(index);
+		                 	 OrderPreferences.getInstance().getArrayList()[6] = Integer.toString(a.getECSId());
 							return false;
 						}
 				    };
@@ -1055,6 +1398,8 @@ public class AssignmentPref extends PreferenceActivity {
 								Preference preference, Object newValue) {
 							int index = nmbPages.findIndexOfValue(newValue.toString()) ;
 							nmbPages.setSummary(nmbPages.getEntries()[index]);
+							NumberPages  a = nmbPageDataAdapter.getItem(index);
+							 OrderPreferences.getInstance().getArrayList()[3] = a.getNumberPage();
 							return false;
 						}
 				    };
@@ -1064,6 +1409,8 @@ public class AssignmentPref extends PreferenceActivity {
 								Preference preference, Object newValue) {
 							int index = nmbRefs.findIndexOfValue(newValue.toString()) ;
 							nmbRefs.setSummary(nmbRefs.getEntries()[index]);
+							NumberOfReferences a = nmbRefsDataAdapter.getItem(index);
+							 OrderPreferences.getInstance().getArrayList()[4] = a.getNumberReference();
 							return false;
 						}
 				    };
@@ -1073,7 +1420,163 @@ public class AssignmentPref extends PreferenceActivity {
 								Preference preference, Object newValue) {
 							int index = typePref.findIndexOfValue(newValue.toString()) ;
 							typePref.setSummary(typePref.getEntries()[index]);
+							EssayType a = essayTypeDataAdapter.getItem(index);
+							 OrderPreferences.getInstance().getArrayList()[5] = Integer.toString(a.getEssayTypeId());
 							return false;
 						}
 				    };
+				    
+				    private class SendAssignment extends AsyncTask<Void, Void, JSONObject > {
+					    
+				    	JSONObject response ;
+				    	ProgressDialog progDailog;
+						protected void onPreExecute() {
+				        	progDailog = ProgressDialog.show(AssignmentPref.this,"Please wait...", "Loading...", true,true);
+				        }
+		
+				        protected JSONObject doInBackground(Void... args) {
+				       
+				       		
+			            try {
+//			            	String title, String category, String level, String deadline, String info, String explanation,
+//			        		String specInfo, String timezone, List<File> files,  
+//			        		String exclusive_video,String common_video 
+			         			   Log.i("deadline", deadlineCus.getSummary().toString());
+			         			   Log.i("explanationReqInt",Integer.toString(explanationReqInt));
+			         			  Log.i("exclVideoInt",Integer.toString(exclVideoInt));
+			         			 Log.i("commVideoInt",Integer.toString(commVideoInt));
+			 					response = launch.sendAssignment(orderTitle.getText().toString(),
+			 							 OrderPreferences.getInstance().getOrderPrefItem(1).toString(),
+			 							OrderPreferences.getInstance().getOrderPrefItem(2).toString(),
+			 							deadlineCus.getSummary().toString(),   taskText.getText().toString(),Integer.toString(explanationReqInt), "",
+			 							timezonePref.getSummary().toString(),FileManagerActivity.getFinalAttachFiles(),  Integer.toString(exclVideoInt), Integer.toString(commVideoInt));
+						} catch (Exception e) {
+							
+							e.printStackTrace();
+						}
+				       		
+				        
+				       	return response;
+				     }
+		
+				        protected void onPostExecute(JSONObject  forPrint) {
+				 	  	  
+				        	try {
+								
+								if (Integer.parseInt(forPrint.getString(KEY_STATUS))==1)
+								{
+								Intent i = new Intent(AssignmentPref.this,
+								       DashboardTabScreen.class);
+								//				 	   Bundle mBundle = new Bundle();
+								//		               mBundle.putString("NewOrder", "wasAdded");
+								//		               i.putExtras(mBundle);
+								startActivity(i);
+								progDailog.dismiss();
+								prefValues = null;
+									}
+      							else 
+								Toast.makeText(AssignmentPref.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+									progDailog.dismiss();
+									prefValues = null;
+									prefEditor.clear().commit();
+								
+							} catch (NumberFormatException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				        }
+				   }
+				    
+				    private class SendEssay extends AsyncTask<Void, Void, JSONObject> {
+				    	
+				    			JSONObject response = null;
+				    			ProgressDialog progDailog;
+				    			protected void onPreExecute() {
+				    				progDailog = ProgressDialog.show(AssignmentPref.this,
+				    						"Please wait...", "Loading...", true,
+				    						true);
+				    			}
+				    	
+				    			protected JSONObject doInBackground(Void... args) {
+				    	
+				    			
+				    				try {
+				    	
+				    					// ??? Category curCat = (Category) catSpin.getSelectedItem();
+//				    					(String title, String subject, String level, String deadline, String info, String explanation,
+//				    				    		String specInfo, String timezone, List<File> files, 
+//				    				    		String pages_number,String number_of_references ,String essay_type, String essay_creation_style)
+				    					response = launch.sendWriting(orderTitle.getText().toString(),
+				    							OrderPreferences.getInstance().getOrderPrefItem(0).toString()
+				    								, OrderPreferences.getInstance().getOrderPrefItem(2).toString(), deadlineCus.getSummary().toString()
+				    											, taskText.getText().toString(),
+				    							Integer.toString(explanationReqInt), "", timezonePref.getSummary().toString(),
+				    							FileManagerActivity.getFinalAttachFiles(),OrderPreferences.getInstance().getOrderPrefItem(3).toString(), 
+				    							OrderPreferences.getInstance().getOrderPrefItem(4).toString(), OrderPreferences.getInstance().getOrderPrefItem(5).toString(),
+				    							OrderPreferences.getInstance().getOrderPrefItem(6).toString());
+				    				} catch (Exception e) {
+				    	
+				    					e.printStackTrace();
+				    				}
+				    	
+				    				return response;
+				    			}
+				    	
+				    			protected void onPostExecute(JSONObject forPrint) {
+				    				
+				    				try {
+										if (forPrint.getString(KEY_STATUS) != null)
+										{
+											if (Integer.parseInt(forPrint.getString(KEY_STATUS))==1)
+										{
+										Intent i = new Intent(AssignmentPref.this,
+										       DashboardTabScreen.class);
+														 	   Bundle mBundle = new Bundle();
+										//		               mBundle.putString("NewOrder", "wasAdded");
+										//		               i.putExtras(mBundle);
+										startActivity(i);
+										progDailog.dismiss();
+										prefValues = null;
+											}
+		      							else 
+										Toast.makeText(AssignmentPref.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+											progDailog.dismiss();
+											prefValues = null;
+											prefEditor.clear().commit();
+										}
+									} catch (NumberFormatException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (JSONException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+				    	
+				    	
+				    			}
+				    	
+				    			
+				    }    
+				    
+					@Override
+					public void onResume()
+					{
+					    super.onResume();
+					    if(!FileManagerActivity.getFinalAttachFiles().isEmpty())
+		             	  {
+		            			addFiles();
+		            			btnFilesRemove.setVisibility(View.VISIBLE);
+		            			for(int b=0;b<FileManagerActivity.getFinalAttachFiles().size();b++)
+		                		{ 
+		                			checks.add(b,0);
+		                	    } 
+		                		mainList.setAdapter(adapter);
+		             	  }
+					    
+					}
+	  
+				    
 	}

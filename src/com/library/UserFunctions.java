@@ -36,7 +36,9 @@ public class UserFunctions {
 	
 //	private static String host =  StaticFields.testHost;
 	
-	private static String host =  StaticFields.IPHost;
+	private static String host =  StaticFields.finalHost;
+	
+//	private static String host =  StaticFields.IPHost;
 	
 	private static String loginURL = host+"/app_dev.php/api/login_check";
     private static String ordersURL = host+"/app_dev.php/api/client/orderList/";
@@ -44,10 +46,11 @@ public class UserFunctions {
     private static String captchaURL = host+"/app_dev.php/captcha/regenerate/";
     private static String restoreURL = host+"/app_dev.php/api/client/request/resetting/";
     private static String attachURL = host+"/app_dev.php/api/client/request/resetting/";
-    private static String sendOrderURL = host+"/app_dev.php/api/client/createOrder/";
+    //private static String sendOrderURL = host+"/app_dev.php/api/client/createOrder/";
+    private static String sendOrderURL = host+"/app_dev.php/api/client/order/";
     private static String sendMessageURL = host+"/app_dev.php/api/client/message/";
     private static String deleteOrderURL = host+"/app_dev.php/api/client/order/";
-    private static String updateProfileURL = host+"/app_dev.php/api/client/user/";
+    private static String updateProfileURL = host+"/app_dev.php/api/client/user/edit";
 
     private static String logOutURL = host+"/app_dev.php/api/logout";
     
@@ -250,12 +253,14 @@ public class UserFunctions {
     		String lastname, String phone, String password) throws Exception
     { 
     	 RestClient restClient = new RestClient(updateProfileURL);
+    	 Log.i("profile rest", firstname);
+    	 Log.i("profile rest", phone);
     	 restClient.AddEntity("user[timezone]", new StringBody(timezone));
     	 restClient.AddEntity("user[first_name]", new StringBody(firstname,Charset.forName("UTF-8")));
     	 restClient.AddEntity("user[last_name]", new StringBody(lastname,Charset.forName("UTF-8")));
     	 restClient.AddEntity("phone", new StringBody(phone));
     	 restClient.AddEntity("user[password_plain]", new StringBody(password,Charset.forName("UTF-8")));
-    	 InputStream is = restClient.Execute(RequestMethod.PUT);
+    	 InputStream is = restClient.Execute(RequestMethod.POST_UPLOAD);
     	 JSONParser parser = new JSONParser();
      	 return parser.getJSONfromInputStream(is);
         

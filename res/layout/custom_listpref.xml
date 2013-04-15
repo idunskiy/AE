@@ -11,9 +11,8 @@
      		android:text=""
      		android:layout_width="wrap_content" 
         	android:layout_height="wrap_content" />
-    
-    
-     <com.customitems.CustomTextView
+
+    <com.customitems.CustomTextView
    	    android:id="@+android:id/summary"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 

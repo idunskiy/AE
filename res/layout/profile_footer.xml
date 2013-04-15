@@ -1,10 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000" 
+    android:focusableInTouchMode="true"
+    android:focusable="true">
+   
+ <TableLayout 
+    android:id="@+id/tableLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:stretchColumns="*">
+          <TableRow
+          android:id="@+id/tableRow1"
+          style="@style/text_row" 
+          android:layout_weight="1"
+          >
+   	<com.customitems.CustomTextView
+   	    
+        android:id="@+id/textViewPlus1"
+        android:layout_width="fill_parent"
+        style="@style/custom_textview"
+         android:text="@string/profileText"
+        foo:customFont="Roboto-Medium.ttf">
+    </com.customitems.CustomTextView>
+		 </TableRow>
+		 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+		  <TableRow
+        android:id="@+id/tableRow2"
+         android:layout_gravity="center_vertical"
+       >
+   	<com.customitems.CustomEditPreference
+        android:id="@+id/loginPref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="Login (email)"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+         </TableRow>
+         	 <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow2"
+           android:layout_gravity="center_vertical"
+         style="@style/edit_row"
+        >
+	<com.customitems.CustomEditPreference
+        android:id="@+id/firstNamePref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="First name"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+	    </TableRow>
+	 <TableRow android:layout_height="1px" android:background="#323232">
+   	<TextView android:layout_span="1" android:layout_height="1px" 
+             android:layout_width="fill_parent" android:text="">
+  	 </TextView>
+		</TableRow>
+       
+ 	<TableRow
+        android:id="@+id/tableRow3"
+        style="@style/button_row"
+        >
+       <com.customitems.CustomEditPreference
+        android:id="@+id/countryPref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="Country"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+	    </TableRow>
+		 <TableRow android:layout_height="1px" android:background="#323232">
+   			<TextView android:layout_span="1" android:layout_height="1px" 
+		             android:layout_width="fill_parent" android:text="">
+		  	 </TextView>
+		</TableRow>
+		<TableRow
+		     
+        android:id="@+id/tableRow1"
+        style="@style/text_row"
+        >
+  			 <com.customitems.CustomEditPreference
+        android:id="@+id/phonePref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="Phone"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+		</TableRow>
+		  <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow2"
+           android:layout_gravity="center_vertical"
+         style="@style/edit_row"
+        >
+	<com.customitems.CustomEditPreference
+        android:id="@+id/timezonePref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="Time zone"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+	    </TableRow>
+	     <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow2"
+           android:layout_gravity="center_vertical"
+         style="@style/edit_row"
+        >
+	<com.customitems.CustomEditPreference
+        android:id="@+id/passwordPref"
+        android:focusable="true"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+        android:title="Password"
+        foo:iconDisable="1"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
+        foo:customFont="Roboto-Regular.ttf"
+       />
+	    </TableRow>
+	    <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow2"
+           android:layout_gravity="center_vertical"
+         style="@style/edit_row"
+        >
+	 <RelativeLayout
+                 android:layout_width="fill_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal"
+                 >
+	      <com.customitems.CustomTextView
+	               android:id="@+android:id/title"
+	     		   android:layout_width="wrap_content"
+	     		   style="@style/custom_edittext"
+	     		  android:text="Sign me in when AE starts"
+	              foo:customFont="Roboto-Medium.ttf"/>
+	
+	      <CheckBox
+	          android:id="@+id/signMeCheck"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentRight="true"
+	          android:layout_centerVertical="true"
+			  android:clickable="false"
+	          android:layout_marginRight="27dp"
+	          android:gravity="left"
+	          android:textSize="20sp" />
+
+      </RelativeLayout>
+      </TableRow>
+	     <TableRow android:layout_height="1px" android:background="#323232">
+			   	<TextView android:layout_span="1" android:layout_height="1px" 
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+		    </TableRow>
+		  <TableRow
+         android:id="@+id/tableRow2"
+           android:layout_gravity="center_vertical"
+         style="@style/edit_row"
+        >
+		  <Button android:text="Edit profile"
+        	style="@style/custom_button"
+        	android:id="@+id/profileEdit"
+        	android:paddingLeft="10dp"
+        	android:layout_marginBottom="14dp"
+        	android:background="@drawable/gray_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+		  </TableRow>
+	</TableLayout>
+</ScrollView>
+
+<!-- 
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
               android:layout_width="fill_parent"
               android:layout_height="124dp"
-              android:orientation="horizontal"
+              android:orientation="vertical"
              >
-      
+             <RelativeLayout
+                 android:layout_width="fill_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="horizontal"
+                 >
+      <com.customitems.CustomTextView
+               android:id="@+android:id/title"
+     		   android:layout_width="wrap_content"
+     		   style="@style/custom_edittext"
+     		  android:text="Sign me in when AE starts"
+              foo:customFont="Roboto-Medium.ttf"/>
+
+      <CheckBox
+          android:id="@+id/signMeCheck"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentRight="true"
+          android:layout_centerVertical="true"
+		  android:clickable="false"
+          android:layout_marginRight="27dp"
+          android:gravity="left"
+          android:textSize="20sp" />
+
+      </RelativeLayout>
     <Button android:text="Edit profile"
         	style="@style/custom_button"
         	android:id="@+id/profileEdit"
@@ -21,3 +264,4 @@
               android:layout_height="0dp" />
     </LinearLayout>
     
+ -->

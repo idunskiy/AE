@@ -11,10 +11,12 @@ import com.assignmentexpert.DashboardActivityAlt;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class InactivateAsync extends AbstractTaskLoader{
 	Context context ; 
+	private boolean errorFlag = false;
 	protected InactivateAsync(Context context) {
 		super(context);
 		this.context = context;
@@ -48,14 +50,26 @@ public class InactivateAsync extends AbstractTaskLoader{
 		try {
 			as = func.deleteOrder(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
 			Log.i("delete operation", as.toString());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		//deleteFlag = true;
 		DashboardActivityAlt.listItem.getProcess_status().setProccessStatusTitle("Inactive");
 		DashboardActivityAlt.listItem.getProcess_status().setProccessStatusId(9);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			errorFlag = true;
+			onStopLoading();
+		}
 		return as;
 	}
+	@Override 
+	 protected void onStopLoading() {
+	        Log.i("InactivateAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 
 }

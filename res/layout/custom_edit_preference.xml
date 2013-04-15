@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="64dp">
 
- <TextView  android:id="@+android:id/title"
+ <com.customitems.CustomTextView  
+     android:id="@+android:id/title"
      		android:textSize="23sp"
      		android:textColor="#FFFFFF"
      		android:layout_marginLeft="25dp"
      		android:layout_width="wrap_content" 
         	android:layout_height="wrap_content" />
- <TextView
+ <com.customitems.CustomTextView
       
    	    android:id="@+android:id/summary"
         android:layout_width="wrap_content" 

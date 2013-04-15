@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout 
-      android:layout_width="fill_parent"
-		    android:layout_height="fill_parent"
-		      xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+         
+            xmlns:android="http://schemas.android.com/apk/res/android"
        		xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
-       		android:orientation="vertical">
-
-     <ScrollView
 		    android:id="@+id/scrollNewMessage"
-		    android:layout_width="wrap_content"
-		    android:layout_height="0dp"
-		   android:layout_weight="1"
+		    android:layout_width="fill_parent"
+		    android:fillViewport="true"
+			android:scrollbars="vertical"
+		    android:layout_height="fill_parent"
 		    >
+		    <LinearLayout 
+     		 android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+       		android:orientation="vertical">
   <RelativeLayout
 	    android:id="@+id/newMessagePanel"
 	    android:layout_width="wrap_content"
@@ -127,8 +128,8 @@
     <com.customitems.CustomEditText
         android:id="@+id/editMessage"
         style="@style/custom_edittext"
-            android:layout_width="fill_parent"
-            android:gravity="top|left"
+        android:layout_width="fill_parent"
+        android:gravity="top|left"
         android:layout_height="120dp"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Write your message">
@@ -158,6 +159,7 @@
  		</TableLayout>
  		 <include layout="@layout/file_list"
                 android:id="@+id/messageFileList"
+                android:tag="messageFileList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -168,31 +170,30 @@
 
 	</RelativeLayout>
 	
-</ScrollView>	    
-	<LinearLayout
-	    android:id="@+id/panelMessage2"
-	    android:layout_alignParentBottom="true"
-	    android:layout_marginTop="10dp"
-	    android:layout_below="@layout/file_list"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="horizontal"
-	    android:weightSum="1.0">
-        <Button
-            android:id="@+id/btnSendMessage"
-             style="@style/custom_button"
-            android:text="Send"
-            android:layout_weight="0.5"/>
-
-         <Button
-             android:id="@+id/btnCancelNewMessage"
-            style="@style/custom_button"
-        	android:layout_marginLeft="5dp"
-        	android:paddingLeft="10dp"
-        	android:text="Cancel"
-        	android:layout_marginBottom="10dp"
-        	android:background="@drawable/gray_button"
-             android:layout_weight="0.5" />
+    
+		<LinearLayout
+		    android:id="@+id/panelMessage2"
+		    android:layout_marginTop="10dp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:weightSum="1.0">
+	        <Button
+	            android:id="@+id/btnSendMessage"
+	             style="@style/custom_button"
+	            android:text="Send"
+	            android:layout_weight="0.5"/>
+	
+	         <Button
+	             android:id="@+id/btnCancelNewMessage"
+	            style="@style/custom_button"
+	        	android:layout_marginLeft="5dp"
+	        	android:paddingLeft="10dp"
+	        	android:text="Cancel"
+	        	android:layout_marginBottom="10dp"
+	        	android:background="@drawable/gray_button"
+	             android:layout_weight="0.5" />
+		</LinearLayout>
 	</LinearLayout>
-</LinearLayout>
 
+</ScrollView>	

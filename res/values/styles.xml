@@ -31,6 +31,7 @@
     
     <style name="custom_textview">
         <item name="android:layout_height">32dp</item>
+         <item name="android:layout_width">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginLeft">25dp</item>
         <item name="android:layout_marginRight">25dp</item>
@@ -72,11 +73,23 @@
     <style name="filePreferencesTheme" >
     	<item name="android:background">#ffffff</item>
 	</style>
+	<style name="list_pref_row" >
+	    <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">64dp</item>
+	</style>
+	<style name="list_pref" >
+	    <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+	</style>
 	<style name="headerStyle" >
     	<item name="android:background">@drawable/header</item>
     	<item name="android:layout_width">wrap_content</item>
     	<item name="android:layout_marginBottom">4dp</item>
     	<item name="android:layout_height">67dp</item>
+	</style>
+	
+	<style name="FullHeightDialog" parent="android:style/Theme.Dialog">
+  			 <item name="android:windowNoTitle">true</item>
 	</style>
     
 </resources>

@@ -23,27 +23,33 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.LoginActivity;
-import com.datamodel.Messages;
-import com.datamodel.Order;
-import com.datamodel.ProcessStatus;
-import com.datamodel.ProductAssignment;
-import com.datamodel.ProductWriting;
-import com.datamodel.Threads;
-import com.google.gson.Gson;
-import com.j256.ormlite.dao.Dao;
-
 import android.app.ActivityManager;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
+import android.app.DownloadManager.Request;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.LoginActivity;
+import com.datamodel.Files;
+import com.datamodel.Messages;
+import com.datamodel.Order;
+import com.datamodel.ProcessStatus;
+import com.datamodel.Threads;
+import com.google.gson.Gson;
+import com.j256.ormlite.dao.Dao;
 
 public class ServiceIntentMessages  extends IntentService{
 	public static final String KEY_DATA = "data";
@@ -59,11 +65,11 @@ public class ServiceIntentMessages  extends IntentService{
 	public ArrayList<Messages> serviceMessages = new ArrayList<Messages>();
 	int count = 0;
 	boolean isRunning ;
-	
+	 private DownloadManager dm;
 	HttpResponse lastResponse;
 	HttpResponse httpTestResponse;
 	 static boolean res ;
- 	
+	 private long enqueue;
 	public static final String ORDERS_IMPORT = "ORDERS_UPDATE";
 	public static final String MESSAGES_IMPORT = "MESSAGES_UPDATE";
 	private final Handler handler = new Handler();
@@ -108,7 +114,7 @@ public class ServiceIntentMessages  extends IntentService{
 	         java.util.Date now = calendar.getTime();
 	         java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
 	         
-	         String url = "http://192.168.0.250:81/?identifier=nspid_"+md5(LoginActivity.passUserId)+
+	         String url = StaticFields.finalRplHost+"/?identifier=nspid_"+md5(LoginActivity.passUserId)+
 	        		  ",nspc&ncrnd="+Long.toString(currentTimestamp.getTime());
 	         
 	         
@@ -180,6 +186,10 @@ public class ServiceIntentMessages  extends IntentService{
 						// TODO Auto-generated catch block
 						//e.printStackTrace();
 					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
 					
 					try
 					{
@@ -195,6 +205,8 @@ public class ServiceIntentMessages  extends IntentService{
      							
      						DataParsing parse = new DataParsing();
      						Order orderObj = parse.wrapOrder(jsonOrder);
+     						Order newOrder = new Order();
+     						
      						db = new DatabaseHandler(getApplicationContext());
      			    		
      						try 
@@ -211,16 +223,21 @@ public class ServiceIntentMessages  extends IntentService{
      						}
      							Log.i("get order from rpl", orderObj.toString());
      							try{
-     							if (orderObj.getOrderid() > serviceList.get(0).getOrderid() )
+     							if (orderObj.getOrderid() > DashboardActivityAlt.forPrint.get(0).getOrderid() )
      							{
      								//serviceList.add(0,orderObj);
-     								addMethod (orderObj);
-     								someMethod("Your order  "+ orderObj.getTitle() +" " + Integer.toString(orderObj.getOrderid()) + "  was added");
-     								intent = new Intent(ORDERS_IMPORT);
-     								//intent.putParcelableArrayListExtra("orders",  serviceOrders);
-     								
-     	     						sendBroadcast(intent);
-     	     						dashboardAct.updateList();
+     								if (orderObj.getOrderid() != newOrder.getOrderid())
+     								{
+	     								Log.i("added item orderObj", Integer.toString(orderObj.getOrderid()));
+	     								Log.i("added item orderObj", Integer.toString(DashboardActivityAlt.forPrint.get(0).getOrderid()));
+	     								addMethod (orderObj);
+	     								someMethod("Your order  "+ orderObj.getTitle() +" " + Integer.toString(orderObj.getOrderid()) + "  was added");
+	     								intent = new Intent(ORDERS_IMPORT);
+	     								//intent.putParcelableArrayListExtra("orders",  serviceOrders);
+	     	     						sendBroadcast(intent);
+	     	     						dashboardAct.updateList();
+	     	     						newOrder.setOrderid(orderObj.getOrderid());
+     								}
      							}
      							else
      							{
@@ -256,6 +273,17 @@ public class ServiceIntentMessages  extends IntentService{
 							try{
      							jsonMessage = data.getJSONObject(KEY_MESSAGE);
      							message =  gson.fromJson(jsonMessage.toString(),Messages.class);
+     							Log.i("message file list", Integer.toString(message.getFiles().size()));
+     							for (Files s: message.getFiles())
+     							{
+     								//Log.i("message files in list",s.getFileName()+ " "+ s.getFileFullPath());
+     								registerReceiver(downloadFilesReceiver, new IntentFilter(
+     						                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+     								 dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+     						        Request request = new Request(
+     						                Uri.parse(s.getFileFullPath()));
+     						        enqueue = dm.enqueue(request);
+     							}
      							Log.i("disparse message",jsonMessage.toString());
 	     					  	JSONObject jsonThread = jsonMessage.getJSONObject(KEY_THREAD);
 	     						Log.i("jsonServiceThread regular", jsonThread.toString());
@@ -330,25 +358,28 @@ public class ServiceIntentMessages  extends IntentService{
 		
 	}
 	public String md5(String string) {
-	    byte[] hash;
+	    byte[] hash = null;
+	    StringBuilder hex = null;
 
 	    try {
 	        hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
-	    } catch (NoSuchAlgorithmException e) 
-	    {
-	        throw new RuntimeException("Huh, MD5 should be supported?", e);
-	    } catch (UnsupportedEncodingException e) 
-	    {
-	    	
-	        throw new RuntimeException("Huh, UTF-8 should be supported?", e);
-	    }
-
-	    StringBuilder hex = new StringBuilder(hash.length * 2);
+	    hex = new StringBuilder(hash.length * 2);
 
 	    for (byte b : hash) {
 	        int i = (b & 0xFF);
 	        if (i < 0x10) hex.append('0');
 	        hex.append(Integer.toHexString(i));
+	    }
+	    } catch (NoSuchAlgorithmException e) 
+	    {
+	        throw new RuntimeException("Huh, MD5 should be supported?", e);
+	    } catch (UnsupportedEncodingException e) 
+	    {
+	        throw new RuntimeException("Huh, UTF-8 should be supported?", e);
+	    }
+	    catch(Exception e)
+	    {
+	    	e.printStackTrace();
 	    }
 	    return hex.toString();
 	}
@@ -392,4 +423,46 @@ public class ServiceIntentMessages  extends IntentService{
 		 {
 			 return serviceList;
 		 }
+		 
+//		 public void DownloadFiles(String url)
+//		 {
+//			 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+//			 request.setDescription("Some descrition");
+//			 request.setTitle("Some title");
+//			 // in order for this if to run, you must use the android 3.2 to compile your app
+//			 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+//				 ((Object)request).allowScanningByMediaScanner();
+//			     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+//			 }
+//			 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
+//
+//			 // get download service and enqueue file
+//			 DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+//			 manager.enqueue(request);
+//			 
+//		 }
+		 BroadcastReceiver downloadFilesReceiver = new BroadcastReceiver() {
+	            @Override
+	            public void onReceive(Context context, Intent intent) {
+	                String action = intent.getAction();
+	                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+	                    long downloadId = intent.getLongExtra(
+	                            DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+	                    Query query = new Query();
+	                    query.setFilterById(enqueue);
+	                    Cursor c = dm.query(query);
+	                    if (c.moveToFirst()) {
+	                        int columnIndex = c
+	                                .getColumnIndex(DownloadManager.COLUMN_STATUS);
+	                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+	                        		
+	                            String uriString = c
+	                                    .getString(c
+	                                            .getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+	                        }
+	                    }
+	                }
+	            }
+	        };
+		 
 } 

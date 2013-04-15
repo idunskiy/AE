@@ -11,7 +11,7 @@
     android:id="@+id/tableLayout1"
     android:layout_width="fill_parent"
     android:layout_height="0dp"
-    android:stretchColumns="1"
+    android:stretchColumns="0"
     android:shrinkColumns="0"
     >
           <TableRow
@@ -39,10 +39,11 @@
          android:layout_width="fill_parent"
        >
    	<com.customitems.CustomEditText
-        android:id="@+id/registerName"
-        android:layout_marginRight="0dp"
-        android:layout_marginLeft="0dp"
+        android:id="@+id/firstnameTextView"
+     	  android:layout_weight="1"
         style="@style/custom_edittext"
+        android:singleLine="true"
+        android:imeOptions="actionNext"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="First name">
@@ -55,12 +56,15 @@
 		</TableRow>
 		 <TableRow
 		       style="@style/text_row" 
-          android:layout_gravity="left"
           >
         <com.customitems.CustomEditPreference
             android:id="@+id/counrtyEditPref"
-          	android:layout_width="wrap_content"
+          	 android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:title="Country"
+          	android:layout_width="fill_parent"
             android:layout_height="64dp"
+            android:layout_weight="1"
             
             />
             
@@ -79,10 +83,12 @@
           android:layout_weight="1"
           >
   <com.customitems.CustomEditText
-        android:id="@+id/registerPhone"
+        android:id="@+id/phoneTextView"
         style="@style/custom_edittext"
         android:inputType = "number"
         android:layout_marginRight="10dp"
+         android:singleLine="true"
+      	    android:imeOptions="actionNext"
         android:layout_marginLeft="25dp"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
@@ -104,13 +110,15 @@
 		<TableRow
           android:id="@+id/tableRow3"
           android:layout_weight="1"
-                  style="@style/edit_row"
-          android:layout_gravity="left"
           >
         <com.customitems.CustomEditPreference
             android:id="@+id/timeZonePref"
-          	android:layout_width="wrap_content"
+            android:title="Time zone"
+          	 android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+          	android:layout_width="fill_parent"
             android:layout_height="64dp"
+            android:layout_weight="1"
             
             />
             
@@ -126,11 +134,13 @@
          style="@style/edit_row"
         >
    	<com.customitems.CustomEditText
-        android:id="@+id/registerPassword"
+        android:id="@+id/passTextView"
         style="@style/custom_edittext"
-        android:layout_marginRight="0dp"
-        android:layout_marginLeft="0dp"
-        foo:customFont="Roboto-Regular.ttf"
+		android:layout_weight="1"
+		 android:singleLine="true"
+		 android:inputType="textPassword"
+      	    android:imeOptions="actionNext"
+	        foo:customFont="Roboto-Regular.ttf"
         android:layout_width="fill_parent"
         android:hint="Password">
     </com.customitems.CustomEditText>
@@ -146,11 +156,13 @@
          android:layout_width="fill_parent"
         >
    	<com.customitems.CustomEditText
-        android:id="@+id/registerPasswordconf"
+        android:id="@+id/confPassTextView"
         style="@style/custom_edittext"
         android:layout_width="fill_parent"
-        android:layout_marginRight="0dp"
-        android:layout_marginLeft="0dp"
+       android:layout_weight="1"
+        android:singleLine="true"
+        android:inputType="textPassword"
+      	android:imeOptions="actionNext"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Password confirmation">
     </com.customitems.CustomEditText>
@@ -182,10 +194,10 @@
     </com.customitems.CustomTextView>
 
  <CheckBox
+        android:id="@+id/signMeCheck"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:text=""
-        android:checked="true"
         android:layout_alignParentRight="true"
         android:gravity="right"
         android:textSize="20sp"/>

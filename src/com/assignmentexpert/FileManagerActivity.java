@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +23,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.library.Constants;
+import com.fragmentactivities.OrderInfoFragmentActivity;
 import com.library.Item;
 import com.tabscreens.DashboardTabScreen;
-import com.tabscreens.OrderInfoTabScreen;
 
 @SuppressLint("ParserError")
 public class FileManagerActivity extends Activity {
@@ -68,13 +67,25 @@ public class FileManagerActivity extends Activity {
 		
 			
 		lv = (ListView)findViewById(R.id.fileManagerList);
+		try{
 		loadFileList();
-		
+		}
+		catch(Exception e)
+		{
+			Dialog dialog = new Dialog(this, R.style.FullHeightDialog);
+        	TextView myMsg = new TextView(FileManagerActivity.this);
+        	myMsg.setText("Your SD card can't be defined. Please try later. (You can reset your SD card as a solution)");
+        	myMsg.setTextColor(Color.WHITE);
+        	myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
+        	dialog.setContentView(myMsg);
+        	dialog.show();
+    		dialog.setCanceledOnTouchOutside(true);
+		}
 
 		lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		lv.setFocusable(false);
+		//sortFiles(fileList);
 		lv.setAdapter(adapter);
-		
 		lv.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 		      public void onItemClick(AdapterView<?> myAdapter, View myView, int myItemInt, long mylng) 
 		      {
@@ -82,11 +93,11 @@ public class FileManagerActivity extends Activity {
 		    	myView.setFocusable(false);
 		    	chosenFile = fileList[myItemInt].file;
 				File sel;
-				
 					
-					sel = new File(path + "/" +  chosenFile);
-				
+				sel = new File(path + "/" +  chosenFile);
 				Log.i("path",sel.toString());
+				
+				
 		        if (sel.isDirectory()) {
 		        	
 					firstLvl = false;
@@ -132,18 +143,12 @@ public class FileManagerActivity extends Activity {
 				    		 	chosenFile = fileList[i].file;
 								File select = new File(path + "/" + chosenFile);
 						    	 fileList[i].setItemCheck(true);
-				        		
-				        		 
 				        		 if (select.isFile())
 				        			 {		 	
-				        			 	
 					        			 resFiles.add(select);
 					        			 resFiles.remove(all);
-					        			 
 				        			 }
-
 				             }
-
 				    	 adapter.notifyDataSetChanged();
 					}			
 				    else if(fileList[myItemInt].file.equalsIgnoreCase("select all") & (fileList[myItemInt].check == false))
@@ -179,7 +184,6 @@ public class FileManagerActivity extends Activity {
 					adapter.notifyDataSetChanged();
 					Log.i(fileList[myItemInt].file,Boolean.toString(fileList[myItemInt].check));
 		        }   
-		
 		      
 		      }
 	});
@@ -198,13 +202,13 @@ public class FileManagerActivity extends Activity {
 		        				  for (File it: resFiles)
 		       	        		  getFinalAttachFiles().add(it);
 		        			  }
-		        			   LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		        			   Intent i = new Intent(getApplicationContext(),
-		                       DashboardTabScreen.class);
-		        			   Bundle mBundle = new Bundle();
-			   	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
-			   	                  i.putExtras(mBundle);
-		               		startActivity(i);
+//		        			   Intent i = new Intent(getApplicationContext(),
+//		                       DashboardTabScreen.class);
+//		        			   Bundle mBundle = new Bundle();
+//			   	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
+//			   	                  i.putExtras(mBundle);
+//		               		startActivity(i);
+		        			  finish();
 		               		
 		                 	}
 		        		   else if(value.equals("NewMessage"))
@@ -216,19 +220,8 @@ public class FileManagerActivity extends Activity {
 		        				   for (File it: resFiles)
 		        					   getFinalMessageFiles().add(it);
 		        			   }
-		        			   
-//		        			   Intent i = new Intent(getApplicationContext(),
-//			                       OrderInfoTabScreen.class);
-//		        			   Bundle mBundle = new Bundle();
-//			   	                  mBundle.putString("OrderInfoTabGroup", "FilesMessages");
-//			   	                
-//			   	                  i.putExtras(mBundle);
-//			               		startActivity(i);
-//			               		Intent intent = new Intent(Constants.MESSAGE_FILES);
-//			               		intent.setAction(Constants.MESSAGE_FILES);
-//	                           FileManagerActivity.this.sendBroadcast(intent);
 		        			   Intent returnIntent = new Intent(getApplicationContext(),
-		    	                       NewMessageActivity.class);
+		    	                       OrderInfoFragmentActivity.class);
 		        			   setResult(5,returnIntent);     
 		        			   FileManagerActivity.this.finish();
 			               	}
@@ -239,78 +232,56 @@ public class FileManagerActivity extends Activity {
 		        		   Toast toast = Toast.makeText(getApplicationContext(), "You should choose at least one file", Toast.LENGTH_SHORT);
 		        		   toast.show();
 		        	   }
-	        	
-//	        	   if (getFinalAttachFiles().isEmpty())
-//	        		   {
-//	        		   		setFinalAttachFiles(resFiles);
-//	        		   }
-//	        	   else 
-//	        	   {
-//	        		   for (File it: resFiles)
-//	        		   getFinalAttachFiles().add(it);
-//	        	   }
-//	        	   if (!resFiles.isEmpty())
-//	        	   {  
-//	        		   String value = getIntent().getExtras().getString("FileManager");
-//	        		   if (value.equals("NewOrder"))
-//	        		   {	        		
-//	        			   Intent i = new Intent(getApplicationContext(),
-//	                       NewOrderActivity.class);
-//	               		startActivity(i);
-//	                 	}
-//	        		   else if(value.equals("NewMessage"))
-//	        		   {	        		  
-//	        			   Intent i = new Intent(getApplicationContext(),
-//		                       NewMessageActivity.class);
-//		               		startActivity(i);
-//		               	}
-//	        		   else if(value.equals("NewEssay"))
-//	        		   {	        		   Intent i = new Intent(getApplicationContext(),
-//		                       NewEssayActivity.class);
-//		               		startActivity(i);
-//		               	}
-//	               }
-//	        	   else
-//	        	   {
-//	        		   Toast toast = Toast.makeText(getApplicationContext(), "You should choose at least one file", Toast.LENGTH_SHORT);
-//	        		   toast.show();
-//	        	   }
-	               
 	           }
 	       });
 		 btnCancel.setOnClickListener(new View.OnClickListener() {
 	    	   
 	           public void onClick(View view) {
-	        	   
-	        	   String value = getIntent().getExtras().getString("FileManager");
-        		   if (value.equals("NewOrder"))
-        		   {	        		   Intent i = new Intent(getApplicationContext(),
-	                       DashboardTabScreen.class);
-        		     Bundle mBundle = new Bundle();
-	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
-	                  i.putExtras(mBundle);
-	               		startActivity(i);
-                 	}
-        		   else if(value.equals("NewMessage"))
-        		   {	        		   
-//        			   Intent i = new Intent(getApplicationContext(),
-//	                       OrderInfoTabScreen.class);
-//	               		startActivity(i);
-        			   
-        			   Intent returnIntent = new Intent(getApplicationContext(),
-    	                       NewMessageActivity.class);
-        			   setResult(4,returnIntent);     
-        			   FileManagerActivity.this.finish();
-	               	}
-        		  
-	           }
-	       });
-	
+	        	   if (!firstLvl)
+	        	   {
+	        	   String s = str.remove(str.size() - 1);
 
+					// path modified to exclude present directory
+					path = new File(path.toString().substring(0,
+							path.toString().lastIndexOf(s)));
+					fileList = null;
+					// if there are no more directories in the list, then
+					// its the first level
+					
+					if (str.isEmpty()) {
+						firstLvl = true;
+					}
+					loadFileList();
+					lv.setAdapter(adapter);
+	        	   }
+	        	   else 
+	        	   {
+		        	   String value = getIntent().getExtras().getString("FileManager");
+		        	   Log.i("FileManager", value);
+	        		   if (value.equals("NewOrder"))
+	        		   {
+	        			   Log.i("FileManager", "it was backed");
+	        			   Intent i = new Intent(getApplicationContext(),
+			                       DashboardTabScreen.class);
+			        			   Bundle mBundle = new Bundle();
+				   	                  mBundle.putString("DashboardTabScreen", "FilesOrder");
+				   	                  i.putExtras(mBundle);
+			               		startActivity(i);
+	                 	}
+	        		   else if(value.equals("NewMessage"))
+	        		   {	        		   
+	        			   Intent returnIntent = new Intent(getApplicationContext(),
+	    	                       NewMessageActivity.class);
+	        			   setResult(4,returnIntent);     
+	        			   FileManagerActivity.this.finish();
+		               	}  
+	        	   }
+
+	           }
+	           
+	    });
 	
 	}
-	
-
 	private void loadFileList() {
 		
 		try {
@@ -333,22 +304,20 @@ public class FileManagerActivity extends Activity {
 
 			String[] fList = path.list(filter);
 			
-				fileList = new Item[fList.length];
+			fileList = new Item[fList.length];
 			
 			for (int i = 0; i < fList.length; i++) {
 				File sel = null;
 				
-					fileList[i] = new Item(fList[i], R.drawable.file, false);
+					fileList[i] = new Item(fList[i], R.drawable.file, false, 0);
 					sel = new File(path, fList[i]);
 				
 				// Convert into file path
-				
-				
 				hasFile = true;
-			
 				// Set drawables
 				if (sel.isDirectory()) {
-					fileList[i].icon = R.drawable.directory_icon;
+					fileList[i].icon = R.drawable.folder;
+					fileList[i].sortId = 1;
 					hasFile = false;
 				} 
 				else 
@@ -364,27 +333,26 @@ public class FileManagerActivity extends Activity {
 				for (int i = 0; i < fileList.length; i++) {
 					temp[i + 1] = fileList[i];
 				}
-				temp[0] = new Item("Select all", R.drawable.stand_logo,false);
+				temp[0] = new Item("Select all",R.drawable.file,false, 2);
 				fileList = temp;
 				
 			}
-
-			if (!firstLvl) {
-				Log.i("I'm not at first level","not first level");
-				Item temp[] = new Item[fileList.length + 1];
-				for (int i = 0; i < fileList.length; i++) {
-					temp[i + 1] = fileList[i];
-				}
-				temp[0] = new Item("Up", R.drawable.directory_up,false);
-				fileList = temp;
-			}
-			else if(firstLvl)
+//			if (!firstLvl) {
+//				Log.i("I'm not at first level","not first level");
+//				Item temp[] = new Item[fileList.length + 1];
+//				for (int i = 0; i < fileList.length; i++) {
+//					temp[i + 1] = fileList[i];
+//				}
+//				temp[0] = new Item("Up", R.drawable.directory_up,false);
+//				fileList = temp;
+//			}
+			 if(firstLvl)
 			{
 				Item temp[] = new Item[fileList.length + 1];
 				for (int i = 0; i < fileList.length; i++) {
 					temp[i + 1] = fileList[i];
 				}
-				temp[0] = new Item("Select all", R.drawable.stand_logo,false);
+				temp[0] = new Item("Select all", R.drawable.file,false, 2);
 				fileList = temp;
 			}
 		} else {
@@ -397,6 +365,8 @@ public class FileManagerActivity extends Activity {
 		{
 			e.printStackTrace();
 		}
+//		Arrays.sort(fileList);
+		sortFiles(fileList);
 		adapter = new ArrayAdapter<Item>(this,
 				R.layout.file_manager, R.id.checkedTextItem,
 				fileList) 
@@ -410,21 +380,24 @@ public class FileManagerActivity extends Activity {
 				CheckedTextView textView = (CheckedTextView) view
 						.findViewById(R.id.checkedTextItem);
 				// put the image on the text view
+				if(!fileList[position].file.equalsIgnoreCase("select all"))
 				textView.setCompoundDrawablesWithIntrinsicBounds(
 						fileList[position].icon, 0, 0, 0);				
 				textView.setTextColor(Color.WHITE);
 				textView.setText(fileList[position].file);
-				if(fileList[position].icon == R.drawable.directory_icon)
-					textView.setCheckMarkDrawable(null);
+				if(fileList[position].icon == R.drawable.folder)
+					{
+					   textView.setCheckMarkDrawable(null);
+					   fileList[position].sortId = 1;
+					}
+				else if (fileList[position].icon == R.drawable.file)
+					fileList[position].sortId = 0;
 				else if(fileList[position].icon == R.drawable.directory_up)
 					textView.setCheckMarkDrawable(null);
 				if(fileList[position].check == true)
 					textView.setChecked(true);
 				else
 					textView.setChecked(false);
-				
-		    	// add margin between image and text (support various screen
-				// densities)
 				int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
 				textView.setCompoundDrawablePadding(dp5);
 				
@@ -435,7 +408,7 @@ public class FileManagerActivity extends Activity {
 			}
 		};
 				
-
+//		
 	}
 
 	public static ArrayList<File> getFinalAttachFiles() {
@@ -453,7 +426,23 @@ public class FileManagerActivity extends Activity {
 		FileManagerActivity.finalMessageFiles = finalAttachFiles;
 	}
 	
-
+	public Item[] sortFiles(Item[] filelist)
+	{
+		for(int i = filelist.length-1 ; i > 0 ; i--)
+		{
+	        for(int j = 0 ; j < i ; j++){
+	            if(	filelist[j].sortId < filelist[j+1].sortId)
+	               {
+	            		Item c = filelist[j];
+	            		filelist[j] = filelist[j+1];
+	            		filelist[j+1] = c;
+	               }
+	        }
+	    }
+		return filelist;
+	}
+	
+	
 	
 //	@Override
 //	public 	boolean onKeyDown(int keyCode, KeyEvent event) 

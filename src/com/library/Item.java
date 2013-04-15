@@ -6,11 +6,13 @@ public class Item {
 		public String file;
 		public int icon;
 		public boolean check;
-
-		public Item(String file, Integer icon, boolean check) {
+		public int sortId;
+		
+		public Item(String file, Integer icon, boolean check, int sortId) {
 			this.file = file;
 			this.icon = icon;
 			this.check = check;
+			this.sortId = sortId;
 		}
 		 public String getItemFile()
 		 {
@@ -24,6 +26,10 @@ public class Item {
 		 public boolean getItemCheck()
 		 {
 		     return check;
+		 }
+		 public int getItemSortId()
+		 {
+		     return sortId;
 		 }
 
 
@@ -40,10 +46,18 @@ public class Item {
 		 {
 		     this.icon = icon;
 		 }
+		 
+		 public void setItemSortId(int sortId)
+		 {
+			 this.sortId = sortId;
+		 }
+		 
+		 
 		 public void toggle()
 		 {
 			 check = !check;
 		 }
+		 
 		 
 		@Override
 		public String toString() {

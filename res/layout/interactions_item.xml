@@ -9,6 +9,179 @@
 	    android:id="@+id/interactions_item_parent"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent">
+	    <!-- 
+ <LinearLayout 
+        android:layout_height="26dp"
+         android:id="@+id/interactionsCursor"
+	            android:layout_width="fill_parent"
+	            android:background="#1b324b"
+	            android:weightSum="1.0"
+	            android:layout_alignParentTop="true"
+	            >
+	           
+        <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess1"
+	            android:text=""
+	            android:layout_weight="0.25"
+	             android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:gravity="center"
+	            android:textColor="#738495"
+	            foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+         <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess2"
+	            android:text=""
+	            android:layout_weight="0.5"
+	              android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:gravity="center|center"
+	            android:textColor="#FFFFFF"
+	             foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+          <com.customitems.CustomTextView
+	            android:id="@+id/cursorMess3"
+	            android:text=""
+	            android:layout_weight="0.25"
+	              android:textSize="17sp"
+	            android:layout_height="fill_parent"
+	            android:layout_width="wrap_content"
+	            android:layout_alignParentRight="true"
+	            android:gravity="center"
+	            android:textColor="#738495"
+	            foo:customFont="Roboto-Bold.ttf"
+	            android:textStyle="bold" />
+     		  
+   </LinearLayout> 
+   <ImageView 
+         android:id="@+id/panelCursor"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@drawable/arrow"
+	    android:layout_centerHorizontal="true"
+	    android:layout_below="@+id/interactionsCursor"
+       
+       /> -->
+<RelativeLayout
+	    android:id="@+id/messagesInteractions"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:layout_below="@+id/panelCursor"
+	    android:background="#000000"
+	    android:orientation="horizontal" 
+	    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert">
+	            
+	             <com.customitems.CustomTextView
+	            android:id="@+id/interactionId"
+	            android:text="Interaction"
+	            android:layout_marginLeft="10dp"
+	            android:layout_width="150dp"
+	            android:layout_below="@+id/interactionAbove"
+                android:gravity="left"
+	            android:layout_height="wrap_content"
+	            android:padding="10dip"
+	            android:textSize="17sp"
+	             foo:customFont="Roboto-Bold.ttf"
+	            android:textColor="#FFFFFF"
+	            android:textStyle="bold" />
+	            <com.customitems.CustomTextView
+	            android:id="@+id/interactionDate"
+	            android:text="Date"
+	            android:layout_marginLeft="10dp"
+	            android:layout_width="fill_parent"
+	              android:textSize="14sp"
+	            android:layout_height="wrap_content"
+	             foo:customFont="Roboto-Regular.ttf"
+	            android:layout_toRightOf="@+id/interactionId" 
+	            android:layout_below="@+id/interactionAbove"
+	            android:gravity="center_vertical|center_horizontal"
+	            android:padding="10dip"
+	            android:textColor="#42aeff"
+	            android:textStyle="bold" />
+	            <com.customitems.CustomTextView
+	            android:id="@+id/interactionMessage"
+	            android:text="Message"
+	            android:layout_marginLeft="10dp"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@+id/interactionId"
+	            android:gravity="left"
+	            android:padding="10dip"
+	            android:textColor="#FFFFFF"
+	            android:textStyle="bold" />
+	              
+	  
+     </RelativeLayout>
+     <LinearLayout 
+    android:id="@+id/interactionsFilesPanel"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_below="@+id/messagesInteractions"
+    android:orientation="vertical">
+    <RelativeLayout 
+    android:orientation="horizontal"
+    android:id="@+id/fileLayout"
+    android:background="#262626"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+ <ImageView
+      android:id="@+id/fileicon"
+     android:src= "@drawable/clip"
+     android:layout_marginTop="10dp"
+     android:layout_width="wrap_content" 
+     android:layout_height="wrap_content"
+     android:layout_marginLeft="20dp"
+     />
+ <com.customitems.CustomTextView
+   	    
+        android:id="@+android:id/title"
+        android:textSize="14sp"
+     		android:paddingTop="10dp"
+     		android:textColor="#FFFFFF"
+     		android:layout_marginLeft="10dp"
+     		android:layout_toRightOf="@+id/fileicon"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Regular.ttf">
+    </com.customitems.CustomTextView>
+    
+ 
+    <com.customitems.CustomTextView
+   	    
+        android:id="@+id/fileSize"
+        android:textSize="14sp"
+     		android:paddingTop="10dp"
+     		android:layout_below="@+android:id/title"
+     		android:textColor="#42aeff"
+     		android:layout_alignLeft="@+android:id/title"
+     		android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        foo:customFont="Roboto-Regular.ttf">
+    </com.customitems.CustomTextView>
+ 
+ </RelativeLayout>
+    	<com.customitems.ExpandedListView 
+   	    
+        android:id="@+id/fileslist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#262626"/>
+           
+ </LinearLayout>
+ </RelativeLayout>
+     </ScrollView>
+<!-- <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+	    android:id="@+id/interactionsLayout"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+<RelativeLayout
+	    android:id="@+id/interactions_item_parent"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
  <LinearLayout 
         android:layout_height="26dp"
          android:id="@+id/interactionsCursor"
@@ -171,3 +344,4 @@
  </LinearLayout>
  </RelativeLayout>
      </ScrollView>
+      -->

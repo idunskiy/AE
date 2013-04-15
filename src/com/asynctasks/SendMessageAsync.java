@@ -10,20 +10,23 @@ import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.FileManagerActivity;
-import com.assignmentexpert.LoginActivity;
-import com.assignmentexpert.NewMessageActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.fragments.NewMessageFragment;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class SendMessageAsync extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
 	private static String KEY_MESSAGE = "message";
 	private static String KEY_EXCEPTION= "exception";
+	public static String messageErrorMess;
+	private Context context;
+	private boolean errorFlag = false;
 	protected SendMessageAsync(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
+		this.context = context;
 	}
 
 	@Override
@@ -53,12 +56,13 @@ public class SendMessageAsync extends AbstractTaskLoader{
 			UserFunctions reg = new UserFunctions();
 			JSONObject response = null ;
 			UserFunctions userFunc = new UserFunctions();
+			String result = "";
        		try {
        			if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
        	       		{
 					response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
 						DashboardActivityAlt.listItem.getDeadline().toString(),
-						Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageActivity.newMessage, 
+						Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageFragment.newMessage, 
 						Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
 				 
        		}
@@ -66,17 +70,56 @@ public class SendMessageAsync extends AbstractTaskLoader{
        		{
        			response = userFunc.sendMessage("0", 
            				DashboardActivityAlt.listItem.getDeadline().toString(),
-           				Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageActivity.newMessage, 
+           				Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageFragment.newMessage, 
            				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
        		}
+       		
+       		try {
+				if ((response.getString(KEY_STATUS) != null))
+				{
+					
+				    String res = response.getString(KEY_STATUS);
+				    if(Integer.parseInt(res) == 1)
+				    {	
+				    	result = "success";
+				    	
+				    }
+				    else 
+				    {
+				    	result = "error";
+				    	messageErrorMess ="Something went wrong. Please try later.";
+				    	this.setCanseled(true);
+	             		TaskProgressDialogFragment.cancel();
+				    }
+    
+
+   
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+       		
        		}
        		catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				errorFlag = true;
+				onStopLoading();
 			}
-	     
-	
-	    return response;
+       	 return result;
 	}
+	@Override 
+	 protected void onStopLoading() {
+	        Log.i("LoginAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 
 }

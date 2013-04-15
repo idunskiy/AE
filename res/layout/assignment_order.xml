@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+     android:layout_width="fill_parent"
+     android:orientation="vertical"
+     android:layout_height="wrap_content"
+      >
+  		<com.customitems.CustomCheckBoxRelative
+                android:name="Detail information"
+                android:title="Detailed explanation required"
+                android:id="@+id/dtlInfo" 
+                 android:textSize="11sp"
+                 android:layout_width="wrap_content"
+                 android:layout_height= "wrap_content"
+                android:layout_marginLeft="15dp"
+                 android:tag="dtlInfo"/>
+        <com.customitems.CustomCheckBoxRelative
+                android:name="Exclusive video"
+                android:title="Shoot exclusive video"
+                android:id="@+id/ExcVideo"
+                 android:textSize="11sp"
+                 android:layout_height= "wrap_content"
+                 android:layout_width="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:tag="ExcVideo" />
+         <com.customitems.CustomCheckBoxRelative
+                android:name="Common video"
+                android:layout_width="wrap_content"
+                android:title="Shoot common video"
+                android:textSize="11sp"
+                android:layout_marginLeft="15dp"
+                android:layout_height= "wrap_content"
+                android:id="@+id/commVideo"
+                android:tag="commVideo" />
+         </LinearLayout>

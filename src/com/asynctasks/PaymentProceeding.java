@@ -11,10 +11,12 @@ import com.assignmentexpert.DashboardActivityAlt;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class PaymentProceeding  extends AbstractTaskLoader{
 	Context context;
+	private boolean errorFlag = false;
 	protected PaymentProceeding(Context context) {
 		super(context);
 		this.context = context;
@@ -51,9 +53,19 @@ public class PaymentProceeding  extends AbstractTaskLoader{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			errorFlag = true;
+			onStopLoading();
 		}
-         Log.i("payment was proceeded", res.toString());
 		return null;
 	}
+	 @Override 
+	 protected void onStopLoading() {
+	        Log.i("LoginAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 
 }

@@ -12,13 +12,24 @@ public class InteractionTabGroup extends MainTabGroup {
 	Context ctx;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContext(InteractionTabGroup.this);
 		InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	    imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+		super.onCreate(savedInstanceState);
 		startChildActivity("InteractionsActivity", new Intent(getParent(),InteractionsActivityViewPager.class));
 }
+	
+	
+	@Override
+	public void onResume()
+	{
+		InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), imm.HIDE_NOT_ALWAYS);
+		imm.hideSoftInputFromWindow(getWindow().getDecorView().getApplicationWindowToken(), imm.HIDE_NOT_ALWAYS);
+		super.onResume();
+	}
 	public void setContext(Context context)
 	{
 		this.ctx = context;
@@ -26,14 +37,4 @@ public class InteractionTabGroup extends MainTabGroup {
 	
 	public Context getContext()
 	{return this.ctx;}
-	public void replaceContentView() {
-//	    View view = ((ActivityGroup) context)
-//	            .getLocalActivityManager()
-//	            .startActivity(id,
-//	                    newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-//	            .getDecorView();
-//	    ((Activity) context).setContentView(view);
-		startChildActivity("InteractionsActivity", new Intent(getParent(),NewMessageActivity.class));
-
-	}
 }

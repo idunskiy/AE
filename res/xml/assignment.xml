@@ -3,28 +3,36 @@
       xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
       android:key="orderScreen">
   		
-                
-                	 <ListPreference
+                	 <com.customitems.IconPreference
                         android:title="Product"
                         android:summary="Not selected"
                         android:key="productPref"
+                        foo:icon = "@drawable/list_pointer"
+                        android:widgetLayout=  "@null"
                         android:entries="@array/productsArray"
                         android:entryValues="@array/productsArray"/>
-	                <ListPreference
+	                <com.customitems.IconPreference
 	                        android:title="Subject"
 	                        android:summary="Not selected"
+	                        foo:icon = "@drawable/list_pointer"
+	                        android:widgetLayout=  "@null"
 	                        android:key="subjectPref"
 	                         />
-	                 <ListPreference
+	                 <com.customitems.IconPreference
 	                        android:title="Category"
+	                        foo:icon = "@drawable/list_pointer"
+	                        android:widgetLayout=  "@null"
 	                        android:summary="Not selected"
 	                        android:key="categoryPref"
                          />
-                    <ListPreference
+                    <com.customitems.IconPreference
                         android:title="Level"
+                        foo:icon = "@drawable/list_pointer"
                         android:summary="Not selected"
+                        android:widgetLayout=  "@null"
                         android:key="levelPref"
                          />
+                    <!-- 
                     <com.customitems.DatePreference
 				       android:title="Deadline"
                         android:summary="Not selected"
@@ -32,19 +40,13 @@
                          android:entries="@array/empty_array"
                         android:entryValues="@array/empty_array"
 				        />
-    
-                    <!-- 
-                      <ListPreference
-                        android:title="Deadline"
-                        android:summary="Not selected"
-                        android:key="deadlinePref"
-                         android:entries="@array/empty_array"
-                        android:entryValues="@array/empty_array"
-                         />
-                          -->
-                        <ListPreference
+     				-->
+                    
+                        <com.customitems.IconPreference
                         android:title="Time zone"
                         android:summary="Not selected"
+                        foo:icon = "@drawable/list_pointer"
+                        android:widgetLayout=  "@null"
                         android:key="timezonePref"
                          />
 </PreferenceScreen>

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -35,6 +36,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -42,9 +44,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.activitygroups.MainTabGroup;
 import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctaskbase.TaskProgressDialogFragment;
+import com.asynctasks.LoginAsync;
 import com.asynctasks.PayPalAsync;
 import com.asynctasks.SendMessageAsync;
 import com.customitems.CustomTextView;
@@ -55,6 +60,8 @@ import com.library.UserFunctions;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalActivity;
+import com.tabscreens.DashboardTabScreen;
+import com.tabscreens.LoginTabScreen;
 public class NewMessageActivity extends FragmentActivity implements ITaskLoaderListener{
 	private ViewPager pager;
 	public Context cxt;
@@ -109,11 +116,14 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	 RelativeLayout newMessagePanel ;
 	 TextView deadline;
 	 TextView priceLabel;
+	private CustomTextView textHead;
+	boolean fileListExist  = false;
+	 private static String KEY_STATUS = "status";
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		
 	    super.onCreate(savedInstanceState);
+	    
 	    this.setContentView(R.layout.new_message2);
 	    
 	    cxt = this;
@@ -135,10 +145,10 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	     textDate = (TextView) page.findViewById(R.id.interactionDate);
 	     emptyList = (TextView) findViewById(R.id.emptyResult);
 	     messageFileList = findViewById(R.id.messageFileList);
-//	     messageFileList.setVisibility(View.GONE);
 	     fileslist = (ListView) messageFileList.findViewById(R.id.fileslist);
 	     btnFilesRemove = (Button)messageFileList.findViewById(R.id.btnRemoveFiles);
-	     
+	     textHead  = (CustomTextView)fileslist
+ 				.findViewById(android.R.id.title); 
 	     test1TextView = (CustomTextView) messageFileList.findViewById(android.R.id.title);
 	     fileSizeHead = (CustomTextView) messageFileList.findViewById(R.id.fileSize);
 	     
@@ -149,50 +159,14 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	     newMessagePanel = (RelativeLayout)findViewById(R.id.newMessagePanel);
 	     if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
 	     {
-	    	 Log.i("new message Act", "before adding");
 	    	 addFiles();
-	    	 Log.i("new message Act", "after adding");
 	     }
 	     
 	     prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	     prefEditor = prefs.edit();
-//	     if (!DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("discussion"))
-//		    {
-//		    	btnPay.setVisibility(View.VISIBLE);
-//		    	btnPay.setClickable(false);
-//		    	btnPay.setEnabled(false);
-//		    	btnPay.setBackgroundColor(Color.GRAY);
-//		    	
-//		    }
-//		    else PayPalAsync.execute(this, this);//new PayPalInitialize().execute();
-//	     
-//			
-//	     editMessage.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-//	            public void onGlobalLayout() {
-//	                int heightDiff = editMessage.getRootView().getHeight() - editMessage.getHeight();
-//	                if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
-//	                	if (!(editMessage.getText().toString().equals("")))
-//	                	{
-//	                		prefEditor.putString("messageBody",editMessage.getText().toString());
-//	                		prefEditor.commit();
-//	    		        	
-//	                		
-//	                	}
-//	                }
-//	             }
-//	        });
-//	     if (DashboardActivityAlt.messagesExport.isEmpty())
-//		    {
-//		    	  deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-//		    }
-//		    else
-//		    {   
-//		    	priceLabel.setTextColor(Color.GREEN);
-//			    priceLabel.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
-//			    deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-//		    } 
-//	    
-	    btnCancelNewMessage.setOnClickListener(new View.OnClickListener() {
+
+	     
+	     btnCancelNewMessage.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
 	        	   
 	        	   Intent frequentMessages = new Intent(getParent(), InteractionsActivityViewPager.class);
@@ -201,8 +175,8 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	               
 	           }
 	       });
-//	    
-	    btnAddFilesMessage.setOnClickListener(new View.OnClickListener() {
+
+	     btnAddFilesMessage.setOnClickListener(new View.OnClickListener() {
 	    	   
 	           public void onClick(View view) {
 	                Intent i = new Intent(getApplicationContext(),
@@ -210,12 +184,11 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	                Bundle mBundle = new Bundle();
 	                mBundle.putString("FileManager", "NewMessage");
 	                i.putExtras(mBundle);
-	                startActivityForResult(i,4);
+	                startActivityForResult(i,5);
 	               
 	           }
 	       });
 	   
-	    
 	    btnSendMessage.setOnClickListener(new View.OnClickListener() {
 	    	   
 	           public void onClick(View view) {
@@ -229,7 +202,6 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 		             if (isOnline)
 		             {	 
 		            	 newMessage =  editMessage.getText().toString();
-//	        		  new SendMessageTask().execute();
 	        		  SendMessageAsync.execute(NewMessageActivity.this, NewMessageActivity.this);
 		              prefEditor.remove("messageBody");
 		              prefEditor.commit();
@@ -254,18 +226,7 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	    btnFilesRemove.setOnClickListener(new View.OnClickListener() {
          	 
             public void onClick(View view) {
-//            	 LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-// 		        View view3 = inflater.inflate(R.layout.file, null);
-// 		       final CheckBox checkBox = (CheckBox)view3
-//						.findViewById(R.id.fileCheck); 
-//            	if (checkBox.isChecked())
-//					  checks.set(position, 1);
-//				else
-//					  checks.set(position, 0);
          for(int i=0;i<checks.size();i++){
-        	 
-        	Log.i("cheks state", Integer.toString(checks.get(i)));
-        	
         	 
           if(checks.get(i)==1){
         	   adapter.remove(adapter.getItem(i));
@@ -276,21 +237,19 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
                 {
                 	wholeSize += file.length();
                 }
-                fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
+                fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
                 
                  i--;
               }
           if( FileManagerActivity.getFinalMessageFiles().isEmpty())
            	  newMessagePanel.removeView(messageFileList);
-          	
+              fileListExist  = false;
             }
 
           }
        });
-	    
 	
 	}
-	
 	
 	 public void updateLayout()
 	    {
@@ -303,12 +262,10 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	    		priceLabel.setTextColor(Color.GREEN);
 	   		    priceLabel.setText("$"+Float.toString(DashboardActivityAlt.listItem.getPrice()));
 	    	 }
-	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==4)
+	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==4 & DashboardActivityAlt.listItem.getPrice()>0)
 				   	    {
-				   	    	Log.i("interations status", "process status is 4");
 				   	    	btnPay.setVisibility(View.GONE);
 				   	    	PayPalAsync.execute(this, this);
-				   	    	
 				   	    }
 				   	else
 				   	    {
@@ -320,103 +277,109 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 				   	    	
 				   	  }
 		      deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-		   	    
-		   	   
 	    	
 	    }
-	    
-	
-	
-	OnLongClickListener onclicklistener = new OnLongClickListener() {
-		public boolean onLongClick(final View arg0) {
-			final CharSequence[] items = {"Open", "Delete", "Details"};
-			final AlertDialog.Builder builder = new AlertDialog.Builder(NewMessageActivity.this);
-		    builder.setTitle(((TextView)arg0).getText().toString());
-		     //Integer position  = (Integer) ((TextView)arg0).getTag();
-			builder.setItems(items, new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int item) {
-			    	 Integer position  = (Integer) ((TextView)arg0).getTag();
-			    	if (item == 0)
-			    	{
-			    		File file = FileManagerActivity.getFinalMessageFiles().get(position.intValue());
-			    		
-			    			//Scanner input = new Scanner(new File(filesDir, file.getName()));
-			    			//Environement.getExternalStorageDirectory().getAbsolutePath() + "/" + file;
-			    			Intent intent = new Intent();
-			    			intent.setAction(android.content.Intent.ACTION_VIEW);
-			    			
-			    			intent.setDataAndType(Uri.fromFile(file), "text/plain");
-			    			startActivity(intent); 
-						
-			    	}
-			    	 else if (item == 1)
-			    		{  
-			    		 
-			    		   if (FileManagerActivity.getFinalMessageFiles().size()==1)
-			    		   { 
-			    			   Log.i("the size is 1", "is going to clear");
-			    			   FileManagerActivity.getFinalMessageFiles().clear();
-			    			   layout.removeAllViewsInLayout();
-			    			   layout.invalidate();
-			    		   }
-			    		   else
-			    		   { 
-			    				   try
-			    				   {
-			    					 
-			    					   FileManagerActivity.getFinalMessageFiles().remove(position.intValue());
-			    					    ((LinearLayout)arg0.getParent()).removeView(arg0);
-				    				     layout.invalidate();
-						    		     updateFileList( FileManagerActivity.getFinalMessageFiles());
-						    		     
-					    		     
-			    				   }
-			    				   catch(IndexOutOfBoundsException e)
-			    				   {
-			    					 //  FileManagerActivity.getFinalAttachFiles().remove(position.intValue());
-			    					 //  Log.i("exception deleted position",FileManagerActivity.getFinalAttachFiles().get(position.intValue()).getName() );
-			    					   e.printStackTrace();
-			    				   }
-			    				  
-			    			   }
-			    		}
-			    	else if (item == 2)
-			    	{
-			    		File file = FileManagerActivity.getFinalMessageFiles().get(position.intValue());
-			    		final AlertDialog.Builder builder = new AlertDialog.Builder(NewMessageActivity.this);
-			  		    builder.setTitle(file.getName());
-			  		  FileInputStream fis;
-					try {
-						fis = new FileInputStream(file);
-						builder.setMessage("Size of file is: " + Long.toString(fis.getChannel().size())+ "  KB"+"\r\n"+
-						"Path of file is: " +"\r\n" + file.getPath());
-						
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    			
-			  		    
-			  		  AlertDialog alert = builder.create();
-			  			alert.show();
-			    	}
-			    	
-			    	 
-			    }
-			});
-			AlertDialog alert = builder.create();
-			alert.show();
-			return false;
+	 public int getFilePosition(View v)
+	 {
+		 int pos = 0;
+		for (int i = 0; i<adapter.getCount();i++)
+		{
+			if (((CustomTextView)v.findViewById(android.R.id.title)).getText().equals((adapter.getItem(i).getName())))
+			 pos = i;
 		}
-	};
+		 return pos;
+	 }
+	 OnLongClickListener filesClicklistener = new OnLongClickListener() {
+			public boolean onLongClick(View arg0) {
+				final CharSequence[] items = {"Open", "Delete", "Details"};
+				final AlertDialog.Builder builder = new AlertDialog.Builder(getParent());
+			    builder.setTitle((((CustomTextView)arg0.findViewById(android.R.id.title))).getText().toString());
+			    Log.i("view class", arg0.getClass().getName());
+			    final int pos = getFilePosition(arg0);
+			    Log.i("position ", Integer.toString(pos));
+			    Integer position  = (Integer) ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int item) {
+				    	if (item == 0)
+				    	{
+				    		File file = FileManagerActivity.getFinalMessageFiles().get(pos);
+				    			Intent intent = new Intent();
+				    			intent.setAction(android.content.Intent.ACTION_VIEW);
+				    			intent.setDataAndType(Uri.fromFile(file), "text/plain");
+				    			startActivity(intent);
+				    			Log.i("file position in new Order open", Integer.toString(pos));
+							
+				    	}
+				    	 else if (item == 1)
+				    		{  
+				    		 
+				    		   if (FileManagerActivity.getFinalMessageFiles().size()==1)
+				    		   {  
+				    			   FileManagerActivity.getFinalMessageFiles().clear();
+				    			   adapter.clear();
+				    			   adapter.notifyDataSetChanged();
+				    			   newMessagePanel.removeView(messageFileList);
+				    		   }
+				    		   else
+				    			   { 
+				    				   try
+				    				   {
+				    					   
+					    				     adapter.remove(FileManagerActivity.getFinalMessageFiles().get(pos));
+					    				     textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+					    	                    long wholeSize = 0;
+					    	                    for (File file: FileManagerActivity.getFinalMessageFiles())
+					    	                    {
+					    	                    	wholeSize += file.length();
+					    	                    }
+					    	                    fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
+							    		     adapter.notifyDataSetChanged();
+				    				   }
+				    				   catch(IndexOutOfBoundsException e)
+				    				   {
+				    					 //  FileManagerActivity.getFinalAttachFiles().remove(position.intValue());
+				    					 //  Log.i("exception deleted position",FileManagerActivity.getFinalAttachFiles().get(position.intValue()).getName() );
+				    					   e.printStackTrace();
+				    				   }
+				    				  
+				    			   }
+				    		}
+				    	else if (item == 2)
+				    	{
+				    		File file = FileManagerActivity.getFinalMessageFiles().get(pos);
+				    		AlertDialog.Builder builder2 = new AlertDialog.Builder(getParent());
+				  		    builder2.setTitle(file.getName());
+				  		  FileInputStream fis;
+						try {
+							fis = new FileInputStream(file);
+							builder2.setMessage("Size of file is: " + Long.toString(fis.getChannel().size()/1024)+ "  KB"+"\r\n"+
+							"Path of file is: " +"\r\n" + file.getPath());
+
+						} catch (FileNotFoundException e) 
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) 
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			    			
+				  		  AlertDialog alert = builder2.create();
+				  			alert.show();
+				    	}
+				    	
+				    }
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
+				return true;
+			}
+		};
 	private ArrayAdapter<File> adapter;
 	private boolean trigger =false;
 	public void updateFileList(ArrayList<File> fileList)
 	{
-		Log.i("linear layout count", Integer.toString(layout.getChildCount()));
 		for (int i = 0;i<fileList.size();i++)
 		{
 			View child = layout.getChildAt(i);
@@ -424,7 +387,6 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 			{
 				child.setTag(i);
 				child.setId(i);
-				Log.i("child class", child.getClass().getName());
 			}
 		}
 	}
@@ -434,7 +396,27 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 	{this.trigger = trigger;}
 	public void addFiles()
     {
+		Log.i("NewMessAct","in addFiles method");
 		try{
+			ViewGroup row = (ViewGroup) newMessagePanel;
+			Log.i("asdasda",Integer.toString(row.getChildCount()));
+			for (int itemPos = 0; itemPos < row.getChildCount(); itemPos++) {
+			    View view = row.getChildAt(itemPos);
+			    Log.i("newMessAct", Integer.toString(view.getId()));
+			    if (view.getId()==2131427432)
+			    	{
+			    		Log.i("NewMess","fileListAct exist");
+			    	   fileListExist = true;
+			    	}
+			    
+			}
+			
+		if (!fileListExist)
+			 {
+				Log.i("NewMessAct", "it might be added");
+				newMessagePanel.addView(messageFileList);
+			 }
+		Log.i("file exist flag",Boolean.toString(fileListExist));
 		messageFileList.setVisibility(View.VISIBLE);
 		
 		test1TextView.setTextSize(17);
@@ -442,10 +424,9 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
        long wholeSize = 0;
        for (File file: FileManagerActivity.getFinalMessageFiles())
        {
-       	wholeSize += file.length();
+    	   wholeSize += file.length();
        }
-       
-       fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
+       fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
 		adapter = new ArrayAdapter<File>(this,
 				R.layout.new_message2, R.id.fileCheck,
 				FileManagerActivity.getFinalMessageFiles()) 
@@ -453,8 +434,6 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 			@Override
 			public View getView(final int position, View convertView, ViewGroup parent) 
 			{
-//				CheckBox textView = (CheckBox) view
-//						.findViewById(R.id.fileCheck);
 				LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		        View view = inflater.inflate(R.layout.file, null);
 	            CustomTextView textView = (CustomTextView)view
@@ -467,7 +446,7 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 				
 				textView.setText(FileManagerActivity.getFinalMessageFiles().get(position).getName().toString());
 				
-				fileSize.setText(Long.toString(FileManagerActivity.getFinalMessageFiles().get(position).length())+ " Mb");
+				fileSize.setText(Long.toString(FileManagerActivity.getFinalMessageFiles().get(position).length()/1024)+ " KB");
 				for (int i = 0; i< FileManagerActivity.getFinalMessageFiles().size();i++)
 		         {
 						textView.setTag(i);
@@ -488,8 +467,16 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 							  checks.set(position, 0);
 		            }
 		        });
-				
-				textView.setOnLongClickListener(onclicklistener);
+				checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked){
+							checks.set(position, 1);
+			            }
+					}
+			    });
+				textView.setOnLongClickListener(filesClicklistener);
 				return view;
 			}
 		};
@@ -500,58 +487,7 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
 			e.printStackTrace();
 		}
     }
-    private class SendMessageTask extends AsyncTask<Void, Void, JSONObject > {
-    
-    	JSONObject response ;
-		protected void onPreExecute() {
-        	progDailog = ProgressDialog.show(NewMessageActivity.this,"Please wait...", "Sending message to the server ...", true);
-        }
-
-        protected JSONObject doInBackground(Void... args) {
-        
-       	try 
-       	{
-       		UserFunctions userFunc = new UserFunctions();
-       		if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
-       		{
-       			response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
-       				DashboardActivityAlt.listItem.getDeadline().toString(),
-       				Float.toString(DashboardActivityAlt.listItem.getPrice()), editMessage.getText().toString(), 
-       				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
-       		}
-       		else if(DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("writing"))
-       		{
-       			response = userFunc.sendMessage("0", 
-           				DashboardActivityAlt.listItem.getDeadline().toString(),
-           				Float.toString(DashboardActivityAlt.listItem.getPrice()), editMessage.getText().toString(), 
-           				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
-       		}
-			
-			Log.i("send message response",response.toString());
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}
-       		return response;
-       		
-        }
-
-        protected void onPostExecute(JSONObject  forPrint) {
-//        	Toast mToast =  Toast.makeText(getApplicationContext(),"qwerty"+forPrint.toString(), Toast.LENGTH_LONG);
-// 	  	      mToast.show();
-        	
-        	   progDailog.dismiss();
-	 	  	   Intent i = new Intent(getApplicationContext(),
-	                InteractionsActivityViewPager.class);
-	 	  	   	Bundle mBundle = new Bundle();
-	 	  		mBundle.putString("NewMessage", "wasAdded");
-	        	i.putExtras(mBundle);
-	 	  	   startActivity(i);
-        }
-
-		
-   }
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(requestCode != request)
     		return;
     	switch(resultCode){
@@ -589,50 +525,6 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
     	}
     
     }
-	private class PayPalInitialize extends AsyncTask<Void, Void, Integer> {
-	    
-	
-		protected void onPreExecute() {
-        	progDailog = ProgressDialog.show(NewMessageActivity.this,"Please wait...", "PayPal library initializing ...", true);
-        }
-
-        protected Integer doInBackground(Void... args) {
-        Integer result = 0;
-       	try 
-       	{
-       		
-       		 faq.setActivity(NewMessageActivity.this);
-       		 faq.setContext(NewMessageActivity.this);
-       		boolean res =faq.initLibrary(NewMessageActivity.this);
-       		Log.i("PayPal init res", Boolean.toString(res));
-			// The library is initialized so let's create our CheckoutButton and update the UI.
-			if (PayPal.getInstance().isLibraryInitialized()) {
-				result = (INITIALIZE_SUCCESS);
-			}
-			else {
-				result = (INITIALIZE_FAILURE);
-			}
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}
-       	Log.i("result result", result.toString());
-		return result;
-       		
-        }
-        protected void onPostExecute(Integer result) {
-
-        	progDailog.dismiss();
-        	Log.i("result onPost result", result.toString());
-         if (result.equals(INITIALIZE_SUCCESS))
-        	 faq.setupButtons(NewMessageActivity.this, panelInteractions);
-         else if (result.equals(INITIALIZE_FAILURE))
-        	 faq.showFailure(NewMessageActivity.this);
-        }
-		
-   }
-	
-	
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -645,21 +537,38 @@ public class NewMessageActivity extends FragmentActivity implements ITaskLoaderL
     }
 	public void onLoadFinished(Object data) {
 		
+		if (data instanceof String)
+		{
+			if (((String)data).equalsIgnoreCase("success"))
+			{
+	             MainTabGroup parentActivity = (MainTabGroup)getParent();
+	             TaskProgressDialogFragment.cancel();
+	             parentActivity.onBackPressed();
+	        }
+			else if(((String)data).equalsIgnoreCase("error"))
+			{
+				  Log.i("new message error"," it occurs");
+				 finish();
+			     Toast.makeText(NewMessageActivity.this, SendMessageAsync.messageErrorMess, Toast.LENGTH_LONG).show();
+			}
+		}
+		else
+		{
 			faq.setupButtons(NewMessageActivity.this, panelInteractions);
+		}
 		
 	}
 	public void onCancelLoad() {
-		
 		 	faq.showFailure(NewMessageActivity.this);
-		
 	}
 	@Override
 	public void onResume()
 	{
-		super.onResume();
 		 InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		super.onResume();
+		Log.i("newMessAct","in onResume method");
 	    updateLayout();
 	    if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
 	     {

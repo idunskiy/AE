@@ -8,7 +8,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-import java.io.File;
 public class Messages implements Parcelable
 {
 	/**
@@ -32,7 +31,7 @@ public class Messages implements Parcelable
 	@SerializedName("ipch")
 	boolean is_pr_ch;
 	@SerializedName("files")
-	ArrayList<File> files;
+	ArrayList<Files> files;
 	@SerializedName("tread")
 	Threads thread;
 	int position;
@@ -40,7 +39,7 @@ public class Messages implements Parcelable
 	public Messages()
 	{}
 	public Messages (int id, DateTime created_at , String body, DateTime deadline, float price, 
-			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<File> files, Threads thread, int position)
+			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<Files> files, Threads thread, int position)
     {
         this.id = id;
         this.created_at = created_at;
@@ -97,7 +96,7 @@ public class Messages implements Parcelable
 		 return this.is_pr_ch;
     }
 	
-	public ArrayList<File> getFiles() 
+	public ArrayList<Files> getFiles() 
 	{
 		 return this.files;
     }
@@ -150,7 +149,7 @@ public class Messages implements Parcelable
 		 this.is_pr_ch = IsPrCh;
 	}
 	
-	public void setFiles(ArrayList<File> files)
+	public void setFiles(ArrayList<Files> files)
 	{
 		 this.files = files;
 	}
@@ -191,7 +190,7 @@ public class Messages implements Parcelable
 		is_cat_ch = myBooleanArr[2];
 		price = in.readFloat();
 		body = in.readString();
-		files = in.readArrayList(File.class.getClassLoader());
+		files = in.readArrayList(Files.class.getClassLoader());
 		thread = in.readParcelable(Threads.class.getClassLoader());
 		
 		

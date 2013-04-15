@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
+
+import com.library.FrequentlyUsedMethods;
 
 public abstract class AbstractTaskLoader extends AsyncTaskLoader<Object> {
 	
@@ -93,6 +96,7 @@ public abstract class AbstractTaskLoader extends AsyncTaskLoader<Object> {
 		}
 	
 	}
+	
 	
 	public void setCanseled(boolean canselled){
 		AbstractTaskLoader.canseled = canselled;

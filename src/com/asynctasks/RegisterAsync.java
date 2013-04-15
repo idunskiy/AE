@@ -6,11 +6,14 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.assignmentexpert.RegisterActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.fragments.RegisterFragment;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class RegisterAsync  extends AbstractTaskLoader{
@@ -18,6 +21,7 @@ public class RegisterAsync  extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
 	private static String KEY_MESSAGE = "message";
 	private static String KEY_EXCEPTION= "exception";
+	private boolean errorFlag = false;
 	protected RegisterAsync(Context context) {
 		super(context);
 		this.context = context;
@@ -27,7 +31,7 @@ public class RegisterAsync  extends AbstractTaskLoader{
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		RegisterAsync loader = new RegisterAsync(fa);
-
+		
 	new TaskProgressDialogFragment.Builder(fa, loader, "Loading…")
 			.setCancelable(true)
 			.setTaskLoaderListener(taskLoaderListener)
@@ -51,18 +55,16 @@ public class RegisterAsync  extends AbstractTaskLoader{
 		UserFunctions reg = new UserFunctions();
         JSONObject a = null;
 		try {
-			a = reg.registerUser(RegisterActivity.userName,RegisterActivity.userEmail,RegisterActivity.userPass,RegisterActivity.userConf,RegisterActivity.userCaptcha);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			a = reg.registerUser(RegisterFragment.userName,RegisterFragment.userEmail,RegisterFragment.userPass,
+					RegisterFragment.userConf,RegisterFragment.userCaptcha);
+		
         	String b;
 			try
 			{
 				b = a.get(KEY_STATUS).toString();
 				if (Integer.parseInt(b)==1)
 				{
-					res = "Registration confirmation message was send to"+"\r\n"+ RegisterActivity.userEmail+ 
+					res = "Registration confirmation message was send to"+"\r\n"+ RegisterFragment.userEmail+ 
 							"\r\n"+"Congratulations!";
 					
 				}
@@ -81,9 +83,23 @@ public class RegisterAsync  extends AbstractTaskLoader{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
-         
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			errorFlag =  true;
+			onStopLoading();
+		}
 
         return res;
 	}
+	@Override 
+	 protected void onStopLoading() {
+	        Log.i("RegisterAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 
 }

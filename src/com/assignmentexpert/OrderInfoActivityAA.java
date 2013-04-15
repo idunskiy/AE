@@ -1,13 +1,25 @@
 package com.assignmentexpert;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -17,11 +29,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.datamodel.Category;
+import com.datamodel.Files;
 import com.datamodel.Level;
 import com.datamodel.ProductAssignment;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.library.DatabaseHandler;
+import com.library.FrequentlyUsedMethods;
 
 public class OrderInfoActivityAA extends Activity {
 	private View btnClose;
@@ -42,10 +56,16 @@ public class OrderInfoActivityAA extends Activity {
 	List<Category> categoryList;
 	List<Level> levelList;
 	private LinearLayout layout;
-	
+	SharedPreferences preferenceManager;
+	DownloadManager downloadManager;
+	//DownloadReceiver downloadFilesReceiver;
+	final String strPref_Download_ID = "PREF_DOWNLOAD_ID";
 	@SuppressWarnings("null")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		 InputMethodManager imm = (InputMethodManager)getSystemService(
+			      Context.INPUT_METHOD_SERVICE);
+	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_info_aa);
         btnClose = (Button) findViewById(R.id.btnClose);
@@ -53,11 +73,6 @@ public class OrderInfoActivityAA extends Activity {
 	    btnInteractions = (Button) findViewById(R.id.btnInteractions);
 	    btnInfoOrder = (Button) findViewById(R.id.btnInfoOrder);
 	   /// btnInfoOrder.setText("info"+ "\r\n"+Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
-	    
-	    InputMethodManager imm = (InputMethodManager)getSystemService(
-			      Context.INPUT_METHOD_SERVICE);
-	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-	    
 	    
 	    productTextView = (TextView)findViewById(R.id.productTextView);
 	    priceTextView =   (TextView)findViewById(R.id.priceTextView);
@@ -96,10 +111,10 @@ public class OrderInfoActivityAA extends Activity {
 		}
 		
 		try {
-			if (DashboardActivityAlt.listItem.getCategory().getCategoryId() != 0)
+			if (DashboardActivityAlt.listItem.getCategory()  != null)
 			DashboardActivityAlt.listItem.getCategory().setCategoryTitle((
 					daoCategory.queryForId(DashboardActivityAlt.listItem.getCategory().getCategoryId())).getCategoryTitle());
-			if (DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId() != 0)
+			if (DashboardActivityAlt.listItem.getCategory().getCategorySubject() != null)
 			DashboardActivityAlt.listItem.getCategory().getCategorySubject().setSubjectTitle((
 					daoSubject.queryForId(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectId())).getSubjectTitle());
 			if (DashboardActivityAlt.listItem.getLevel() != null)
@@ -110,6 +125,12 @@ public class OrderInfoActivityAA extends Activity {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		catch(NullPointerException e)
+		{
+			DashboardActivityAlt.listItem.getCategory().setCategoryTitle("");
+			DashboardActivityAlt.listItem.getCategory().getCategorySubject().setSubjectTitle("");
+			DashboardActivityAlt.listItem.getLevel().setLevelTitle("");
 		}
 				
 		
@@ -163,6 +184,38 @@ public class OrderInfoActivityAA extends Activity {
 //	               
 //	           }
 //	       });
+	    preferenceManager
+        = PreferenceManager.getDefaultSharedPreferences(this);
+       downloadManager
+        = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+//       downloadFilesReceiver = new DownloadReceiver();
+       try{
+       if (!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
+       {
+    	   for (Files b: DashboardActivityAlt.listItem.getOrderFiles())
+			{
+//    		   downloadFilesReceiver.setContext(this);
+//    		   downloadFilesReceiver.downloadFile(b);
+				try{
+				 Uri downloadUri = Uri.parse(b.getFileFullPath());
+           	   DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+           	   long id = downloadManager.enqueue(request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
+           			   "AssignmentExpert/" + b.getFileName()));
+           	   Editor PrefEdit = preferenceManager.edit();
+           	   PrefEdit.putLong(strPref_Download_ID, id);
+           	   PrefEdit.commit();
+				}
+				catch(NullPointerException e)
+				{
+					e.printStackTrace();
+				}
+			}
+       }
+       }
+       catch(Exception e)
+       {
+    	   e.printStackTrace();
+       }
 	}
 	public void addFiles()
 	 {
@@ -170,7 +223,7 @@ public class OrderInfoActivityAA extends Activity {
 		{
 	    if(!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
 	    {
-	    	TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
+	    	final TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
 		         for (int i = 0; i< DashboardActivityAlt.listItem.getOrderFiles().size();i++)
 		          {
 		            
@@ -180,14 +233,16 @@ public class OrderInfoActivityAA extends Activity {
 		                tv[i] = new TextView(this);
 		                tv[i].setId(i);
 		                tv[i].setTag(i);
-		                tv[i].setTextColor(Color.BLACK);
+		                tv[i].setTextColor(Color.WHITE);
 		                tv[i].setTextSize(12);
 		                tv[i].setCompoundDrawablesWithIntrinsicBounds(
-		                        0, R.drawable.file_icon, 0, 0);
+		                        0, R.drawable.file, 0, 0);
 		                tv[i].setText(DashboardActivityAlt.listItem.getOrderFiles().get(i).getFileName());
+		                
+		                tv[i].setOnClickListener(new FrequentlyUsedMethods(OrderInfoActivityAA.this).fileInfoListenter);
 		                layout.addView(tv[i], 0);
 		                layout.addView(line, 1);
-		                
+		               
 	
 		          }
 		       
@@ -201,13 +256,56 @@ public class OrderInfoActivityAA extends Activity {
 	    
 
 	}
+	  private BroadcastReceiver downloadFilesReceiver = new BroadcastReceiver() {
+
+    	  @Override
+    	  public void onReceive(Context arg0, Intent arg1) {
+    	   // TODO Auto-generated method stub
+    	   DownloadManager.Query query = new DownloadManager.Query();
+    	   query.setFilterById(preferenceManager.getLong(strPref_Download_ID, 0));
+    	   Cursor cursor = downloadManager.query(query);
+    	   if(cursor.moveToFirst()){
+    	    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+    	    int status = cursor.getInt(columnIndex);
+    	    if(status == DownloadManager.STATUS_SUCCESSFUL){
+    	     
+    	     //Retrieve the saved request id
+    	     long downloadID = preferenceManager.getLong(strPref_Download_ID, 0);
+    	     
+    	     ParcelFileDescriptor file;
+    	     try {
+    	      file = downloadManager.openDownloadedFile(downloadID);
+//    	      FileInputStream fileInputStream
+//    	       = new ParcelFileDescriptor.AutoCloseInputStream(file);
+//    	      Bitmap bm = BitmapFactory.decodeStream(fileInputStream);
+//    	      Drawable d =new BitmapDrawable(bm);
+//    	      cancelProfile.setBackgroundDrawable(d);
+    	     } catch (FileNotFoundException e) {
+    	      // TODO Auto-generated catch block
+    	      e.printStackTrace();
+    	     }
+    	     
+    	    }
+    	   }
+    	  } 
+    	 };
 	@Override
 	public void onResume()
 	{
-		super.onResume();
 		 InputMethodManager imm = (InputMethodManager)getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+		super.onResume();
+		IntentFilter intentFilter
+		   = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+		  registerReceiver(downloadFilesReceiver, intentFilter);
+		
+	}
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		unregisterReceiver(downloadFilesReceiver);
 	}
 	@Override
     public void onBackPressed() {

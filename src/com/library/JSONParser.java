@@ -32,96 +32,35 @@ public class JSONParser {
 	    }
 	    public static DefaultHttpClient getInstance() { return httpClient; }
 	    
-	    public JSONObject getJSONFromUrl(String url, List<NameValuePair> params, RequestMethod method) throws Exception 
+	    public InputStream  requestExecution(String url, List<NameValuePair> params, RequestMethod method)
 	    {
-	    	
+	    	InputStream is = null;
 	    	  RestClient client = new RestClient(url);
 	    	  for (NameValuePair param: params)
 	    	  {	
 	    		  Log.i("params",param.getName()+param.getValue());
 	    		  client.AddParam(param.getName(), param.getValue());  
 	    	  }
+	    	  try {
+				 is = client.Execute(method);
+			}
+	    	  catch (Exception e) {
 
-	    	  
-	    	 InputStream is = client.Execute(method);
-	        // Log.i("params",client.getResponse().toString());
-	          
-	    	//InputStream is = HttpClient.getResponse(url, params);
-	         // is = client.
-	        try {
-	        	
-	        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-	            StringBuilder sb = new StringBuilder();
-	            
-	            String line = null;
-	            try
-	            {
-		            while ((line = reader.readLine()) != null)
-		            {
-		                sb.append(line);// + "n");
-		            }
-		            
-	            }
-	            catch (IOException e)
-	            {
-	            	e.printStackTrace();
-	            }
-	            finally
-	            {
-	            	try
-	            	{
-	            		is.close();
-	            	}
-	            	catch (IOException e)
-		            {
-		            	e.printStackTrace();
-		            }
-	            }
-	            Log.i("sb string in JSONObject", sb.toString());
-	            if (sb != null)
-	               {json = sb.toString();
-	            
-	            }
-	            Log.i("final response",json);
-	        } 
-	        catch (Exception e) {
-	            Log.e("Buffer Error JSON Parsing", "Error converting result " + e.toString());
-	            
-	        }
-	        
-	 
-	        try {
-	        	
-	            jObj = new JSONObject(json);
-	        } catch (JSONException e) {
-	        	
-	            Log.e("JSON Parser ", "Error parsing data " + e.toString());
-	        }
-	        
-	        return jObj;
+				e.printStackTrace();
+			}
+	    	  return is;
 	    }
 	    
-	    
-	    
-	    
+	    public JSONObject getJSONFromUrl(String url, List<NameValuePair> params, RequestMethod method) throws Exception 
+	    {
+	    	
+	    	 return getJSONfromInputStream(requestExecution(url,params,method));
+	    }
 	    
 	    public JSONArray getJSONArrayFromUrl(String url, List<NameValuePair> params, RequestMethod method) throws Exception 
 	    {
 	    	
-	    	  RestClient client = new RestClient(url);
-	    	  for (NameValuePair param: params)
-	    	  {	
-	    		  Log.i("params",param.getName()+param.getValue());
-	    		  client.AddParam(param.getName(), param.getValue());  
-	    	  }
-
-	    	  
-	    	 InputStream is = client.Execute(method);
-	        // Log.i("params",client.getResponse().toString());
-	          
-	    	//InputStream is = HttpClient.getResponse(url, params);
-	         // is = client.
+	    	 InputStream is = requestExecution( url, params, method);
 	        try {
 	        	
 	        	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -135,7 +74,6 @@ public class JSONParser {
 		            {
 		                sb.append(line); //+ "n");
 		            }
-		            
 	            }
 	            catch (IOException e)
 	            {
@@ -152,7 +90,6 @@ public class JSONParser {
 		            	e.printStackTrace();
 		            }
 	            }
-	            
 	            json = sb.toString();
 	            if (json==null)
 	            	Log.i("JSONParser JSONAray","json response is null");
@@ -175,20 +112,9 @@ public class JSONParser {
 	        
 	        return jArr;
 	    }
-	    
 	    public String getStringFromUrl (String url, List<NameValuePair> params) throws Exception
 	    {
-	    	
-	    	  RestClient client = new RestClient(url);
-	    	 
-	    	  for (NameValuePair param: params)
-	    	  {
-	    		  client.AddParam(param.getName(), param.getValue());  
-	    	  }
-	    	  Log.i(" get string from url method  url",url);
-	        
-	          
-		    InputStream is = client.Execute(RequestMethod.GET);
+		    InputStream is = requestExecution( url, params, RequestMethod.GET);
 	        try {
 	            BufferedReader reader = new BufferedReader(new InputStreamReader(
 	                    is, "iso-8859-1"), 8);
@@ -240,8 +166,6 @@ public class JSONParser {
 			            	e.printStackTrace();
 			            }
 		            }
-		            
-		          
 		               json = sb.toString();
 		            Log.i("getJSONfromInputStream result", json);
 		            

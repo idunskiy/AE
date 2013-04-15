@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.LoginActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
@@ -26,6 +27,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.library.DataParsing;
 import com.library.DatabaseHandler;
+import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 
 public class DashboardAsync extends AbstractTaskLoader{
@@ -40,6 +42,7 @@ public class DashboardAsync extends AbstractTaskLoader{
  	DashboardActivityAlt dashboardAct = new DashboardActivityAlt();
 		String result = "";
 		List<Order> orders;
+		private boolean errorFlag  = false;
 		
 		public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
@@ -50,6 +53,7 @@ public class DashboardAsync extends AbstractTaskLoader{
 					.setTaskLoaderListener(taskLoaderListener)
 					.show();
 		}
+		
 	public DashboardAsync(Context context) {
 		super(context);
 		this.context = context; 
@@ -90,15 +94,14 @@ public class DashboardAsync extends AbstractTaskLoader{
     		{
 			
     		}
-		
 		QueryBuilder<ProcessStatus,Integer> query = dao.queryBuilder();
 		Where where = query.where();
 	    	for(Order r : orders)
 	    	{
 		         GenericRawResults<String[]> rawResults = dao.queryRaw("select "+ ProcessStatus.STATUS_TITLE +" from process_status where "+ ProcessStatus.STATUS_ID + " = " + r.getProcess_status().getProccessStatusId());
 		         results = rawResults.getResults();
-		         String[] resultArray = results.get(0); //This will select the first result (the first and maybe only row returned)
-		         result = resultArray[0]; //This will select the first field in the result (That should be the ID you need)
+		         String[] resultArray = results.get(0); 
+		         result = resultArray[0];
 		         if (!r.getIsActive())
 		         {
 		        	    r.getProcess_status().setProccessStatusId(9);
@@ -109,15 +112,26 @@ public class DashboardAsync extends AbstractTaskLoader{
 		         
 		        DashboardActivityAlt.forPrint.add(r);
 	         }
-	    	
+	    	res = false;
+		    DashboardActivityAlt.page+=1;
 		}
 	    catch (Exception e1) {
-			// TODO Auto-generated catch block
+	    	
 			e1.printStackTrace();
+			errorFlag    = true;
+			onStopLoading();
 		}
-	    res = false;
-	    DashboardActivityAlt.page+=1;
+	    
 		return null;
 	}
+	@Override 
+	 protected void onStopLoading() {
+	        Log.i("DashboardAsync", "onStopLoading method");
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if (errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 
 }

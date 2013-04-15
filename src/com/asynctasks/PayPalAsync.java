@@ -1,20 +1,22 @@
 package com.asynctasks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.assignmentexpert.InteractionsActivityViewPager;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.fragments.InteractionFragment;
 import com.library.FrequentlyUsedMethods;
 import com.paypal.android.MEP.PayPal;
 
 public class PayPalAsync  extends AbstractTaskLoader {
 	Context context;
 	FrequentlyUsedMethods faq = new FrequentlyUsedMethods(context);
+	private boolean errorFlag = false;
 	protected PayPalAsync(Context context) {
 		super(context);
 		this.context = context;
@@ -45,14 +47,18 @@ public class PayPalAsync  extends AbstractTaskLoader {
 			try{
 				
 			boolean res =faq.initLibrary(context);
-			
+			Log.i("PayPal init", Boolean.toString(res));
 			// The library is initialized so let's create our CheckoutButton and update the UI.
 			if (PayPal.getInstance().isLibraryInitialized()) {
 				result = (1);
+				Log.i("PayPalAsync curr Act", ((Activity)context).getClass().toString());
+				
+				//faq.setupButtons(context, InteractionFragment.panelInteractions);
 			}
 			else {
 				
-				cancelLoad();
+				this.setCanseled(true);
+		        TaskProgressDialogFragment.cancel();
 			}
 		} catch (Exception e) {
 			

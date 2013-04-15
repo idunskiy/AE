@@ -8,19 +8,21 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.assignmentexpert.ProfileActivity;
+import com.assignmentexpert.LoginActivity;
+import com.assignmentexpert.ProfileCompl;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.fragments.ProfileFragmentCompl;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-import com.paypal.android.MEP.PayPal;
 
 public class ProfileUpdateAsync extends AbstractTaskLoader {
 	Context context;
 	private static String KEY_STATUS = "status";
 	private static String KEY_MESSAGE = "message";
 	public static String errorMessage;
+	private boolean errorFlag = false;
 	FrequentlyUsedMethods faq = new FrequentlyUsedMethods(context);
 	protected ProfileUpdateAsync(Context context) {
 		super(context);
@@ -55,35 +57,45 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
 		String res = "";
      	JSONObject a = null;
 		try {
-			a = reg.profileUpdate(ProfileActivity.timeZone, ProfileActivity.firstName,ProfileActivity.lastName,ProfileActivity.phone,
-					ProfileActivity.password);
-			
+			a = reg.profileUpdate(ProfileFragmentCompl.timeZone, ProfileFragmentCompl.firstName,ProfileFragmentCompl.lastName,ProfileFragmentCompl.phone,
+					ProfileFragmentCompl.password);
+		
+			try {
+				
+				String b = a.get(KEY_STATUS).toString();
+				
+				if(Integer.parseInt(b)==1)
+					{
+						res = "success";
+					}
+				else 
+				{
+					errorMessage = a.getString(KEY_MESSAGE);
+					 res = "error";
+				}
+			} 
+			catch (JSONException e) 
+			{
+				e.printStackTrace();
+			}
+     
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			errorFlag = true;
+			onStopLoading();
 		}
-		
-		try {
-			
-			String b = a.get(KEY_STATUS).toString();
-			
-			if(Integer.parseInt(b)==1)
-				{
-					res = "success";
-				}
-			else 
-			{
-				errorMessage = a.getString(KEY_MESSAGE);
-				 res = "error";
-			}
-		} catch (JSONException e) 
-		{
-			e.printStackTrace();
-		}
-     
-
     return res;
 		
 	}
+	
+	@Override 
+	 protected void onStopLoading() {
+	        this.setCanseled(true);
+	        TaskProgressDialogFragment.cancel();
+	        if(errorFlag)
+	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+	        cancelLoad();
+	    }
 }
 

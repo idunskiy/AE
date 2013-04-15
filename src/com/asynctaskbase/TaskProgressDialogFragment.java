@@ -2,12 +2,16 @@ package com.asynctaskbase;
 
 import java.util.UUID;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.inputmethod.InputMethodManager;
+
+import com.assignmentexpert.R;
 
 public class TaskProgressDialogFragment extends
 		AbstractTaskProgressDialogFragment {
@@ -15,6 +19,8 @@ public class TaskProgressDialogFragment extends
 	private ITaskLoaderListener taskLoaderListener;
 	private final Handler handler = new Handler();
 	 static TaskProgressDialogFragment fragment;
+	 
+	 public static boolean dialogIsProceeding = false;
 	/**
 	 * Static helper to build and run loader
 	 *
@@ -54,9 +60,8 @@ public class TaskProgressDialogFragment extends
 	        if (prev != null) {
 	            ft.remove(prev);
 	        }
-	        
 	        //create dlg fragment
-	         fragment = new TaskProgressDialogFragment(loader,progressMsg);
+	        fragment = new TaskProgressDialogFragment(loader,progressMsg);
 	        fragment.setTaskLoaderListener(taskLoaderListener);
 	        fragment.setCancelable(cancelable);
 	        
@@ -64,6 +69,7 @@ public class TaskProgressDialogFragment extends
 	        args.putString("message", progressMsg);
 	        fragment.setArguments(args);
 	        fragment.show(ft, TAG_FRAGMENT);
+	        dialogIsProceeding = true;
 	        
 		}
 		
@@ -72,6 +78,7 @@ public class TaskProgressDialogFragment extends
 	public static void cancel()
 	{
 		fragment.dismiss();
+		dialogIsProceeding = false;
 	}
 		
 	protected TaskProgressDialogFragment(AbstractTaskLoader loader,	String message) {
@@ -90,7 +97,7 @@ public class TaskProgressDialogFragment extends
 				
 				public void run() {
 					taskLoaderListener.onLoadFinished(data);
-					
+					dialogIsProceeding = false;
 				}
 			});
 		}

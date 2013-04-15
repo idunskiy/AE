@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -65,7 +67,7 @@ public class RestClient {
     int count= 0;
     private int responseCode;
     private String message;
-    public static boolean inetError = false;
+    private static boolean restError = false;
     
     public static String restClientErrorMess;
     
@@ -212,8 +214,6 @@ public class RestClient {
                 	((HttpPost)request).setEntity(entity);
                 	
                 }
-
-                //executeRequest(request, url);
                 break;
             }
             case PUT:
@@ -223,18 +223,18 @@ public class RestClient {
                 for(NameValuePair h : headers)
                 {
                     request.addHeader(h.getName(), h.getValue());
-                    request.addHeader("Content-Transfer-Encoding", "8bit");
+//                    request.addHeader("Content-Transfer-Encoding", "8bit");
+//                    request.addHeader("Content-Type", "text/plain; charset=US-ASCII");
                 }
                 Log.i("http put", request.getClass().toString());
                 if(entity.getContentLength()!=0)
                 {
+                	
                 	Log.i("rest client entity check",
                 				"is not null and is going to launch put method");
                 	((HttpPut)request).setEntity(entity);
                 	
                 }
-                
-                
                 
                 break;
             }
@@ -292,12 +292,27 @@ public class RestClient {
             
 
         } catch (ClientProtocolException e)  {
-        	
+        	Log.i("restClient exc", "ClientProtocolException");
+        	RestError(true);
+            client.getConnectionManager().shutdown();
+            e.printStackTrace();
+        } 
+        catch (ConnectTimeoutException e)  {
+        	Log.i("restClient exc", "ConnectTimeoutException");
+        	RestError(true);
+            client.getConnectionManager().shutdown();
+            e.printStackTrace();
+        } 
+        catch (UnknownHostException e)  {
+        	Log.i("restClient exc", "UnknownHostException");
+        	RestError(true);
             client.getConnectionManager().shutdown();
             e.printStackTrace();
         } 
         
         catch (IOException e) {
+        	Log.i("restClient exc", "IOException");
+        	RestError(true);
         	if (e instanceof HttpHostConnectException)
             client.getConnectionManager().shutdown();
             
@@ -415,6 +430,12 @@ public class RestClient {
       
       return jObj;
   }
+    public static boolean RestError(boolean res)
+    {
+    	restError = res;
+    	
+    	return restError;
+    }
     
     
 }

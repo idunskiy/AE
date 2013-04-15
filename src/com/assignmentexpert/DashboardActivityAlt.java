@@ -14,6 +14,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -25,6 +27,7 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,10 +35,11 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctaskbase.TaskProgressDialogFragment;
 import com.asynctasks.DashboardAsync;
 import com.asynctasks.InactivateAsync;
 import com.customitems.CustomTextView;
@@ -49,7 +53,7 @@ import com.library.UserFunctions;
 import com.tabscreens.OrderInfoTabScreen;
 
  
- public class DashboardActivityAlt extends FragmentActivity implements ITaskLoaderListener{
+ public class DashboardActivityAlt extends FragmentActivity implements ITaskLoaderListener {
 	 public static enum Action {
 	        LR, // Left to Right
 	        RL, // Right to Left
@@ -77,10 +81,12 @@ import com.tabscreens.OrderInfoTabScreen;
 	DatabaseHandler db;
 	static public Order listItem;
 	private Intent intent;
+	View orderSwipedView;
 	boolean isEmpty = false;
 	LinearLayout dashboardHeader;
 	int layoutHeight;
-	
+	boolean borderDetLeft = false;
+	boolean borderDetRight = false;
 	 private Action mSwipeDetected = Action.None;
 
 	    public boolean swipeDetected() {
@@ -93,7 +99,6 @@ import com.tabscreens.OrderInfoTabScreen;
 	    	mSwipeDetected = action;
 	    }
 	    
-	    private static final int MIN_DISTANCE = 100;
 		
 	    private float downX, downY, upX, upY ,  stopX, stopY;
 	    OrderAdapter adapter;
@@ -102,14 +107,31 @@ import com.tabscreens.OrderInfoTabScreen;
 		private View btnProfile;
 		FrequentlyUsedMethods faq;
 	    private static final String logTag = "SwipeDetector";
-	    
+	    private boolean openInfoFlag = false;
+        private boolean openInteractFlag = false;
 	    private int savedPosition;
 	    private int savedListTop;
 	    Parcelable state;
+		private GestureLibrary mGestureLib;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		GestureOverlayView gestureOverlayView = new GestureOverlayView(this);
+//		 View inflate = getLayoutInflater().inflate(R.layout.main, null);
+//		    gestureOverlayView.addView(inflate);
+//		    gestureOverlayView.addOnGesturePerformedListener(this);
+//		    gestureLib = GestureLibraries.fromRawResource(this, R.raw.gestures);
+//		    if (!gestureLib.load()) {
+//		      finish();
+//		    }
 		setContentView(R.layout.dash_alt);
+//		 mGestureLib = GestureLibraries.fromRawResource(this, R.raw.gestures);
+//         if (!mGestureLib.load()) {
+//             finish();
+//         }
+//
+//         GestureOverlayView gestures = (GestureOverlayView) findViewById(R.id.gestures);
+//         gestures.addOnGesturePerformedListener(this);
 		
 	    dashboardHeader = (LinearLayout) findViewById(R.id.dashboardHeader);
 	    faq = new FrequentlyUsedMethods(DashboardActivityAlt.this);
@@ -126,9 +148,11 @@ import com.tabscreens.OrderInfoTabScreen;
 		listView1.setCacheColorHint(Color.BLACK);
 		listView1.setScrollingCacheEnabled(false); 
 		final FrequentlyUsedMethods met = new FrequentlyUsedMethods(DashboardActivityAlt.this);
-		
-		final float HORIZONTAL_MIN_DISTANCE =met.convertPixelsToDp(30,act);
-		final float VERTICAL_MIN_DISTANCE = met.convertPixelsToDp(100,act);
+		final ViewConfiguration vc = ViewConfiguration.get(this);
+		final int swipeMinDistance = vc.getScaledTouchSlop();
+		final int swipeThresholdVelocity = vc.getScaledMinimumFlingVelocity();
+		final float HORIZONTAL_MIN_DISTANCE = 80;//=met.convertPixelsToDp(200,act);
+		final float VERTICAL_MIN_DISTANCE =8;//met.convertPixelsToDp(100,act);
 		ctx = this;
 	    DisplayMetrics displaymetrics = new DisplayMetrics();
 	    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -156,20 +180,13 @@ import com.tabscreens.OrderInfoTabScreen;
 				FileManagerActivity.setOrderAttachFiles(files);
 			}
 		}
-
-		//listView1.addView( findViewById(R.id.empty_list_view1 ), new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		if (forPrint.isEmpty() & !stopDownload )
 		{
 			
 			DashboardActivityAlt.page = 1;
 			DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
 			adapter.notifyDataSetChanged();
-//				this.pd = ProgressDialog.show(this, "Please wait..", "Downloading Data..."
-//					, true, false); 
-//				new DownloadTask().execute(Integer.toString(DashboardActivityAlt.page), Integer.toString(DashboardActivityAlt.perpage));
 			LoginActivity.newUser = false;
-			Log.i("download page count dashboard",Integer.toString(DashboardActivityAlt.page));
-			
 		}
 		else if (LoginActivity.newUser)
 		{
@@ -178,9 +195,6 @@ import com.tabscreens.OrderInfoTabScreen;
 			forPrint.clear();
 			stopDownload = false;
 			DashboardActivityAlt.page = 1;
-//			this.pd = ProgressDialog.show(this, "Please wait..", "Downloading Data..."
-//					, true, false); 
-//			new DownloadTask().execute(Integer.toString(DashboardActivityAlt.page), Integer.toString(DashboardActivityAlt.perpage));
 			DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
 			adapter.notifyDataSetChanged();
 			Log.i("new page count dashboard",Integer.toString(DashboardActivityAlt.page));
@@ -193,7 +207,6 @@ import com.tabscreens.OrderInfoTabScreen;
         			R.layout.dash_alt_item, forPrint);
 			listView1.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-      
             if (sharedPreferences != null)
             {
             	savedPosition = sharedPreferences.getInt("savedPosition", 0);
@@ -204,19 +217,36 @@ import com.tabscreens.OrderInfoTabScreen;
   		    }
 		}
 		
-		gestureDetector = new GestureDetector(new MyGestureListener());
+//		gestureDetector = new GestureDetector(new MyGestureListener());
 //	    View.OnTouchListener gestureListener = new View.OnTouchListener() {
 //            public boolean onTouch(View v, MotionEvent event) {
 //                return gestureDetector.onTouchEvent(event); 
 //            }};
         gestureListener = new View.OnTouchListener() {
-	            public boolean onTouch(View v, MotionEvent event) {
-	            	if (gestureDetector.onTouchEvent(event)){
+	           
+				
+
+				public boolean onTouch(View v, MotionEvent event) {
+	            	
+	            	int id =0;
+//	            	if (gestureDetector.onTouchEvent(event)){
 	            	switch (event.getAction()) {
 	                case MotionEvent.ACTION_DOWN: {
 	                    downX = event.getX();
 	                    downY = event.getY();
 	                    mSwipeDetected = Action.None;
+	                    return false; // allow other events like Click to be processed
+	                }
+	                case MotionEvent.ACTION_UP: {
+	                	if (openInteractFlag)
+	                        openCurrentOrderInteract();
+	                	else if (openInfoFlag)
+	                		openCurrentOrderInfo();
+	                	else 
+	                	{
+	                		id = listView1.pointToPosition((int) downX, (int) downY);
+	                		orderDetectDismiss();
+	                	}
 	                    return false; // allow other events like Click to be processed
 	                }
 	                case MotionEvent.ACTION_MOVE: {
@@ -226,103 +256,214 @@ import com.tabscreens.OrderInfoTabScreen;
 	                    float deltaY = downY - upY;
 	                            if (Math.abs(deltaX) > HORIZONTAL_MIN_DISTANCE) {
 	                                // left or right
+	                            	Log.i("swipe detect", Float.toString(deltaX));
+	                            	Log.i("swipe detect const", Float.toString(HORIZONTAL_MIN_DISTANCE));
 	                                if (deltaX < 0) {
+	                                	
 	                                    Log.i(logTag, "Swipe Left to Right");
 	                                    mSwipeDetected = Action.LR;
+	                                    if (!openInteractFlag)
+	                                    {
+		                                    id = listView1.pointToPosition((int) upX, (int) upY);
+		                                    borderDetLeft =true;
+		                                    openInteractFlag = true;
+		                                    orderDetect(id);
+	                                    }
+//	                                    Order temp = (Order) adapter.getItem((id));
+//	                   	             Log.i("swiping order", temp.toString());
+//	                   	             
+//	                   	              View w = listView1.getChildAt(id);
+//	                   	              
+//	                   	 	    	 w.setBackgroundColor(Color.rgb(66, 174, 255));
+//	           	                     listItem = (Order) listView1.getItemAtPosition(position);
+//	           	                      ((CustomTextView)v.findViewById(R.id.altOrderTitle)).setTextSize(28);
+//	           	                      ((CustomTextView)v.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
+//	           	                      ((CustomTextView)v.findViewById(R.id.altOrderTitle)).setText("Opening...");
+//	           	                      
+//	           	                     try {
+//	           	                    	 messagesExport = listItem.getCusThread().getMessages();
+//	           	                 	  }
+//	           	                 	  catch (NullPointerException npe) {
+//	           	                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
+//	           	                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+//	           	                    	 toast.show();
+//	           	                    	 Intent intent = getIntent();
+//	           	                    	 finish();
+//	           	                    	 startActivity(intent);
+//	           	                 	  }
+//	           	                     
+//	           	                     Intent i = new Intent(getApplicationContext(),
+//	           	                            OrderInfoTabScreen.class);
+//	           	                     Bundle mBundle = new Bundle();
+//	           	                     mBundle.putString("OrderSwiping", "LR");
+//	           	                     i.putExtras(mBundle);
+//	           	                     startActivity(i);
 	                                    return true;
 	                                }
 	                                if (deltaX > 0) {
 	                                    Log.i(logTag, "Swipe Right to Left");
 	                                    mSwipeDetected = Action.RL;
+	                                    if (!openInfoFlag )
+	                                    {
+		                                    id = listView1.pointToPosition((int) upX, (int) upY);
+		                                    borderDetRight =true;
+		                                    openInfoFlag = true;
+		                                    orderDetect(id);
+	                                    }
+	                                    	
 	                                    return true;
 	                                }
 	                            } else 
 
-	                            // vertical swipe detection
 	                            if (Math.abs(deltaY) > VERTICAL_MIN_DISTANCE) {
 	                                // top or down
 	                                if (deltaY < 0) {
 	                                    Log.i(logTag, "Swipe Top to Bottom");
 	                                    mSwipeDetected = Action.TB;
+	                                    Log.i(logTag,Boolean.toString(borderDetLeft));
+	                                    if (borderDetLeft){
+	                                    	id = listView1.pointToPosition((int) upX, (int) upY);
+	                                    	orderDetectDismiss();
+	                                    	openInteractFlag = false;
+	                                    }
+	                                    
 	                                    return false;
 	                                }
 	                                if (deltaY > 0) {
 	                                    Log.i(logTag, "Swipe Bottom to Top");
+	                                    if (borderDetRight){
+	                                    	id = listView1.pointToPosition((int) upX, (int) upY);
+	                                    	orderDetectDismiss();
+	                                    	openInfoFlag = false;
+	                                    }
 	                                    mSwipeDetected = Action.BT;
+	                                    if (deltaY > 300)
+	    	                            {
+	    	                            	 try {
+	    	                    					
+	    	                						
+	    	                						boolean isOnline = faq.isOnline();
+	    	                					if (isOnline)
+	    	                					{
+	    	                							if (!TaskProgressDialogFragment.dialogIsProceeding)
+	    	                							{
+	    	                								DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
+	    	                							    adapter.notifyDataSetChanged();
+	    	                							}
+	    	                							else 
+	    	                							{
+	    	                								Log.i("DashboardAct", "it was cancelled");
+	    	                							}
+	    	                					}
+	    	                					else
+	    	                					{
+	    	                					   Toast mToast =  Toast.makeText(getApplicationContext(), "No network connection. Please try later.", Toast.LENGTH_LONG);
+	    	                			   	  	   mToast.show();
+	    	                					}
+	    	                            }
+	    	                            	 catch(Exception e)
+	    	                            	 {
+	    	                            		e.printStackTrace(); 
+	    	                            	 }
+	    	                            	 return false;
+	    	                            }
 	                                    return false;
 	                                }
-	                            } 
-	                            return true;
-	                	}
-	                  }
-	            	}
-				return false;
+	                            }
+	                          
+	                           
+	                  	}
+//	            	}
 	        }
-        };
+	            	 return true;
+        }};
 		listView1.setOnItemClickListener(new OnItemClickListener() {
 	          public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	          {
-	                  if (getAction() == getAction().LR | getAction() == getAction().RL)
-	                  {
-	                	 
-	                	  
-	                	  
-	                     view.setBackgroundColor(Color.rgb(66, 174, 255));
+//	                  if (getAction() == getAction().LR )
+//	                  {
+//	                	 
+//	                     view.setBackgroundColor(Color.rgb(66, 174, 255));
+//
+//	                     listItem = (Order) listView1.getItemAtPosition(position);
+//	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextSize(28);
+//	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
+//	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setText("Opening...");
+//	                      
+//	                     try {
+//	                    	 messagesExport = listItem.getCusThread().getMessages();
+//	                 	  }
+//	                 	  catch (NullPointerException npe) {
+//	                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
+//	                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+//	                    	 toast.show();
+//	                    	 Intent intent = getIntent();
+//	                    	 finish();
+//	                    	 startActivity(intent);
+//	                 	  }
+//	                     
+//	                     Intent i = new Intent(getApplicationContext(),
+//	                            OrderInfoTabScreen.class);
+//	                     Bundle mBundle = new Bundle();
+//	                     mBundle.putString("OrderSwiping", "LR");
+//	                     i.putExtras(mBundle);
+//	                     startActivity(i);
+//	                  } 
+//	             
+//	                  else if(!swipeDetected())
+//	                  {
+//	                	  
+//	                  }
+//	                  else if(getAction() == getAction().RL)
+//	                  {
+//	                	  view.setBackgroundColor(Color.rgb(66, 174, 255));
+//
+//		                     listItem = (Order) listView1.getItemAtPosition(position);
+//		                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextSize(28);
+//		                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
+//		                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setText("Opening...");
+//		                      
+//		                     try {
+//		                    	 messagesExport = listItem.getCusThread().getMessages();
+//		                 	  }
+//		                 	  catch (NullPointerException npe) {
+//		                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
+//		                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+//		                    	 toast.show();
+//		                    	 Intent intent = getIntent();
+//		                    	 finish();
+//		                    	 startActivity(intent);
+//		                 	  }
+//		                     
+//		                     Intent i = new Intent(getApplicationContext(),
+//		                            OrderInfoTabScreen.class);
+//		                     Bundle mBundle = new Bundle();
+//		                     mBundle.putString("OrderSwiping", "RL");
+//		                     i.putExtras(mBundle);
+//		                     startActivity(i);
+//	                  }
+//	                  else 
+//	                  {
+	        	  Log.i("onCLick method", Integer.toString(position));
+	        		 if (  mSwipeDetected == Action.None){
+	        	  		orderDetect(position);
+	        	  		openCurrentOrderInteract();
+	        		 }	
+	        	  		
+//	                     try {
+//	                    	 messagesExport = listItem.getCusThread().getMessages();
+//	                 	  }
+//	                 	  catch (NullPointerException npe) {
+//	                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
+//	                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+//	                    	 toast.show();
+//	                    	 Intent intent = getIntent();
+//	                    	 finish();
+//	                    	 startActivity(intent);
+//	                 	  }
 	                     
-	                      listItem = (Order) listView1.getItemAtPosition(position);
-	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextSize(28);
-	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
-	                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setText("Opening...");
-	                      
-	                     try {
-	                    	 messagesExport = listItem.getCusThread().getMessages();
-	                 	  }
-	                 	  catch (NullPointerException npe) {
-	                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
-	                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
-	                    	 toast.show();
-	                    	 Intent intent = getIntent();
-	                    	 finish();
-	                    	 startActivity(intent);
-	                 	  }
-	                     
-	                     Intent i = new Intent(getApplicationContext(),
-	                            OrderInfoTabScreen.class);
-	                     startActivity(i);
-	                     
-	                    
-	                  } 
-	             
-	                  else if(!swipeDetected())
-	                  {
-	                	  Log.i("stop value", "it was stoped");
-	                     //view.setBackgroundColor(Color.WHITE);
-	                  }
-	                  else 
-	                  {
-	                	 
-	                  }
-	                  listItem = (Order) listView1.getItemAtPosition(position);
-                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextSize(28);
-                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
-                      ((CustomTextView)view.findViewById(R.id.altOrderTitle)).setText("Opening...");
-                      view.setBackgroundColor(Color.rgb(66, 174, 255));
-                      Log.i("selected item product", listItem.getProduct().getProductType());
-                     try {
-                    	 messagesExport = listItem.getCusThread().getMessages();
-                 	  }
-                 	  catch (NullPointerException npe) {
-                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
-                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
-                    	 toast.show();
-                    	 Intent intent = getIntent();
-                    	 finish();
-                    	 startActivity(intent);
-                 	  }
-                     
-                     Intent i = new Intent(getApplicationContext(),
-                            OrderInfoTabScreen.class);
-                     startActivity(i);
+//	                  }
+	                  
 	                  
 	               
 	          }
@@ -330,7 +471,8 @@ import com.tabscreens.OrderInfoTabScreen;
 		listView1.setOnTouchListener(gestureListener);
 		listView1.setOnItemLongClickListener(new OnItemLongClickListener() {
 	          public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
-	        	  if (position<forPrint.size())
+	        	 if (  mSwipeDetected == Action.None)
+	        	 { if (position<forPrint.size())
 	        	  {
 	        	  listItem =  forPrint.get(position);
 	        	  List<String> listItems = new ArrayList<String>();
@@ -362,9 +504,7 @@ import com.tabscreens.OrderInfoTabScreen;
 		                    	 startActivity(intent);
 		                 	  }
 		                    
-		                     Intent i = new Intent(getApplicationContext(),
-			                            OrderInfoTabScreen.class);
-			                     startActivity(i);
+		                     openCurrentOrderInteract();
 		                     
 	  			    	}
 	  			    	else if (item == 1)
@@ -379,38 +519,44 @@ import com.tabscreens.OrderInfoTabScreen;
 	  			AlertDialog alert = builder.create();
 	  			alert.show();
 	        	  }
+	        	 }
 	        	  return false;
 	         
 	          }
 	      });
 
-       
 	}
 	
 	
 	 class MyGestureListener extends SimpleOnGestureListener implements OnTouchListener
 	    {
-		 @Override
+		 private int counter =0 ;
+
+		@Override
 		public boolean onDown(MotionEvent arg0) {
-			 Log.i("MyGesture", "onDown");  
+			Log.i("oDown", Float.toString(arg0.getX()));
 			return true;
 		}
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
-			if(Math.abs(e1.getY()-e2.getY()) > 250) 
-	            return false;               
-	        if(e1.getX() - e2.getX() > 70// && Math.abs(velocityX) > 200
+			Log.i("onFling", Float.toString(e1.getX()));
+	        if(e1.getX() - e2.getX() > 20// && Math.abs(velocityX) > 200
 	        		){ 
 	        	setAction(Action.RL);
+	        	 int id = listView1.pointToPosition((int) e1.getX(), (int) e1.getY());
+	        	openCurrentOrderInfo();
 	 	      Log.d("one", "Coords: x=" + e1.getX() + ",y=" + e2.getY());
 	 	     return true;
 	        }
-	        else if(e2.getX() - e1.getX() > 70// && Math.abs(velocityX) > 200
+	        else if(e2.getX() - e1.getX() > 20// && Math.abs(velocityX) > 200
 	        		){
 	        	
 	        	setAction(Action.LR);
+	        	
 	  	       Log.d("two", "Coords: x=" + e1.getX() + ",y=" + e2.getY());
+	  	     int id = listView1.pointToPosition((int) e1.getX(), (int) e1.getY());
+	  	     openCurrentOrderInteract();
 	  	     return true;
 	        }
 			return false;
@@ -461,30 +607,36 @@ import com.tabscreens.OrderInfoTabScreen;
 			float pos = dpFromPx(e2.getY() - e1.getY());
 			if (pos < -280 & pos > -320)
 			{
-				Log.i("stopDownload flag", Boolean.toString(stopDownload));
 				mSwipeDetected = Action.BT;
 				try {
-					if (!AbstractTaskLoader.isCanselled())
-					{	
+					
+						
 						boolean isOnline = faq.isOnline();
-						if (isOnline)
-						{
-							DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
-							adapter.notifyDataSetChanged();
-						}
+					if (isOnline)
+					{
+							if (!TaskProgressDialogFragment.dialogIsProceeding)
+							{
+								DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
+							    adapter.notifyDataSetChanged();
+							}
+							else 
+							{
+								Log.i("DashboardAct", "it was cancelled");
+							}
 					}
 					else
 					{
-					   Toast mToast =  Toast.makeText(getApplicationContext(), "Downloading was interrupted. Please try later", Toast.LENGTH_LONG);
+					   Toast mToast =  Toast.makeText(getApplicationContext(), "No network connection. Please try later.", Toast.LENGTH_LONG);
 			   	  	   mToast.show();
 					}
+				
 
 				} 
 
-			catch (Exception e) {
-					e.printStackTrace();
+			catch (Exception q) {
+					q.printStackTrace();
 				}
-				
+				counter ++;
 			}
 
 		  	return false;
@@ -495,46 +647,40 @@ import com.tabscreens.OrderInfoTabScreen;
 		}
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
-			
-			 Log.i("MyGesture", "onSingleTapUp");  
 			return false;
-			
-			
 		}
 		@Override
         public boolean onDoubleTap(MotionEvent e) {
-//			try {
-//				
-//					if (!DashboardActivityAlt.pd.isShowing() & !DashboardActivityAlt.stopDownload)
-//					{
-//						DashboardActivityAlt.pd = ProgressDialog.show(DashboardActivityAlt.this,
-//							"Please wait..", "Downloading Data...", true, true);
-//							new DownloadTask().execute();
-//					}
-//			
-//				
-//			}
-//			catch (Exception exp) {
-//				// TODO Auto-generated catch block
-//				exp.printStackTrace();
-//			}
 			return true;
 		}
-		
-		public boolean onTouchEvent(MotionEvent me)
+		 float gestureDistance = 0;
+		 public boolean onTouchEvent(MotionEvent me)
 		 {
+			 Log.i("ontouch", "gestureListener");
+			switch (me.getAction() & MotionEvent.ACTION_MASK) {
+	        case MotionEvent.ACTION_DOWN:               
+	            Log.d("actionDown", "gestureDistance:" + gestureDistance);
+	            break;
+	        case MotionEvent.ACTION_UP:
+	            Log.d("actionUp", "gestureDistance:" + gestureDistance);
+	            break;
+	        case MotionEvent.ACTION_MOVE:
+	            Log.d("actionMove", "gestureDistance:" + gestureDistance);
+	            break;
+	        default:
+	            Log.d("action default", "default");
+	            break;}
 			return gestureDetector.onTouchEvent(me);
 		 }
 		
 			public boolean onTouch(View arg0, MotionEvent arg1) 
 			{
-
+				Log.i("ontouch", arg0.getClass().toString());
 				return false;
 			 
 			}
 			
 	    }
-
 	    @Override
 	    public boolean dispatchTouchEvent(MotionEvent ev){
 	        super.dispatchTouchEvent(ev);
@@ -550,7 +696,6 @@ import com.tabscreens.OrderInfoTabScreen;
 		  private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 	        @Override
 	        public void onReceive(Context context, Intent intent) {
-	        	Log.i("Dashboard onreceive", "I've got receiving");
 	        	adapter.notifyDataSetChanged();
 	        	updateUI(intent);       
 	        }
@@ -559,73 +704,44 @@ import com.tabscreens.OrderInfoTabScreen;
 	    @Override
 		public void onResume() {
 			super.onResume();	
-			Log.i("dashboard activity", "it was resumed");
+			 openInteractFlag = false;
+			 openInfoFlag = false;
 			listView1.setAdapter(adapter);
 			if (savedPosition >= 0) {
 			      listView1.setSelectionFromTop(savedPosition, savedListTop);
 			    }
 			startService(intent);
 			registerReceiver(broadcastReceiver, new IntentFilter(ServiceIntentMessages.ORDERS_IMPORT));
-			
 		}
 	    
 	    
 	    @Override
 		public void onRestart() {
 			super.onRestart();	
-			Log.i("dashboard activity", "it was restarted");
 		}
 	    
 		@Override
 		public void onPause() {
 			super.onPause();
-			Log.i("dashboard activity", "it was stoped");
-	
 			unregisterReceiver(broadcastReceiver);
 		   stopService(intent);
 		   savedPosition = listView1.getFirstVisiblePosition();
 		   View firstVisibleView = listView1.getChildAt(0);
 		   savedListTop = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
 		   editor.putInt("savedPosition", savedPosition);
-		      editor.putInt("savedListTop", savedListTop);
-		      editor.commit();
+		   editor.putInt("savedListTop", savedListTop);
+		   editor.commit();
 		}	
 
-		
-	    private void updateUI(Intent intent) {
-	    	
+		private void updateUI(Intent intent) {
 	    	try 
 			{	
-				//forPrint = new ArrayList<Order>(ServiceIntentMessages.serviceList);//ServiceIntentMessages.serviceList;
 	    		DashboardActivityAlt.this.runOnUiThread(new Runnable ()
 	    		{
 					public void run() {
-//						 Bundle b = getIntent().getExtras();
-//						 if (b!=null)
-//							 {  ArrayList<Order> fromService = b.getParcelableArrayList("orders");
-//						     forPrint = fromService;
-//						     Log.i("from service list", Integer.toString(fromService.size()));
-//							for(Order a: fromService)
-//							{
-//								Log.i("dashboard update list", a.toString());
-//							}
-			//				OrderAdapter adapter = new OrderAdapter(DashboardActivityAlt.this,
-			//						R.layout.dash_alt_item, ServiceIntentMessages.serviceList);
-			//				listView1.setAdapter(adapter);
-						for (Order a: forPrint)
-						{
-						Log.i("forPrint befor equate updateUI", a.toString());
-						}
 						ServiceIntentMessages b = new ServiceIntentMessages();
 						forPrint = b.getServiceList();
-						for (Order a: b.getServiceList())
-						{
-							Log.i("serviceList befor equate updateUI", a.toString());
-						}
-					//	 forPrint = ServiceIntentMessages.serviceList;
 						 adapter.notifyDataSetChanged();
-//						 }
-						
 					}
 	    		});
 			} 
@@ -633,35 +749,24 @@ import com.tabscreens.OrderInfoTabScreen;
 			{
 				e.printStackTrace();
 			}
+	    	
 	    }
-	    
-	    
 	    @Override
 	    public void onSaveInstanceState(Bundle savedInstanceState) {
 	      super.onSaveInstanceState(savedInstanceState);
-	      // Save UI state changes to the savedInstanceState.
-	      // This bundle will be passed to onCreate if the process is
-	      // killed and restarted.
-	      Log.i("dashboard onSaveInstance","Im here fuck");
-	        savedPosition = listView1.getFirstVisiblePosition();
-	        state = listView1.onSaveInstanceState();
-			View firstVisibleView = listView1.getChildAt(0);
-			savedListTop = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
-			Log.i("listview pos on save", Integer.toString(savedPosition));
-	        Log.i("listview pos on save", Integer.toString(savedListTop));
+	       savedPosition = listView1.getFirstVisiblePosition();
+	      state = listView1.onSaveInstanceState();
+		  View firstVisibleView = listView1.getChildAt(0);
+		  savedListTop = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
 	      savedInstanceState.putInt("savedPosition", savedPosition);
 	      savedInstanceState.putInt("savedListTop", savedListTop);
 	    }
-	    
-	    
 	    @Override
 	    public void onRestoreInstanceState(Bundle savedInstanceState) {
 	      super.onRestoreInstanceState(savedInstanceState);
 	      
 	      int savedPosition = savedInstanceState.getInt("savedPosition");
 	      int savedListTop=  savedInstanceState.getInt("savedListTop");
-	      Log.i("Restore listview pos", Integer.toString(savedPosition));
-	      Log.i("Restore listview pos", Integer.toString(savedListTop));
 	      if (savedPosition >= 0) {
 		      listView1.setSelectionFromTop(savedPosition, savedListTop);
 		    }
@@ -676,9 +781,8 @@ import com.tabscreens.OrderInfoTabScreen;
 		    super.onConfigurationChanged(newConfig);
 		  }
 		public void onLoadFinished(Object data) {
-			
-				
-				if (DashboardActivityAlt.page == 2)
+
+			if (DashboardActivityAlt.page == 2)
 	        	{	
 	        		listView1.setAdapter(adapter);
 	        	}
@@ -687,7 +791,6 @@ import com.tabscreens.OrderInfoTabScreen;
 		}
 		public void onCancelLoad() {
 			 Toast.makeText(DashboardActivityAlt.this, "Some problems at server occurs. Please try later ", Toast.LENGTH_LONG).show();
-			
 		}
 		
 	    public ArrayList<Order> getOrderList()
@@ -698,5 +801,97 @@ import com.tabscreens.OrderInfoTabScreen;
 	     {
 	    	 adapter.notifyDataSetChanged();
 	     }
-	    
+	     private void orderDetect(int id)
+	     {
+	    	 try{
+	             Order temp = (Order) adapter.getItem((id));
+	             Log.i("swiping order", temp.toString());
+	             
+	              View w = adapter.getView(id);
+	              Log.i("got view tag detect",  ((CustomTextView) w.findViewById(R.id.altOrderId)).getText().toString());
+	              setSwipedId(w);
+	 	    	 w.setBackgroundColor(Color.rgb(66, 174, 255));
+	             listItem = (Order) adapter.getItem((id));
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setTextSize(28);
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setText("Opening...");
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
+	             ((CustomTextView) w.findViewById(R.id.altOrderStatus)).setTextColor(Color.WHITE);
+	             ((TextView) w.findViewById(R.id.menu_sep1)).setBackgroundColor(Color.WHITE);
+	             ((TextView) w.findViewById(R.id.menu_sep2)).setVisibility(View.GONE);
+	             ((CustomTextView) w.findViewById(R.id.altOrderPrice)).setVisibility(View.GONE);
+	             
+	            // ((CustomTextView) w.findViewById(R.id.menu_sep1)).setTextColor(Color.WHITE);
+	          //   ((CustomTextView) w.findViewById(R.id.menu_sep1)).setLayoutParams(new RelativeLayout.LayoutParams(2, LayoutParams.WRAP_CONTENT));
+	            
+	            
+	             
+	           	 messagesExport = listItem.getCusThread().getMessages();
+	             //adapter.notifyDataSetChanged();
+	    	 }
+	            catch(Exception e)
+	            {
+	            	e.printStackTrace();
+	            	 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
+		           			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+		           	 toast.show();
+	            }
+	     }
+	     private void orderDetectDismiss()
+	     {
+	    	 try{
+	    		 Log.i("dashboard", "orderDetDismiss");
+	            // Order temp = (Order) adapter.getItem(getSwipedId());
+	           //  Log.i("swiped listItem", temp.toString());
+	              //View w = adapter.getView(id);
+	             View w = getSwipedId();//adapter.getView(getSwipedId());
+	             Log.i("got view tag dismiss",  ((CustomTextView) w.findViewById(R.id.altOrderId)).getText().toString());
+	             // Log.i("dismiss order", temp.toString());
+	 	    	 w.setBackgroundColor(Color.rgb(0, 0, 0));
+	 	       // Log.i("swiped id", Integer.toString(getSwipedId()));
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setTextSize(17);
+	            // adapter.setStatusColor(temp);
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setTextColor(Color.WHITE);
+	             ((CustomTextView) w.findViewById(R.id.altOrderStatus)).setTextColor(adapter.getStatusColor(listItem));
+	             ((TextView) w.findViewById(R.id.menu_sep2)).setVisibility(View.VISIBLE);
+	             ((TextView) w.findViewById(R.id.menu_sep1)).setBackgroundColor(Color.rgb(86, 86, 86));
+	             ((CustomTextView) w.findViewById(R.id.altOrderPrice)).setVisibility(View.VISIBLE);
+	             ((CustomTextView) w.findViewById(R.id.altOrderTitle)).setText(listItem.getTitle());
+	             adapter.notifyDataSetChanged();
+	             
+	    	 }
+	            catch(Exception e)
+	            {
+	            	e.printStackTrace();
+	            }
+	     }
+	    private void openCurrentOrderInteract()
+	    {
+	    	
+           Intent i = new Intent(getApplicationContext(),
+                  OrderInfoTabScreen.class);
+           Bundle mBundle = new Bundle();
+           mBundle.putString("OrderSwiping", "LR");
+           i.putExtras(mBundle);
+           startActivity(i);
+           
+	    }
+	    private void openCurrentOrderInfo()
+	    {
+	    	
+	           Intent i = new Intent(getApplicationContext(),
+	                  OrderInfoTabScreen.class);
+	           Bundle mBundle = new Bundle();
+	           mBundle.putString("OrderSwiping", "RL");
+	           i.putExtras(mBundle);
+	           startActivity(i);
+          
+	    }
+	    private View getSwipedId()
+	    {
+	    	return this.orderSwipedView;
+	    }
+	    private void setSwipedId(View id)
+	    {
+	    	 this.orderSwipedView = id;
+	    }
 }

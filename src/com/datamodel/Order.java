@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 public class Order implements Parcelable{
 
 	@SerializedName("files")
-	List<File> files;
+	List<Files> files;
 	@SerializedName("customer_deadline_sent")
 	boolean customer_deadline_sent;
 	@SerializedName("payed")
@@ -65,7 +65,7 @@ public class Order implements Parcelable{
 	List<Order> orders;
 	public Order()
 	{}
-	public Order(ArrayList<File> files, boolean customer_deadline_sent,
+	public Order(ArrayList<Files> files, boolean customer_deadline_sent,
 			boolean payed, boolean payment_failed, boolean not_payed_sent,
 			String info, int id, Category category, String timezone,
 			String title, Level level, DateTime updated_at, float price,
@@ -106,7 +106,7 @@ public class Order implements Parcelable{
 		this();
 		readFromParcel(in);
 	}
-	public List<File> getOrderFiles() {
+	public List<Files> getOrderFiles() {
 		return this.files;
 	}
 
@@ -210,7 +210,7 @@ public class Order implements Parcelable{
 
 	// setters
 
-	public void setOrderFiles(List<File> files) {
+	public void setOrderFiles(List<Files> files) {
 		this.files = files;
 	}
 
@@ -336,7 +336,7 @@ public class Order implements Parcelable{
 		return 0;
 	}
 	private void readFromParcel(Parcel in) {
-		files = in.readArrayList(File.class.getClassLoader());
+		files = in.readArrayList(Files.class.getClassLoader());
 		checkpoint_deadline_sent = in.readByte() == 1; 
 		customer_deadline_sent = in.readByte() == 1; 
 		payed = in.readByte() == 1; 
