@@ -10,10 +10,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.content.Context;
 import android.util.Log;
-
 import com.datamodel.Category;
 import com.datamodel.Customer;
 import com.datamodel.EssayCreationStyle;
@@ -32,28 +29,40 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
+/**
+ *	 класс для парсинга данных с получаемого json и преобразование их в соответствующие обьекты.
+ */
 public class DataParsing {
-	private static String KEY_STATUS = "status";
-    private static String KEY_MESSAGE = "message";
-    private static String KEY_CATEGORIES = "categories";
+	/**	 *	 строка для парсинга категорий.	 */
+	private static String KEY_CATEGORIES = "categories";
+	/**	 *	 строка для парсинга данных клиента.	 */
     private static String KEY_CUSTOMER = "customer";
+    /**	 *	 строка для парсинга id	 */
     private static String KEY_ID = "id";
+    /**	 *	 строка для парсинга данных пользователя	 */
     private static String KEY_USER = "user";
     private static String KEY_DATA = "data";
+    /**	 *	 строка для парсинга заказов	 */
     private static String KEY_ORDERS= "orders";
+    /**	 *	 строка для парсинга level'ов	 */
     private static String KEY_LEVELS= "levels";
+    /**	 *	 строка для парсинга number pages	 */
     private static String KEY_NUMBER_PAGES ="pages_number_list";
+    /**	 *	 строка для парсинга number of references	 */
     private static String KEY_NUMBER_REFERENCES ="number_of_references_list";
+    /**	 *	 строка для парсинга subjects	 */
     private String KEY_SUBJECTS = "subjects";
+    /**	 *	 строка для парсинга essay types	 */
     private static String KEY_ESSAY_TYPE= "essay_types";
+    /**	 *	 строка для парсинга essay creation styles	 */
     private static String KEY_CREATION_STYLES= "essay_creation_styles";
-   
-    
-    private DatabaseHandler databaseHandler;
-    private Context _context;
-	private String KEY_STATUSES = "process_statuses";
-	
+    /**	 *	 строка для парсинга process statuses	 */
+    private String KEY_STATUSES = "process_statuses";
+    /**
+     *	 метод для парсинга и преобразования json в обьекты process statuses
+     *@param json - данные для парсинга
+     *@return возвращает List ProcessStatus - ов
+     */
 	public List<ProcessStatus> wrapStatuses(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -72,7 +81,11 @@ public class DataParsing {
 		
 		return obj_statuses;
 	}
-	
+	 /**
+     *	 метод для парсинга и преобразования json в обьекты Level
+     *@param json - данные для парсинга
+     *@return возвращает List Level - ов
+     */
 	public List<Level> wrapLevels(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -89,7 +102,12 @@ public class DataParsing {
         
 		
 		return obj_statuses;
-	}
+	}	
+	/**
+     *	 метод для парсинга id пользователя
+     *@param json - данные для парсинга
+     *@return возвращает id юзера
+     */
 	public String wrapUserId(JSONObject json) throws JSONException
 	{
 		String id=null;
@@ -104,7 +122,11 @@ public class DataParsing {
 		Log.i(" user json while login",customer.toString());
     	return id;
 	}
-	
+	 /**
+     *	 метод для парсинга и преобразования json в обьекты Level
+     *@param json - данные для парсинга
+     *@return возвращает List Category
+     */
 	public List<Category> wrapCategories(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -119,7 +141,11 @@ public class DataParsing {
         tasks = gson.fromJson(array.toString(), listType);
     	return tasks;
 	}
-	
+	 /**
+     *	 метод для парсинга и преобразования json в обьекты Order
+     *@param k - данные для парсинга
+     *@return возвращает List Order
+     */
 	public List<Order> wrapOrders(JSONObject k) throws JSONException
 	{
 		if (k != null)
@@ -156,6 +182,12 @@ public class DataParsing {
 			return null;
 	
 	}
+	
+	 /**
+     *	 метод для парсинга  и преобразования json в обьект Order
+     *@param k - данные для парсинга
+     *@return возвращает обьект Order
+     */
 	public Order wrapOrder(JSONObject k) throws JSONException
 	{
 		if (k != null)
@@ -183,7 +215,12 @@ public class DataParsing {
 			return null;
 	
 	}
-	
+	/**
+     *	 метод для парсинга и преобразования json в обьекты Subject
+     *@param json - данные для парсинга
+     *@return возвращает List Subject
+     */
+
 	public List<Subject> wrapSubjects(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -198,6 +235,11 @@ public class DataParsing {
         tasks = gson.fromJson(array.toString(), listType);
     	return tasks;
 	}
+	/**
+     *	 метод для парсинга и преобразования json в обьекты EssayType
+     *@param json - данные для парсинга
+     *@return возвращает List EssayType
+     */
 	public List<EssayType> wrapEssayType(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -212,6 +254,11 @@ public class DataParsing {
         tasks = gson.fromJson(array.toString(), listType);
     	return tasks;
 	}
+	/**
+     *	 метод для парсинга и преобразования json в обьекты EssayCreationStyle
+     *@param json - данные для парсинга
+     *@return возвращает List EssayCreationStyle
+     */
 	public List<EssayCreationStyle> wrapEssayCreationStyle(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -226,7 +273,11 @@ public class DataParsing {
         tasks = gson.fromJson(array.toString(), listType);
     	return tasks;
 	}
-	
+	/**
+     *	 метод для парсинга и преобразования json в обьекты NumberPages
+     *@param json - данные для парсинга
+     *@return возвращает List NumberPages
+     */
 	public final List<NumberPages> wrapNumberPages(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -244,7 +295,11 @@ public class DataParsing {
 
     	return numberList;
 	}
-	
+	/**
+     *	 метод для парсинга и преобразования json в обьекты NumberOfReferences
+     *@param json - данные для парсинга
+     *@return возвращает List NumberOfReferences
+     */
 	public final List<NumberOfReferences> wrapNumberReferences(JSONObject json) throws JSONException, SQLException
 	{
 		
@@ -263,17 +318,21 @@ public class DataParsing {
 
     	return numberList;
 	}
-	
+	/**
+     *	 метод для парсинга и преобразования json в обьект Customer
+     *@param json - данные для парсинга
+     *@return возвращает обьект Customer
+     */
 	public Customer wrapUser (JSONObject json) throws JSONException, JsonSyntaxException 
    {
 		
 		JSONObject data = json.getJSONObject(KEY_DATA);
     	Gson gson = new Gson();
     	JSONObject customer = new JSONObject();
-    	JSONObject jsonUser = new JSONObject();
+    	new JSONObject();
     	customer = data.getJSONObject(KEY_CUSTOMER);
-    	jsonUser = customer.getJSONObject(KEY_USER);
-    	JsonParser parser = new JsonParser();
+    	customer.getJSONObject(KEY_USER);
+    	new JsonParser();
     	
 		Customer user =  gson.fromJson(customer.toString(),Customer.class);
     	return user;

@@ -7,13 +7,15 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
+/** * класс обьекта темы заказа.*/
 @DatabaseTable(tableName = "subjects")
 public class Subject implements Parcelable{
 	private static final String SUBJECT_ID = "subject_id";
+	/** * id темы заказа.*/
 	@SerializedName("id")
 	@DatabaseField(columnName = SUBJECT_ID,id = true,generatedId = false)
 	int id;
+	/** * название темы заказа.*/
 	@SerializedName("title")
 	@DatabaseField(dataType = DataType.STRING)
 	String title;
@@ -59,8 +61,8 @@ public class Subject implements Parcelable{
 		title = in.readString();
 		
 	}
-	public static final Parcelable.Creator CREATOR =
-	    	new Parcelable.Creator() {
+	public static final Parcelable.Creator<Subject> CREATOR =
+	    	new Parcelable.Creator<Subject>() {
 	            public Subject createFromParcel(Parcel in) {
 	                return new Subject(in);
 	            }

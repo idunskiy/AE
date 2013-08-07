@@ -16,11 +16,9 @@ import com.asynctaskbase.TaskProgressDialogFragment;
 import com.fragments.NewMessageFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask для посылки сообщения по заказу.  */
 public class SendMessageAsync extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
-	private static String KEY_MESSAGE = "message";
-	private static String KEY_EXCEPTION= "exception";
 	public static String messageErrorMess;
 	private Context context;
 	private boolean errorFlag = false;
@@ -34,7 +32,7 @@ public class SendMessageAsync extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		SendMessageAsync loader = new SendMessageAsync(fa);
@@ -50,10 +48,9 @@ public class SendMessageAsync extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
-
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
-			UserFunctions reg = new UserFunctions();
 			JSONObject response = null ;
 			UserFunctions userFunc = new UserFunctions();
 			String result = "";
@@ -81,15 +78,17 @@ public class SendMessageAsync extends AbstractTaskLoader{
 				    String res = response.getString(KEY_STATUS);
 				    if(Integer.parseInt(res) == 1)
 				    {	
-				    	result = "success";
+				    	result = "send_message_success";
 				    	
 				    }
 				    else 
 				    {
-				    	result = "error";
-				    	messageErrorMess ="Something went wrong. Please try later.";
-				    	this.setCanseled(true);
-	             		TaskProgressDialogFragment.cancel();
+				    	Log.i("SendMessageAsync", "key status is 0");
+				    	result = "send_message_error";
+//				    	messageErrorMess ="Something went wrong. Please try later.";
+//				    	errorFlag = true;
+//				    	this.setCanseled(true);
+//	             		TaskProgressDialogFragment.cancel();
 				    }
     
 
@@ -114,12 +113,11 @@ public class SendMessageAsync extends AbstractTaskLoader{
 	}
 	@Override 
 	 protected void onStopLoading() {
-	        Log.i("LoginAsync", "onStopLoading method");
+	        Log.i("SendMessageAsync", "onStopLoading method");
 	        this.setCanseled(true);
 	        TaskProgressDialogFragment.cancel();
 	        if(errorFlag)
 	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
-	        cancelLoad();
 	    }
 
 }

@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
+/** * класс обьекта потока иформации по заказу в присылаемом сообщении.*/
 public class Threads implements Parcelable{
+	/** * обьект заказа*/
 	@SerializedName("order")
 	private Order order;
+	/** * id заказа*/
 	@SerializedName("id")
 	private int id;
 	public Threads()
@@ -15,8 +17,6 @@ public class Threads implements Parcelable{
 	public Threads(Parcel in) {
 		readFromParcel(in);
 	}
-	
-	
 	public int getTreadId() 
 	{
 		 return this.id;
@@ -55,8 +55,8 @@ public class Threads implements Parcelable{
 		order = in.readParcelable(Order.class.getClassLoader());
 		
 	}
-	public static final Parcelable.Creator CREATOR =
-	    	new Parcelable.Creator() {
+	public static final Parcelable.Creator<Threads> CREATOR =
+	    	new Parcelable.Creator<Threads>() {
 	            public Threads createFromParcel(Parcel in) {
 	                return new Threads(in);
 	            }

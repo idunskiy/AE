@@ -14,24 +14,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-
+/**  *	 класс парсинга полученной с сервера строки в JSON обьекты/массивы */
 public class JSONParser {
-	
-	   
 	    static JSONObject jObj = null;
 	    static JSONArray jArr = null;
 	    static String json = "";
 	    private static final DefaultHttpClient httpClient = new DefaultHttpClient() ;
 	    String jsonData = null;
 		List<Cookie> cookies;
-	    private static String cookie;
 	    
 	     // constructor
-	    public JSONParser() {
-	    	
-	    }
-	    public static DefaultHttpClient getInstance() { return httpClient; }
+	    public JSONParser() { }
 	    
+	    public static DefaultHttpClient getInstance() { return httpClient; }
+	    /**  *	 метод получения обьекта InputStream из полученных от сервера данных
+	     *  @param url - url, обращение к которому вернет необходимые запрашиваемые данные
+	     *  @param params - параметры сетевого соединения
+	     *  @param method - CRUD методы Rest архитектуры
+	     *  @return обьект  InputStream*/
 	    public InputStream  requestExecution(String url, List<NameValuePair> params, RequestMethod method)
 	    {
 	    	InputStream is = null;
@@ -50,7 +50,11 @@ public class JSONParser {
 			}
 	    	  return is;
 	    }
-	    
+	    /**  *	 метод получения обьекта JSONObject из полученных от сервера данных
+	     *  @param url - url, обращение к которому вернет необходимые запрашиваемые данные
+	     *  @param params - параметры сетевого соединения
+	     *  @param method - CRUD методы Rest архитектуры
+	     *  @return обьект  JSONObject*/
 	    public JSONObject getJSONFromUrl(String url, List<NameValuePair> params, RequestMethod method) throws Exception 
 	    {
 	    	
@@ -112,6 +116,11 @@ public class JSONParser {
 	        
 	        return jArr;
 	    }
+	    /**  *	 метод получения обьекта String из полученных от сервера данных (используется для получения captcha)
+	     *  @param url - url, обращение к которому вернет необходимые запрашиваемые данные
+	     *  @param params - параметры сетевого соединения
+	     *  @param method - CRUD методы Rest архитектуры
+	     *  @return обьект  String*/
 	    public String getStringFromUrl (String url, List<NameValuePair> params) throws Exception
 	    {
 		    InputStream is = requestExecution( url, params, RequestMethod.GET);
@@ -135,6 +144,9 @@ public class JSONParser {
 	        return json;
 
 	    }
+	    /**  *	 метод получения обьекта JSONObject из передаваемого обьекта InputStream
+	     *  @param is - обьект InputStream 
+	     *  @return обьект JSONObject*/
 	    public JSONObject getJSONfromInputStream (InputStream is) throws Exception
 	    {
 	    	

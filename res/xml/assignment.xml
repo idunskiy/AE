@@ -21,6 +21,7 @@
 	                 <com.customitems.IconPreference
 	                        android:title="Category"
 	                        foo:icon = "@drawable/list_pointer"
+	                        android:enabled= "false"
 	                        android:widgetLayout=  "@null"
 	                        android:summary="Not selected"
 	                        android:key="categoryPref"

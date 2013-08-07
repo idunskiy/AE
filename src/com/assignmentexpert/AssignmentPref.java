@@ -1,6 +1,7 @@
 package com.assignmentexpert;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,7 +24,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,13 +33,12 @@ import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -77,103 +76,131 @@ import com.datamodel.NumberOfReferences;
 import com.datamodel.NumberPages;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
+import com.library.Constants;
 import com.library.DatabaseHandler;
 import com.library.FrequentlyUsedMethods;
-import com.library.OrderPreferences;
 import com.library.UserFunctions;
-import com.tabscreens.DashboardTabScreen;
+import com.library.singletones.OrderPreferences;
 
+/** *Activity для отправки нового заказа. Так как, согласно дизайну, Activity похожа на Preference, наследуется от PreferenceActivity.*/
 @SuppressLint("NewApi")
 public class AssignmentPref extends PreferenceActivity {
-    private ListView fileList;
+	/** *кнопка выбора файлов для отправки.*/
 	private Button btnSelectFiles;
+	/** *sharedPreferences для сохранения настроек текущего заказа в случае, если пользователь решит покинуть текущую активность*/
 	private SharedPreferences prefs;
 	private Editor prefEditor;
+	/** адаптер для списка файлов **/
 	private ArrayAdapter<File> adapter;
+	/** контейнер для отметок файлов на удаление**/
 	ArrayList<Integer> checks=new ArrayList<Integer>();
-	private int currFilePos;
+	/** кнопка удаления файлов**/
 	private Button btnFilesRemove;
+	/**основной ListView активности**/
 	private ListView mainList;
 	View assignfooter;
 	View editsfooter;
-	Context context;
-	private PreferenceScreen mFilterShow;
-	private View filesList;
-	private View newAssign;
 	
-	 ListView customfileList;
+	/**Context текущей активности**/
+	Context context;
+	/**ListView списка файлов**/
+	private View filesList;
+	ListView customfileList;
 	private Button btnSubmitOrder;
+	/**IconPreference для тем заказа**/
 	private IconPreference subjectPref;
+	/**IconPreference для категорий**/
 	private IconPreference categoryPref;
+	/**IconPreference для уровней**/
 	private IconPreference levelPref;
+	/**IconPreference для временных зон**/
 	private IconPreference timezonePref;
 	
+	/**id для диалога выбора даты**/
 	 static final int DATE_DIALOG_ID = 1;
+	 /**id для диалога выбора времени**/
 	 static final int TIME_DIALOG_ID = 0;
-	 
-	 
-	 private static String KEY_STATUS = "status";
-	 
+	 	 
+	 /**числовое значение выбранного дня**/
 	 private int mDay;
+	 /**числовое значение выбранного часа**/
 	 private int mHour;
+	 /**числовое значение выбранной минуты**/
 	 private int mMinute;
+	 /**числовое значение выбранного года**/
 	 private int mYear;
+	 /**числовое значение выбранного месяца**/
 	 private int mMonth;
+	 /**ListPreference числа страниц essay**/
 	private ListPreference nmbPages;
+	/**ListPreference типа essay**/
 	private ListPreference typePref;
+	/**ListPreference числа ccылок для essay**/
 	private ListPreference nmbRefs;
+	/**ListPreference типа создания essay**/
 	private ListPreference crStyle;
+	/**ImageView информации напротив EditText названия заказа**/
 	private ImageView orderInfo;
+	/**ImageView информации напротив EditText задания заказа**/
 	private ImageView taskInfo;
 	boolean trigger = false;
+	/**CustomTextView для общего заголовка файлов**/
 	 CustomTextView textHead;
+	 /**CustomTextView для общего размера файлов**/
 	 CustomTextView fileSizeHead;
+	 /**CustomEditText названия заказа**/
 	private CustomEditText orderTitle;
+	 /**CustomEditText деталей заказа**/
 	private CustomEditText taskText;
 	UserFunctions launch = new UserFunctions();
+	/**ListPreference продукта**/
 	private ListPreference productPref;
+	/**CustomEditPreference времени выполнения заказа**/
 	CustomEditPreference deadlineCus;
+	/**ArrayAdapter для тем заказов**/
 	ArrayAdapter<Subject> subjectDataAdapter ;
+	/**ArrayAdapter для категории заказов**/
 	ArrayAdapter<Category> categoryDataAdapter;
+	/**ArrayAdapter для уровня заказов**/
 	ArrayAdapter<Level> levelDataAdapter;
 	
-//	final ArrayList<Integer> prefValues =  new ArrayList<Integer>(5);
 	
-	String[] prefValues;// = new String[8];
+	String[] prefValues;
 	
 	
 	Object[] essayPref = new Object[4];
-	//final ArrayList<Object> essayPref = new ArrayList<Object>(5);
-	
-//	CheckBoxPreference dtlInfo;
-//	CheckBoxPreference ExcVideo;
-//	CheckBoxPreference commVideo;
-	
-//	CustomCheckBoxRelative dtlInfo;
-//	CustomCheckBoxRelative ExcVideo;
-//	CustomCheckBoxRelative commVideo;
-	
+	/**CustomCheckBoxPref детальной информации**/
 	CustomCheckBoxPref dtlInfo;
+	/**CustomCheckBoxPref эсклюзивного видео**/
 	CustomCheckBoxPref ExcVideo;
+	/**CustomCheckBoxPref обычного видео**/
 	CustomCheckBoxPref commVideo;
 	
+	/**ArrayAdapter количества страниц**/
 	ArrayAdapter<NumberPages> nmbPageDataAdapter;
+	/**ArrayAdapter количества ссылочных материалов**/
 	ArrayAdapter<NumberOfReferences> nmbRefsDataAdapter ;
+	/**ArrayAdapter типов essay**/
 	ArrayAdapter<EssayType> essayTypeDataAdapter;
+	/**ArrayAdapter типа создания essay**/
 	ArrayAdapter<EssayCreationStyle> essayCrDataAdapter;
 	
+	/**int для дополнительной информации**/
 	 private int explanationReqInt;
+	 /**int для обычного видео**/
 	 private int commVideoInt;
+	 /**int для эксклюзивного видео**/
 	 private int exclVideoInt;
-	private View assignmentFoot;
+	 /**CheckBox для отметки всех файлов в списке**/
+	private CheckBox fileCheckHead;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.assignment);
            // setContentView(R.layout.footer_listview);
             context  = this;
-            
+           
             final Calendar c = Calendar.getInstance();
             mYear = c.get(Calendar.YEAR);
             mMonth = c.get(Calendar.MONTH);
@@ -182,32 +209,24 @@ public class AssignmentPref extends PreferenceActivity {
             mMinute = c.get(Calendar.MINUTE);
             
           
-            mFilterShow =
-                    (PreferenceScreen)getPreferenceScreen().findPreference("orderScreen");
             final ListPreference productList = (ListPreference) findPreference("productPref");
             
             assignfooter = getLayoutInflater().inflate(R.layout.assign_footer2, null);
             editsfooter = getLayoutInflater().inflate(R.layout.assign_footer1, null);
-            assignmentFoot = getLayoutInflater().inflate(R.layout.assignment_order, null);
             deadlineCus = new CustomEditPreference(this);
             deadlineCus.setTitle("Deadline");
             deadlineCus.setSummary("Not selected");
             deadlineCus.setIcon(R.drawable.list_pointer);
-            deadlineCus.setOnTouchListener(new OnTouchListener()
+            deadlineCus.setOnClickListener(new OnClickListener()
             {
-  
-  			public boolean onTouch(View arg0, MotionEvent arg1) 
+				public void onClick(View arg0) {
+					showDialog(DATE_DIALOG_ID);
+				}
   			
-  			{
-  				  showDialog(DATE_DIALOG_ID);
-  				  return false;
-  			}
-  			
-          });
+            });
             
             filesList = getLayoutInflater().inflate(R.layout.file_list, null);
-            
-            
+
             orderInfo = (ImageView)editsfooter.findViewById(R.id.orderInfo);
             taskInfo = (ImageView)editsfooter.findViewById(R.id.taskInfo);
             
@@ -234,7 +253,6 @@ public class AssignmentPref extends PreferenceActivity {
             mainList = getListView();
             mainList.setCacheColorHint(Color.BLACK);
             getListView().setBackgroundColor(Color.BLACK);
-            fileList = getListView();
             btnSelectFiles = (Button) editsfooter.findViewById(R.id.btnSelectFiles);
             btnFilesRemove = (Button) filesList.findViewById(R.id.btnRemoveFiles);
             
@@ -245,6 +263,10 @@ public class AssignmentPref extends PreferenceActivity {
             
             fileSizeHead = (CustomTextView)filesList
     				.findViewById(R.id.fileSize); 
+            
+            fileCheckHead = (CheckBox)filesList
+    				.findViewById(R.id.fileCheck); 
+            
             prefs = getSharedPreferences("newOrder", MODE_PRIVATE);
     		prefEditor = prefs.edit();
     		mainList.addFooterView(deadlineCus);
@@ -292,7 +314,7 @@ public class AssignmentPref extends PreferenceActivity {
 	                	 	categoryPref.setSummary("Not selected");
 	                	 	categoryPref.setEnabled(false);
 	                	}
-                		
+                	 OrderPreferences.getInstance().getArrayList()[11]=productList.getSummary();
                 	return true;
                 }
 
@@ -337,7 +359,7 @@ public class AssignmentPref extends PreferenceActivity {
                 	 OrderPreferences.getInstance().getArrayList()[0]=Integer.toString(a.getSubjectId());
                 	if (productList.getSummary().equals("Assignment"))
                 	 {
-                		addCategories(index) ;
+                		addCategories(index+1) ;
                 		categoryPref.setEnabled(true);
                 		categoryPref.setSummary("Not selected");
                 	 }
@@ -374,6 +396,7 @@ public class AssignmentPref extends PreferenceActivity {
                 	int index = levelPref.findIndexOfValue(newValue.toString()) ;
                 	levelPref.setSummary(levelPref.getEntries()[index]);
                 	Level a = levelDataAdapter.getItem(index);
+                	Log.i("choosed level Pref", a.getLevelTitle());
                 		//prefValues[2] = Integer.toString(a.getLevelId());
                 	  OrderPreferences.getInstance().getArrayList()[2]= Integer.toString(a.getLevelId());
                 	return true;
@@ -398,7 +421,7 @@ public class AssignmentPref extends PreferenceActivity {
                     Bundle mBundle = new Bundle();
                     mBundle.putString("FileManager", "NewOrder");
                     i.putExtras(mBundle);
-                    startActivity(i);
+                    startActivityForResult(i, Constants.addFilesResult);
                     
                 }
             });
@@ -414,30 +437,40 @@ public class AssignmentPref extends PreferenceActivity {
              	  }
             btnFilesRemove.setOnClickListener(new View.OnClickListener() {
               	 
-            public void onClick(View view) {
-             for(int i=0;i<checks.size();i++){
-              if(checks.get(i)==1){
-            	   adapter.remove(adapter.getItem(i));
-                    checks.remove(i);
-                    textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
-                    long wholeSize = 0;
-                    for (File file: FileManagerActivity.getFinalAttachFiles())
-                    {
-                    	wholeSize += file.length();
-                    }
-                    fileSizeHead.setText(Long.toString(wholeSize)+ " Mb");
-                    
-                     i--;
-                  }
-             
-              
-                 else 
-                 {
-               	 mainList.removeFooterView(filesList);
-                 }
-              	
-                  }
-                }
+	            public void onClick(View view) {
+	            	
+	             for(int i=0;i<checks.size();i++){
+				              if(checks.get(i)==1)
+				              {
+				            	   adapter.remove(adapter.getItem(i));
+				                    checks.remove(i);
+				                    for (File s: FileManagerActivity.getFinalAttachFiles())
+				                    {
+				                    		Log.i("remained files", s.toString());
+				                    }
+				                    Log.i("FileManagerActivity.getFinalAttachFiles()", Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
+				                    textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
+				                    long wholeSize = 0;
+				                    for (File file: FileManagerActivity.getFinalAttachFiles())
+				                    {
+				                    	wholeSize += file.length();
+				                    }
+				                    fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
+				                     i--;
+				              }
+	              
+	              	
+	                  }
+	             if (FileManagerActivity.getFinalAttachFiles().size()==0)
+	    		   {  
+	    			 fileCheckHead.setChecked(false);
+	            	 FileManagerActivity.getFinalAttachFiles().clear();
+	    			   adapter.clear();
+	    			   adapter.notifyDataSetChanged();
+	                   mainList.removeFooterView(filesList);
+	                   btnSelectFiles.setText("Add files");
+	    		   }
+	                }
             });
             
             
@@ -456,18 +489,17 @@ public class AssignmentPref extends PreferenceActivity {
           });
             
 
-       	 DatePickerDialog.OnDateSetListener mDateSetListener =
-                    new DatePickerDialog.OnDateSetListener() {
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                    int dayOfMonth) {
-                            mYear = year;
-                            mMonth = monthOfYear;
-                            mDay = dayOfMonth;
-                           
-                            updateDisplay();
-                    }
-            };
-            TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+       	 new DatePickerDialog.OnDateSetListener() {
+		public void onDateSet(DatePicker view, int year, int monthOfYear,
+		                int dayOfMonth) {
+		        mYear = year;
+		        mMonth = monthOfYear;
+		        mDay = dayOfMonth;
+		       
+		        updateDisplay();
+		}
+         };
+            new TimePickerDialog.OnTimeSetListener() {
            	    public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
            	      mHour = hourOfDay;
            	      mMinute = minuteOfHour;
@@ -476,113 +508,208 @@ public class AssignmentPref extends PreferenceActivity {
            	    }
            	  };
           
-           	  btnSubmitOrder.setOnTouchListener(new OnTouchListener() {
+           	 btnSubmitOrder.setOnClickListener(new OnClickListener() {
+         		
+
+					public void onClick(View v) {
+						 boolean errorFlag=false;
+  		         	   if(deadlineCus.getSummary().toString().equalsIgnoreCase("Not selected"))
+  		         	   {
+  		         		   Toast toast = Toast.makeText(getApplicationContext(),"You have to choose deadline", Toast.LENGTH_SHORT);
+  		         		   toast.show();
+  		         		   errorFlag = true;
+  		         	   }
+  		         	   if(orderTitle.getText().length()<5)
+  		         	   {
+  		         		   Toast toast = Toast.makeText(getApplicationContext(), "Title have to be longer than 5 symbols", Toast.LENGTH_SHORT);
+  		         		   toast.show();
+  		         		   orderTitle.setText("");
+  		         		   orderTitle.setTextColor(Color.RED);
+  		         		   orderTitle.setText("Put more than 5 symbols");
+  		         		   errorFlag = true;
+  		         	   }
+	    		           if (productPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+  		         	   {
+  		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the product", Toast.LENGTH_SHORT);
+  		         		   toast.show();
+  		         		   errorFlag = true;
+  		         	   }
+  		         	   if (subjectPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+  		         	   {
+  		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the subject", Toast.LENGTH_SHORT);
+  		         		   toast.show();
+  		         		   errorFlag = true;
+  		         	   }
+  		         	  if (productPref.getSummary().toString().equalsIgnoreCase("Assignment")) 
+  		         	  {
+							  if (categoryPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+		   		         	   {
+		   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the category", Toast.LENGTH_SHORT);
+		   		         		   toast.show();
+		   		         		   errorFlag = true;
+		   		         	   }
+  		         	  }
+  		         	 if (productPref.getSummary().toString().equalsIgnoreCase("Writing")) 
+  		         	 {
+  		         		 
+							  if (nmbPages.getSummary().toString().equalsIgnoreCase("Not selected"))
+		   		         	   {
+		   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of pages", Toast.LENGTH_SHORT);
+		   		         		   toast.show();
+		   		         		   errorFlag = true;
+		   		         	   }
+							  if (typePref.getSummary().toString().equalsIgnoreCase("Not selected"))
+		   		         	   {
+		   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose type of essay", Toast.LENGTH_SHORT);
+		   		         		   toast.show();
+		   		         		   errorFlag = true;
+		   		         	   }
+							  if (nmbRefs.getSummary().toString().equalsIgnoreCase("Not selected"))
+		   		         	   {
+		   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of references", Toast.LENGTH_SHORT);
+		   		         		   toast.show();
+		   		         		   errorFlag = true;
+		   		         	   }
+							  if (crStyle.getSummary().toString().equalsIgnoreCase("Not selected"))
+		   		         	   {
+		   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose creation style", Toast.LENGTH_SHORT);
+		   		         		   toast.show();
+		   		         		   errorFlag = true;
+		   		         	   }
+							  
+  		         	 }
+  		         	   if (levelPref.getSummary().toString().equalsIgnoreCase("Not selected"))
+  		         	   {
+  		         		   
+  		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the level", Toast.LENGTH_SHORT);
+  		         		   toast.show();
+  		         		   errorFlag = true;
+  		         	   }
+  		         	 
+  		         	   if (errorFlag == false)
+  		         	   {
+  		         		 boolean isOnline = new FrequentlyUsedMethods(AssignmentPref.this).isOnlineOrderSend();
+  		         		 if (isOnline)
+  		         		 {    
+  		         			 OrderPreferences.getInstance().getArrayList()[7]= orderTitle.getText().toString();
+	    		    		 OrderPreferences.getInstance().getArrayList()[8]= deadlineCus.getSummary();
+	    		    		 OrderPreferences.getInstance().getArrayList()[9]= taskText.getText().toString();
+	    		    		 OrderPreferences.getInstance().getArrayList()[10]= timezonePref.getSummary();
+	    		    		 OrderPreferences.getInstance().getArrayList()[12] = Integer.toString(explanationReqInt);
+	    		    		 OrderPreferences.getInstance().getArrayList()[13] = Integer.toString(exclVideoInt);
+	    		    		 OrderPreferences.getInstance().getArrayList()[14] = Integer.toString(commVideoInt);
+	    		    		 Intent intent = new Intent(Constants.TAB_CHANGE_ORDER);
+	    		    		 Bundle bundle = new Bundle();
+	    		    		 bundle.putString("newOrder", "success");
+	    		    		 intent.putExtras(bundle);
+	    		    		 sendBroadcast(intent);
+	    		    		 Log.i("AssignmentPref filesToSend", Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
+	    		    		 preferencesValuesDelete();
+  		         			
+  		         		 }
+  		         		 else
+  		         		 {
+  		         			AlertDialog.Builder alt_bld = new AlertDialog.Builder(AssignmentPref.this);
+  		                    alt_bld.setMessage("Connection is lost. Would you to try again or quit?")
+  		                    .setCancelable(false)
+  		                    .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+  		                        public void onClick(DialogInterface dialog, int id) {
+  		                        	btnSubmitOrder.performClick();
+  		                  		  }
+  		                    })
+  		                    .setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+  		                        public void onClick(DialogInterface dialog, int id) {
+  		                        //  Action for 'NO' Button
+  		                        	
+  		                        	
+  		                        	preferencesValuesDelete();
+  		                        	Intent intent = new Intent(Constants.TAB_CHANGE_ORDER);
+  			    		    		 sendBroadcast(intent);
+  			    		    		prefEditor.clear().commit();
+  		                        	
+  		                        	dialog.cancel();
+  			    		    		
+  		                            
+  		                        }
+  		                    });
+  		                    AlertDialog alert = alt_bld.create();
+  		                    // Title for AlertDialog
+  		                    alert.setTitle("Connection is lost.");
+  		                    // Icon for AlertDialog
+  		                    alert.show();
+  		         		 }
+  		 					
+  		 				} 
+  		    		
+  		         	   }
+						
+	    		    
+	    		    });
+           	fileCheckHead.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        	{
+
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked)
+    				{
+    					for (Integer i : checks)
+    					{
+    						checks.set(checks.indexOf(i), 1);
+    					}
+    					for (int i = 0;i<customfileList.getCount();i++)
+    					{
+    					
+    						View a = customfileList.getChildAt(i);
+    						CheckBox b = (CheckBox) a.findViewById(R.id.fileCheck);
+    						b.setChecked(true);
+    					}
+    					btnFilesRemove.setEnabled(true);
+    				}
+    				else 
+    				{
+    					for (Integer i : checks)
+    					{
+    						checks.set(checks.indexOf(i), 0);
+    					}
+    					for (int i = 0;i<customfileList.getCount();i++)
+    					{
+    					
+    						View a = customfileList.getChildAt(i);
+    						CheckBox b = (CheckBox) a.findViewById(R.id.fileCheck);
+    						b.setChecked(false);
+    					}
+    					btnFilesRemove.setEnabled(false);
+    					
+    				}
+    				
+    			}
         		
-        		    		    public boolean onTouch(View v, MotionEvent event) {
-        		    		    	 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-        		    		    		
-        		    		    		 boolean errorFlag=false;
-        		    		         	   if(deadlineCus.getSummary().toString().equalsIgnoreCase("Not selected"))
-        		    		         	   {
-        		    		         		   Toast toast = Toast.makeText(getApplicationContext(),"You have to choose deadline", Toast.LENGTH_SHORT);
-        		    		         		   toast.show();
-        		    		         		   errorFlag = true;
-        		    		         	   }
-        		    		         	   if(orderTitle.getText().length()<5)
-        		    		         	   {
-        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "Title have to be longer than 5 symbols", Toast.LENGTH_SHORT);
-        		    		         		   toast.show();
-        		    		         		   orderTitle.setText("");
-        		    		         		   orderTitle.setTextColor(Color.RED);
-        		    		         		   orderTitle.setText("Put more than 5 symbols");
-        		    		         		   errorFlag = true;
-        		    		         	   }
-	        		    		           if (productPref.getSummary().toString().equalsIgnoreCase("Not selected"))
-	       		    		         	   {
-	       		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the product", Toast.LENGTH_SHORT);
-	       		    		         		   toast.show();
-	       		    		         		   errorFlag = true;
-	       		    		         	   }
-        		    		         	   if (subjectPref.getSummary().toString().equalsIgnoreCase("Not selected"))
-        		    		         	   {
-        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the subject", Toast.LENGTH_SHORT);
-        		    		         		   toast.show();
-        		    		         		   errorFlag = true;
-        		    		         	   }
-        		    		         	  if (productPref.getSummary().toString().equalsIgnoreCase("Assignment")) 
-        		    		         	  {
-	        								  if (categoryPref.getSummary().toString().equalsIgnoreCase("Not selected"))
-	        			   		         	   {
-	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the category", Toast.LENGTH_SHORT);
-	        			   		         		   toast.show();
-	        			   		         		   errorFlag = true;
-	        			   		         	   }
-        		    		         	  }
-        		    		         	 if (productPref.getSummary().toString().equalsIgnoreCase("Writing")) 
-        		    		         	 {
-        		    		         		 
-	        								  if (nmbPages.getSummary().toString().equalsIgnoreCase("Not selected"))
-	        			   		         	   {
-	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of pages", Toast.LENGTH_SHORT);
-	        			   		         		   toast.show();
-	        			   		         		   errorFlag = true;
-	        			   		         	   }
-	        								  if (typePref.getSummary().toString().equalsIgnoreCase("Not selected"))
-	        			   		         	   {
-	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose type of essay", Toast.LENGTH_SHORT);
-	        			   		         		   toast.show();
-	        			   		         		   errorFlag = true;
-	        			   		         	   }
-	        								  if (nmbRefs.getSummary().toString().equalsIgnoreCase("Not selected"))
-	        			   		         	   {
-	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose number of references", Toast.LENGTH_SHORT);
-	        			   		         		   toast.show();
-	        			   		         		   errorFlag = true;
-	        			   		         	   }
-	        								  if (crStyle.getSummary().toString().equalsIgnoreCase("Not selected"))
-	        			   		         	   {
-	        			   		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose creation style", Toast.LENGTH_SHORT);
-	        			   		         		   toast.show();
-	        			   		         		   errorFlag = true;
-	        			   		         	   }
-	        								  
-        		    		         	 }
-        		    		         	   if (levelPref.getSummary().toString().equalsIgnoreCase("Not selected"))
-        		    		         	   {
-        		    		         		   
-        		    		         		   Toast toast = Toast.makeText(getApplicationContext(), "You should to choose the level", Toast.LENGTH_SHORT);
-        		    		         		   toast.show();
-        		    		         		   errorFlag = true;
-        		    		         	   }
-        		    		         	 
-        		    		         	   if (errorFlag == false)
-        		    		         	   {
-        		    		         		 boolean isOnline = new FrequentlyUsedMethods(AssignmentPref.this).isOnline();
-        		    		         		 if (isOnline)
-        		    		         		 {  
-        		    		         			 btnSubmitOrder.getBackground().setAlpha(255);
-        		    		         			if (productPref.getSummary().toString().equalsIgnoreCase("Assignment"))
-        		    		         			  new SendAssignment().execute();
-        		    		         			else if (productPref.getSummary().toString().equalsIgnoreCase("Writing"))
-        		    		         			new SendEssay().execute();
-        		    		         			
-        		    		         			
-        		    		         			 Log.i("deadline",deadlineCus.getSummary().toString());
-        		    		         			Log.i("orderTitle",orderTitle.getText().toString());
-        		    		         		 }
-        		    		         		   
-        		    		 					
-        		    		 				} 
-        		    		         		  
-        		    		         	   }
-        		    		    	
-        		    		    	 return false;
-        		    		    	 }
-        		    		    
-        		    		    });
+        	});
            	 
     }
-	
+	 /**очистка списков настроек заказа**/
+	private void preferencesValuesDelete()
+	{
+		
+		orderTitle.getText().clear();
+      	taskText.getText().clear();
+      	if (productPref.getSummary().toString().equalsIgnoreCase("assignment"))
+      		assignmentFieldsDelete();
+      	else if (productPref.getSummary().toString().equalsIgnoreCase("writing"))
+      	    writingFieldsDelete();
+      	productPref.setSummary("Not selected");
+      	levelPref.setSummary("Not selected");
+      	subjectPref.setSummary("Not selected");
+      	categoryPref.setSummary("Not selected");
+      	deadlineCus.setSummary("Not selected");
+
+
+      	prefEditor.putBoolean("orderPrefDismiss", true);
+      	mainList.removeFooterView(filesList);
+      	
+		
+	}
+	/**добавление полей в случае выбора типа продукта assignment **/
 	public void assignmentFieldsAdd()
 	{
 		addPreferencesFromResource(R.xml.new_assign);
@@ -598,13 +725,13 @@ public class AssignmentPref extends PreferenceActivity {
 		dtlInfo.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue)
             {
-				Log.i("dtlInfo","onPreferenceChange");
                 boolean checked = Boolean.valueOf(newValue.toString());
                 Log.i("dtlInfo value",Boolean.toString(checked));
                 if (checked)
                 	explanationReqInt = 1;
                 else 
                 	explanationReqInt = 0;
+               
                 Log.i("dtlInfo value",Integer.toString(explanationReqInt));
                 return true;
                 
@@ -618,6 +745,7 @@ public class AssignmentPref extends PreferenceActivity {
                 	exclVideoInt = 1;
                 else 
                 	exclVideoInt = 0;
+                
                 return true;
             }
         });
@@ -630,22 +758,36 @@ public class AssignmentPref extends PreferenceActivity {
                 	commVideoInt = 1;
                 else 
                 	commVideoInt = 0;
+               
                 return true;
             }
         });
     	
-    	
-    	
-    	
 		
 	}
+	/**удаление полей в случае выбора типа продукта assignment **/
 	public void assignmentFieldsDelete()
 	{
+		
+		
+		CheckBoxPreference a = (CheckBoxPreference) getPreferenceScreen().findPreference("dtlInfo");
+		CheckBoxPreference b = (CheckBoxPreference) getPreferenceScreen().findPreference("ExcVideo");
+		CheckBoxPreference c = (CheckBoxPreference) getPreferenceScreen().findPreference("commVideo");
+		
+		
+		a.setChecked(false);
+		b.setChecked(false);
+		c.setChecked(false);
+		explanationReqInt = 0;
+		exclVideoInt= 0;
+		commVideoInt= 0;
+		
 		getPreferenceScreen().removePreference(getPreferenceScreen().findPreference("dtlInfo"));
 		getPreferenceScreen().removePreference(getPreferenceScreen().findPreference("ExcVideo"));
 		getPreferenceScreen().removePreference(getPreferenceScreen().findPreference("commVideo"));
 		
 	}
+	/**добавление полей в случае выбора типа продукта writing **/
 	public void writingFieldsAdd()
 	{
 		addPreferencesFromResource(R.xml.new_writing);
@@ -663,6 +805,7 @@ public class AssignmentPref extends PreferenceActivity {
 	{return this.trigger;}
 	public void setTrigger(boolean trigger)
 	{this.trigger = trigger;}
+	/**добавление списка файлов**/
 	public void addFiles()
     {
 		
@@ -696,10 +839,9 @@ public class AssignmentPref extends PreferenceActivity {
 				
 				fileSize.setText(Long.toString(FileManagerActivity.getFinalAttachFiles().get(position).length()/1024)+ " KB");
 				for (int i = 0; i< FileManagerActivity.getFinalAttachFiles().size();i++)
-		         {
+		        {
 						textView.setTag(i);
-		         }
-				
+		        }
 				view.setOnClickListener(new OnClickListener() {
 					public void onClick(View v) {
 						if (!getTrigger())
@@ -709,18 +851,42 @@ public class AssignmentPref extends PreferenceActivity {
 						checkBox.setChecked(getTrigger());
 						Log.i("checkable state", Boolean.toString(checkBox.isChecked()));
 						if (checkBox.isChecked())
-							  checks.set(position, 1);
+						{
+							checks.set(position, 1);
+							btnFilesRemove.setEnabled(true);
+						}
 						else
-							  checks.set(position, 0);
+						{
+							checks.set(position, 0);
+							int sum =0;
+							for (int k=0;k<checks.size();k++)
+							{
+								sum += checks.get(k).intValue();
+							}
+							if (sum==0)
+								btnFilesRemove.setEnabled(false);
+						}
 		            }
 		        });
 				checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
-						if (isChecked){
-							checks.set(position, 1);
-			            }
+						if (isChecked)
+							{
+								checks.set(position, 1);
+								btnFilesRemove.setEnabled(true);
+							}
+						else
+							{
+								checks.set(position, 0);
+								int sum =0;
+								for (int k=0;k<checks.size();k++)
+								{
+									sum += checks.get(k).intValue();
+								}
+								if (sum==0)
+									btnFilesRemove.setEnabled(false);
+							}
 					}
 			    });
 				
@@ -728,25 +894,12 @@ public class AssignmentPref extends PreferenceActivity {
 				return view;
 			}
 		};
-		LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.file, null);
-        view.setFocusable(false);
-        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-        relativeParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        
-        textHead.setTextSize(17);
-        textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
-        long wholeSize = 0;
-        for (File file: FileManagerActivity.getFinalAttachFiles())
-        {
-        	wholeSize += file.length();
-        }
-        
-        fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
+		changeFileHeafer();
 		customfileList.setAdapter(adapter);
 		mainList.addFooterView(filesList);
 		mainList.addFooterView(assignfooter);
-		Log.i("assignment pref count",Integer.toString(prefs.getAll().size()));
+		if (!FileManagerActivity.getFinalAttachFiles().isEmpty())
+			btnSelectFiles.setText("Add more files");
       if (!prefs.getAll().isEmpty())
       {
     	  Log.i("AssPref", "im in pref reload");
@@ -754,7 +907,7 @@ public class AssignmentPref extends PreferenceActivity {
 			String CategoriesValue =  prefs.getString("CategoriesValue", null);
 			String SubjectsValue  =  prefs.getString("SubjectsValue", null);
 			String ProductsValue  =  prefs.getString("ProductValue", null);
-			String prefValues  =  prefs.getString("prefValues", null);
+			prefs.getString("prefValues", null);
 			
 			
 			CharSequence charTitle = prefs.getString("orderTitle", null);
@@ -764,7 +917,6 @@ public class AssignmentPref extends PreferenceActivity {
 			if (charTask!=null)
 				taskText.setText(charTask);
 				
-			
 			if (charTitle != null)
 			{
 				orderTitle.setText(charTitle);
@@ -774,8 +926,6 @@ public class AssignmentPref extends PreferenceActivity {
 			
 			if (ProductsValue != null)
 				productPref.setSummary(ProductsValue.toString());
-				
-				
 				
 			if (charDeadline != null)
 			{
@@ -800,6 +950,8 @@ public class AssignmentPref extends PreferenceActivity {
       }
 		
     }
+		
+	/**сохранение выбранных настроек**/
 	 public void savePreferences() 
 	 {
 		 Iterator it =  prefs.getAll().entrySet().iterator();
@@ -817,8 +969,7 @@ public class AssignmentPref extends PreferenceActivity {
 		 	prefEditor.putString("taskReq",taskText.getText().toString());
 			prefEditor.putString("orderTitle",orderTitle.getText().toString());
 			prefEditor.putString("deadline",deadlineCus.getSummary().toString());
-			
-			
+
 			prefEditor.putInt("detailedExp", explanationReqInt);
 			prefEditor.putInt("exclVideo", exclVideoInt);
 			prefEditor.putInt("commonVideo", commVideoInt);
@@ -838,6 +989,7 @@ public class AssignmentPref extends PreferenceActivity {
 			prefEditor.commit();
 		 
 	 }
+	 /**OnLongClickListener для списка файлов**/
 	 OnLongClickListener filesClicklistener = new OnLongClickListener() {
 			public boolean onLongClick(View arg0) {
 				final CharSequence[] items = {"Open", "Delete", "Details"};
@@ -846,7 +998,7 @@ public class AssignmentPref extends PreferenceActivity {
 			    Log.i("view class", arg0.getClass().getName());
 			    final int pos = getFilePosition(arg0);
 			    Log.i("position ", Integer.toString(pos));
-			    Integer position  = (Integer) ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
+			    ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog, int item) {
 				    	if (item == 0)
@@ -859,7 +1011,7 @@ public class AssignmentPref extends PreferenceActivity {
 				    			Log.i("file position in new Order open", Integer.toString(pos));
 							
 				    	}
-				    	 else if (item == 1)
+				    	else if (item == 1)
 				    		{  
 				    		 
 				    		   if (FileManagerActivity.getFinalAttachFiles().size()==1)
@@ -868,6 +1020,7 @@ public class AssignmentPref extends PreferenceActivity {
 				    			   adapter.clear();
 				    			   adapter.notifyDataSetChanged();
 				                   mainList.removeFooterView(filesList);
+				                   btnSelectFiles.setText("Add files");
 				    		   }
 				    		   else
 				    			   { 
@@ -912,8 +1065,6 @@ public class AssignmentPref extends PreferenceActivity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-			    			
-				  		    
 				  		  AlertDialog alert = builder2.create();
 				  			alert.show();
 				    	}
@@ -926,7 +1077,7 @@ public class AssignmentPref extends PreferenceActivity {
 				return true;
 			}
 		};
-	
+		/**метод для получения позиции файла в списке по нажимаемому View**/
 		 public int getFilePosition(View v)
 		 {
 			 int pos = 0;
@@ -938,6 +1089,7 @@ public class AssignmentPref extends PreferenceActivity {
 			}
 			 return pos;
 		 }
+			/**TimePickerDialog для времени**/
 		  private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 	    	    public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
 	    	      mHour = hourOfDay;
@@ -946,15 +1098,15 @@ public class AssignmentPref extends PreferenceActivity {
 
 	    	    }
 	    	  };
-	    	  
+	    	  /**OnDateSetListener для даты**/
 	    		 DatePickerDialog.OnDateSetListener mDateSetListener =
 	    	             new DatePickerDialog.OnDateSetListener() {
 	    	             public void onDateSet(DatePicker view, int year, int monthOfYear,
 	    	                             int dayOfMonth) {
-	    	                     mYear = year;
+	    	                     
+	    	            	 	 mYear = year;
 	    	                     mMonth = monthOfYear;
 	    	                     mDay = dayOfMonth;
-	    	                    
 	    	                     updateDisplay();
 	    	             }
 	    	     };
@@ -972,7 +1124,7 @@ public class AssignmentPref extends PreferenceActivity {
 		                   
 		            case TIME_DIALOG_ID:
 		                return new TimePickerDialog(this, mTimeSetListener, mHour, mMinute,
-		                    false);
+		                    true);
 		            }
 		            return null;
 		    }
@@ -1008,14 +1160,25 @@ public class AssignmentPref extends PreferenceActivity {
 			                );
 				showDialog(TIME_DIALOG_ID);
 		}
-			
+			 /**метод добавления тем заказа**/
 			 public void addSubjects() {
 				 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-				 
 				 try {
-					
 					Dao<Subject,Integer> daoSubject = db.getSubjectDao();
 					subjectsListSpinner = daoSubject.queryForAll();
+					try{
+						Iterator<Subject> it = subjectsListSpinner.iterator();
+						while (it.hasNext()) {
+						    if (it.next().getSubjectTitle().equalsIgnoreCase("non-categorized")) {
+						        it.remove();
+						        // If you know it's unique, you could `break;` here
+						    }
+						}
+					}
+					catch(Exception e) 
+					{
+						e.printStackTrace();
+					}
 					subjectDataAdapter= new ArrayAdapter<Subject>(this,
 					android.R.layout.simple_spinner_item, subjectsListSpinner);
 					subjectDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1024,11 +1187,11 @@ public class AssignmentPref extends PreferenceActivity {
 				    int i = 0;
 				    for (Subject dev : subjectsListSpinner)
 				    {
-				    	entries[i] = dev.getSubjectTitle();
-			            entryValues[i] = Integer.toString(dev.getSubjectId());
-			            i++;
-			            
+				    		entries[i] = dev.getSubjectTitle();
+				    		entryValues[i] = Integer.toString(dev.getSubjectId());
+				    		i++;
 				    }
+				    
 				    subjectPref.setEntries(entries);
 				    subjectPref.setEntryValues(entryValues);
 				    
@@ -1043,16 +1206,30 @@ public class AssignmentPref extends PreferenceActivity {
 				 
 			 }
 			
-		
+			 /**метод добавления категорий заказа**/
 				public void addCategories(int index) {
 					 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 					 try {
 
 						 Dao<Category,Integer> daoCategory = db.getCategoryDao();
-						 QueryBuilder<Category, Integer> qb = daoCategory.queryBuilder();
+						 daoCategory.queryBuilder();
 						 final List<Category> categories =
 								 daoCategory.queryBuilder().where().
 								    eq("subject_id", index+1).query();//Integer.parseInt(subjectPref.getEntry().toString())).query();
+						try{
+							Iterator<Category> it = categories.iterator();
+							while (it.hasNext()) {
+							    if (it.next().getCategoryTitle().equalsIgnoreCase("non-categorized")) {
+							        it.remove();
+							        // If you know it's unique, you could `break;` here
+							    }
+							}
+						}
+						catch(Exception e) 
+						{
+							e.printStackTrace();
+						}
+
 						categoryDataAdapter = new ArrayAdapter<Category>(this,
 								android.R.layout.simple_spinner_item, categories);
 						categoryDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1081,12 +1258,25 @@ public class AssignmentPref extends PreferenceActivity {
 					}
 			
 				 }
-				
+				/**метод добавления уровней заказа**/
 				 public void addLevels() {
 					 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 					 try {
 						Dao<Level,Integer> daoSubject = db.getLevelDao();
 						levelsListSpinner = daoSubject.queryForAll();
+						try{
+						Iterator<Level> it = levelsListSpinner.iterator();
+						while (it.hasNext()) {
+						    if (it.next().getLevelTitle().equalsIgnoreCase("non-categorized")) {
+						        it.remove();
+						        // If you know it's unique, you could `break;` here
+						    }
+						}
+					}
+					catch(Exception e) 
+					{
+						e.printStackTrace();
+					}
 						levelDataAdapter = new ArrayAdapter<Level>(this,
 						android.R.layout.simple_spinner_item, levelsListSpinner);
 						levelDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1113,15 +1303,15 @@ public class AssignmentPref extends PreferenceActivity {
 					}
 					 
 				 }
-				 
+				 /**метод добавления временных зон**/
 				 public void addTimeZones() {
 						//
 						final String[] TZ = TimeZone.getAvailableIDs();
 
 						Log.i("count", Integer.toString(TZ.length));
 						ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
-								this, android.R.layout.simple_spinner_item);
-						adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+								this,  R.layout.dialog_list_item, R.id.tv);
+//						adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 						final ArrayList<String> TZ1 = new ArrayList<String>();
 						for (int i = 0; i < TZ.length; i++) {
@@ -1167,7 +1357,7 @@ public class AssignmentPref extends PreferenceActivity {
 					    timezonePref.setSummary(currTimeZone );
 						
 					}
-				 
+				 /**метод добавления списка стилей создания essay**/
 					public void addEssayCreationStyles() {
 						DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 						try {
@@ -1202,6 +1392,7 @@ public class AssignmentPref extends PreferenceActivity {
 						}
 				
 					}
+					/**метод добавления списка количества страниц**/
 					public void addNumberPages() {
 						try
 						{
@@ -1267,6 +1458,7 @@ public class AssignmentPref extends PreferenceActivity {
 						    nmbPages.setEntryValues(entryValues);
 						    nmbPages.setOnPreferenceChangeListener(nmbPagesListener);
 					}
+					/**метод добавления списка количества ссылочных материалов**/
 						public void addNumberReferences() {
 							nmbRefs = (IconPreference)findPreference("nmbRefs");
 							Collections.sort(LoginAsync.numberReferencesList, new Comparator<NumberOfReferences>() {
@@ -1322,7 +1514,7 @@ public class AssignmentPref extends PreferenceActivity {
 						    nmbRefs.setOnPreferenceChangeListener(nmbRefsListener);
 					
 					}
-						
+						/**метод добавления списка типов essay**/
 						public void addEssayTypes() {
 							DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 							try {
@@ -1356,6 +1548,7 @@ public class AssignmentPref extends PreferenceActivity {
 							}
 					
 						}
+						/**метод проверки или строка состоит исключетельно из цифр**/
 					 boolean numbersCheck(String email)
 					    {
 					    	Pattern pattern = Pattern.compile("^[0-9]{1,2}.*");
@@ -1363,23 +1556,7 @@ public class AssignmentPref extends PreferenceActivity {
 								boolean matchFound = matcher.matches();
 					    	return matchFound;
 					    }
-//					 @Override
-//					 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//
-//						  if (requestCode == 1) {
-//
-//						     if(resultCode == RESULT_OK){      
-//						         String result=data.getStringExtra("result");          
-//						     }
-//						     if (resultCode == RESULT_CANCELED) {    
-//						         //Write your code on no result return 
-//						     }
-//						  }
-//						}
-					 
-//					 (String title, String subject, String level, String deadline, String info, String explanation,
-//					    		String specInfo, String timezone, List<File> files, 
-//					    		String pages_number,String number_of_references ,String essay_type, String essay_creation_style) 
+					 /**OnPreferenceChangeListener для стилей создания essay**/
 					public OnPreferenceChangeListener crStyleListener = new OnPreferenceChangeListener() {        
 
 						public boolean onPreferenceChange(
@@ -1391,7 +1568,7 @@ public class AssignmentPref extends PreferenceActivity {
 							return false;
 						}
 				    };
-				    
+				    /**OnPreferenceChangeListener для количества страниц**/
 				    public OnPreferenceChangeListener nmbPagesListener = new OnPreferenceChangeListener() {        
 
 						public boolean onPreferenceChange(
@@ -1403,6 +1580,8 @@ public class AssignmentPref extends PreferenceActivity {
 							return false;
 						}
 				    };
+				    
+				    /**OnPreferenceChangeListener для количества страниц essay**/
 				    public OnPreferenceChangeListener nmbRefsListener = new OnPreferenceChangeListener() {        
 
 						public boolean onPreferenceChange(
@@ -1414,6 +1593,7 @@ public class AssignmentPref extends PreferenceActivity {
 							return false;
 						}
 				    };
+				    /**OnPreferenceChangeListener для типов essay**/
 				    public OnPreferenceChangeListener typePrefListener = new OnPreferenceChangeListener() {        
 
 						public boolean onPreferenceChange(
@@ -1425,157 +1605,68 @@ public class AssignmentPref extends PreferenceActivity {
 							return false;
 						}
 				    };
-				    
-				    private class SendAssignment extends AsyncTask<Void, Void, JSONObject > {
-					    
-				    	JSONObject response ;
-				    	ProgressDialog progDailog;
-						protected void onPreExecute() {
-				        	progDailog = ProgressDialog.show(AssignmentPref.this,"Please wait...", "Loading...", true,true);
-				        }
-		
-				        protected JSONObject doInBackground(Void... args) {
-				       
-				       		
-			            try {
-//			            	String title, String category, String level, String deadline, String info, String explanation,
-//			        		String specInfo, String timezone, List<File> files,  
-//			        		String exclusive_video,String common_video 
-			         			   Log.i("deadline", deadlineCus.getSummary().toString());
-			         			   Log.i("explanationReqInt",Integer.toString(explanationReqInt));
-			         			  Log.i("exclVideoInt",Integer.toString(exclVideoInt));
-			         			 Log.i("commVideoInt",Integer.toString(commVideoInt));
-			 					response = launch.sendAssignment(orderTitle.getText().toString(),
-			 							 OrderPreferences.getInstance().getOrderPrefItem(1).toString(),
-			 							OrderPreferences.getInstance().getOrderPrefItem(2).toString(),
-			 							deadlineCus.getSummary().toString(),   taskText.getText().toString(),Integer.toString(explanationReqInt), "",
-			 							timezonePref.getSummary().toString(),FileManagerActivity.getFinalAttachFiles(),  Integer.toString(exclVideoInt), Integer.toString(commVideoInt));
-						} catch (Exception e) {
-							
-							e.printStackTrace();
-						}
-				       		
+				    /**метод изменения заголовка списка файлов при удалении/добавлении файлов из списка**/
+				    private void changeFileHeafer()
+				    {
+				    	LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				        View view = inflater.inflate(R.layout.file, null);
+				        view.setFocusable(false);
+				        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+				        relativeParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 				        
-				       	return response;
-				     }
-		
-				        protected void onPostExecute(JSONObject  forPrint) {
-				 	  	  
-				        	try {
-								
-								if (Integer.parseInt(forPrint.getString(KEY_STATUS))==1)
-								{
-								Intent i = new Intent(AssignmentPref.this,
-								       DashboardTabScreen.class);
-								//				 	   Bundle mBundle = new Bundle();
-								//		               mBundle.putString("NewOrder", "wasAdded");
-								//		               i.putExtras(mBundle);
-								startActivity(i);
-								progDailog.dismiss();
-								prefValues = null;
-									}
-      							else 
-								Toast.makeText(AssignmentPref.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
-									progDailog.dismiss();
-									prefValues = null;
-									prefEditor.clear().commit();
-								
-							} catch (NumberFormatException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+				        textHead.setTextSize(17);
+				        textHead.setText(Integer.toString(FileManagerActivity.getFinalAttachFiles().size())+ " files attached");
+				        long wholeSize = 0;
+				        for (File file: FileManagerActivity.getFinalAttachFiles())
+				        {
+				        	wholeSize += file.length();
 				        }
-				   }
-				    
-				    private class SendEssay extends AsyncTask<Void, Void, JSONObject> {
+				        fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
+				    }
+				    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+				    	switch(resultCode){
+				    	case Constants.addFilesResult:
 				    	
-				    			JSONObject response = null;
-				    			ProgressDialog progDailog;
-				    			protected void onPreExecute() {
-				    				progDailog = ProgressDialog.show(AssignmentPref.this,
-				    						"Please wait...", "Loading...", true,
-				    						true);
+				    	if (adapter==null)
+				    		addFiles();
+				    	else if (adapter.getCount()==0)
+				    		addFiles();
+				    		else 
+				    			{
+				    				adapter.notifyDataSetChanged();
+				    				changeFileHeafer();
 				    			}
-				    	
-				    			protected JSONObject doInBackground(Void... args) {
-				    	
-				    			
-				    				try {
-				    	
-				    					// ??? Category curCat = (Category) catSpin.getSelectedItem();
-//				    					(String title, String subject, String level, String deadline, String info, String explanation,
-//				    				    		String specInfo, String timezone, List<File> files, 
-//				    				    		String pages_number,String number_of_references ,String essay_type, String essay_creation_style)
-				    					response = launch.sendWriting(orderTitle.getText().toString(),
-				    							OrderPreferences.getInstance().getOrderPrefItem(0).toString()
-				    								, OrderPreferences.getInstance().getOrderPrefItem(2).toString(), deadlineCus.getSummary().toString()
-				    											, taskText.getText().toString(),
-				    							Integer.toString(explanationReqInt), "", timezonePref.getSummary().toString(),
-				    							FileManagerActivity.getFinalAttachFiles(),OrderPreferences.getInstance().getOrderPrefItem(3).toString(), 
-				    							OrderPreferences.getInstance().getOrderPrefItem(4).toString(), OrderPreferences.getInstance().getOrderPrefItem(5).toString(),
-				    							OrderPreferences.getInstance().getOrderPrefItem(6).toString());
-				    				} catch (Exception e) {
-				    	
-				    					e.printStackTrace();
-				    				}
-				    	
-				    				return response;
-				    			}
-				    	
-				    			protected void onPostExecute(JSONObject forPrint) {
-				    				
-				    				try {
-										if (forPrint.getString(KEY_STATUS) != null)
-										{
-											if (Integer.parseInt(forPrint.getString(KEY_STATUS))==1)
-										{
-										Intent i = new Intent(AssignmentPref.this,
-										       DashboardTabScreen.class);
-														 	   Bundle mBundle = new Bundle();
-										//		               mBundle.putString("NewOrder", "wasAdded");
-										//		               i.putExtras(mBundle);
-										startActivity(i);
-										progDailog.dismiss();
-										prefValues = null;
-											}
-		      							else 
-										Toast.makeText(AssignmentPref.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
-											progDailog.dismiss();
-											prefValues = null;
-											prefEditor.clear().commit();
-										}
-									} catch (NumberFormatException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-				    	
-				    	
-				    			}
-				    	
-				    			
-				    }    
+						btnFilesRemove.setVisibility(View.VISIBLE);
+							for(int b=0;b<FileManagerActivity.getFinalAttachFiles().size();b++)
+				    		{ 
+				    			checks.add(b,0);
+				    	    } 
+				    	}
+				    }
 				    
 					@Override
 					public void onResume()
 					{
 					    super.onResume();
-					    if(!FileManagerActivity.getFinalAttachFiles().isEmpty())
-		             	  {
-		            			addFiles();
-		            			btnFilesRemove.setVisibility(View.VISIBLE);
-		            			for(int b=0;b<FileManagerActivity.getFinalAttachFiles().size();b++)
-		                		{ 
-		                			checks.add(b,0);
-		                	    } 
-		                		mainList.setAdapter(adapter);
-		             	  }
-					    
+					    categoryPref.setEnabled(false);
+					  if (	prefs.getBoolean("orderPrefDismiss", false) == true)
+						  getListView().setSelection(0);
+					  if( FileManagerActivity.getFinalAttachFiles().isEmpty())
+	             	  {
+						  mainList.removeFooterView(filesList);
+					  }
+					}
+					
+					@Override
+					public void onStop()
+					{
+					    super.onStop();
+					    if(FileManagerActivity.getFinalAttachFiles().isEmpty())
+					    {
+					    	if (adapter != null)
+					    		Log.i("adapter size", Integer.toString(adapter.getCount()));
+					    }
+		            
 					}
 	  
 				    

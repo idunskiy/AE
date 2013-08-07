@@ -4,34 +4,35 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ListView;
 
 import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
 import com.customitems.CustomEditPreference;
-import com.library.SharedPrefs;
-
+import com.library.singletones.SharedPrefs;
+/** * фрагмент для отображения информации профиля пользователя*/
 public class ProfileFragmentPref  extends Fragment implements IClickListener {
-	private CustomEditPreference firstnameTextView;
-	private CustomEditPreference lastnameTextView;
+	/** * CustomEditPreference для отображения email'a пользователя*/
 	public static CustomEditPreference loginTextView;
+	/** * CustomEditPreference для отображения телефона пользователя*/
 	public static CustomEditPreference phoneTextView;
 	View buttonFooter;
-	private ListView listView;
-	private View listFHeader;
+	/** * кнопка для изменения профиля пользователя*/
 	private Button profileEdit;
+	/** * CustomEditPreference для отображения временной зоны пользователя*/
 	public static CustomEditPreference timezonePref;
+	/** * CustomEditPreference для отображения страны пользователя*/
 	public static CustomEditPreference countryPref;
+	/** * CustomEditPreference для пароля пользователя*/
 	public static CustomEditPreference passwordPref;
+	/** * CheckBox для входа в приложение без прохождения этапа login'a*/
 	private CheckBox signMeCheck;
+	/** * CustomEditPreference для имени пользователя*/
 	public static CustomEditPreference firstNamePref;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,6 +46,7 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
 		timezonePref = (CustomEditPreference) view.findViewById(R.id.timezonePref);
 		countryPref  = (CustomEditPreference) view.findViewById(R.id.countryPref);
 		passwordPref= (CustomEditPreference)  view.findViewById(R.id.passwordPref);
+		
 	    profileEdit.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
 	        	    listener.changeFragment(1);
@@ -55,6 +57,7 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
 	    	  signMeCheck.setChecked(true);
 	    return view;
 	  }
+	/** * экземпляр интерфейса  IClickListener*/
 	IClickListener listener;
     
     @Override
@@ -73,7 +76,7 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
                     + " must implement OnHeadlineSelectedListener");
         }
     }
-
+    /** *метод установки значений в соответствующие поля*/
 	public void setFields()
 	{
 		firstNamePref.setSummary(LoginActivity.getUser.getUser().getUserFirstName());

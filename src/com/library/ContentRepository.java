@@ -13,17 +13,19 @@ import com.datamodel.EssayType;
 import com.datamodel.Level;
 import com.datamodel.NumberOfReferences;
 import com.datamodel.NumberPages;
+import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-
+/**
+ *	 класс для записи/чтения данных в/из базы данных. Используется библиотека ORMLite для сохранения обьектов, а не значений. 
+ */
 public class ContentRepository {
-	  private ContentResolver _contentResolver;
-
-	    private Context _context;
+	  private Context _context;
+	    /**
+	     * конструктор класса. 
+	     */
 	    public ContentRepository(ContentResolver contentResolver, Context context) {
-	        this._contentResolver = contentResolver;
 	        this._context=context;
 	    }
 
@@ -51,23 +53,28 @@ public class ContentRepository {
 //	        return contactList.getContacts();
 	    	return null;
 	    }
-
-	    public void saveCategories(List<Category> contacts) throws SQLException
+	    /**
+	     *	 метод сохранения списка категорий в базу данных
+	     *	@param categories - List обьектов Category
+	     */
+	    public void saveCategories(List<Category> categories) throws SQLException
 	    {
 	    	
 	    	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	
-	    	Dao<Category, Integer> daoContact=dbHelper.getDao(Category.class);
-	        for (Category contact : contacts) {
+	    	dbHelper.getDao(Category.class);
+	        for (Category contact : categories) {
 	        	 HelperFactory.GetHelper().getCategoryDao().createIfNotExists(contact);
 	        }
 	        dbHelper.close();
 	    }
-	    
+	    /**
+	     *	 метод сохранения списка статусов заказа в базу данных
+	     *	@param statuses - List статусов заказа
+	     */
 	    public void saveStatuses(List<ProcessStatus> statuses) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<ProcessStatus, Integer> daoContact=dbHelper.getDao(ProcessStatus.class);
+	    	dbHelper.getDao(ProcessStatus.class);
 	       	Log.i(" ", statuses.toString());
 	    	Log.i("dao",HelperFactory.GetHelper().getStatusDao().toString());
 	        for (ProcessStatus status : statuses) {
@@ -76,23 +83,29 @@ public class ContentRepository {
 	        }
 	        dbHelper.close();
 	    }
-	    
-	    public void saveSubjects(List<Subject> statuses) throws SQLException
+	    /**
+	     *	 метод сохранения списка Subjects в базу данных
+	     *	@param subjects - List обьектов Subject
+	     */
+	    public void saveSubjects(List<Subject> subjects) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<Subject, Integer> daoContact=dbHelper.getDao(Subject.class);
-	        for (Subject status : statuses) {
+	    	dbHelper.getDao(Subject.class);
+	        for (Subject status : subjects) {
 	        	
 	            HelperFactory.GetHelper().getSubjectDao().create(status);
 	        }
 	        dbHelper.close();
 	    }
 	    
-	    
+	    /**
+	     *	 метод сохранения списка Level в базу данных
+	     *	@param levels - List обьектов Level
+	     */
 	    public void saveLevels(List<Level> levels) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<Level, Integer> daoContact=dbHelper.getDao(Level.class);
+	    	dbHelper.getDao(Level.class);
 	      
 	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
 	        for (Level level : levels) {
@@ -101,11 +114,14 @@ public class ContentRepository {
 	        }
 	        dbHelper.close();
 	    }
-	    
+	    /**
+	     *	 метод сохранения списка EssayType в базу данных
+	     *	@param esssayTypes - List обьектов EssayType
+	     */
 	    public void saveEssayTypes(List<EssayType> esssayTypes) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<EssayType, Integer> daoContact=dbHelper.getDao(EssayType.class);
+	    	dbHelper.getDao(EssayType.class);
 	      
 	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
 	        for (EssayType essayType : esssayTypes) {
@@ -114,39 +130,62 @@ public class ContentRepository {
 	        }
 	        dbHelper.close();
 	    }
-	    public void saveEssayCreationStyles(List<EssayCreationStyle> esssayTypes) throws SQLException
+	    /**
+	     *	 метод сохранения списка EssayCreationStyle в базу данных
+	     *	@param esssayTypes - List обьектов EssayCreationStyle
+	     */
+	    public void saveEssayCreationStyles(List<EssayCreationStyle> esssayCreationStyles) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<EssayCreationStyle, Integer> daoContact=dbHelper.getDao(EssayCreationStyle.class);
+	    	dbHelper.getDao(EssayCreationStyle.class);
 	      
-	        for (EssayCreationStyle essayType : esssayTypes) {
+	        for (EssayCreationStyle essayType : esssayCreationStyles) {
 	        	
 	            HelperFactory.GetHelper().getEssayCreationStyleDao().create(essayType);
 	        }
 	        dbHelper.close();
 	    }
-	    public void saveNumberPages(List<NumberPages> esssayTypes) throws SQLException
+	    /**
+	     *	 метод сохранения списка NumberPages в базу данных
+	     *	@param numberPages - List обьектов NumberPages
+	     */
+	    public void saveNumberPages(List<NumberPages> numberPages) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<NumberPages, Integer> daoContact=dbHelper.getDao(NumberPages.class);
+	    	dbHelper.getDao(NumberPages.class);
 	      
 	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
-	        for (NumberPages essayType : esssayTypes) {
+	        for (NumberPages essayType : numberPages) {
 	        	
 	            HelperFactory.GetHelper().getNumberPagesDao().create(essayType);
 	        }
 	        dbHelper.close();
 	    }
-	    public void saveNumberReferences(List<NumberOfReferences> esssayTypes) throws SQLException
+	    /**
+	     *	 метод сохранения списка NumberOfReferences в базу данных
+	     *	@param numbersOfRefs - List обьектов NumberOfReferences
+	     */
+	    public void saveNumberReferences(List<NumberOfReferences> numbersOfRefs) throws SQLException
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
-	    	Dao<NumberOfReferences, Integer> daoContact=dbHelper.getDao(NumberOfReferences.class);
+	    	dbHelper.getDao(NumberOfReferences.class);
 	      
 	    	Log.i("dao",HelperFactory.GetHelper().getSubjectDao().toString());
-	        for (NumberOfReferences essayType : esssayTypes) {
+	        for (NumberOfReferences essayType : numbersOfRefs) {
 	        	
 	            HelperFactory.GetHelper().getNumberReferencesDao().create(essayType);
 	        }
+	        dbHelper.close();
+	    }
+	    /**
+	     *	 метод сохранения заказа в базу данных
+	     *	@param order - заказ для сохранения
+	     */
+	    public void saveOrder(Order order) throws SQLException
+	    {
+	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
+	    	dbHelper.getDao(Order.class);
+	        HelperFactory.GetHelper().getOrderDao().create(order);
 	        dbHelper.close();
 	    }
 }

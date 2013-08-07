@@ -1,63 +1,67 @@
 package com.fragments;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.assignmentexpert.R;
-import com.assignmentexpert.RegisterActivity;
 import com.customitems.CustomTextView;
-
+import com.fragmentactivities.RegisterFragmentActivity;
+import com.library.singletones.SharedPrefs;
+/** * фрагмент для регистрации нового пользователя*/
 public class RegisterFragment extends Fragment implements IClickListener{
+	/** * кнопка для обработки введенных пользователем данных*/
 	 Button btnProceed;
-	    Button btnLinkToLogin;
-	    Button btnClose;
+	 /** * EditText для ввода имени пользователя*/
 	    EditText inputFullName;
+	    /** * EditText для ввода email'a пользователя*/
 	    EditText inputEmail;
+	    /** * EditText для ввода пароля пользователя*/
 	    EditText inputPassword;
+	    /** * EditText для подтверждения ввода пароля пользователя*/
 	    EditText confPassword;
-	    TextView registerErrorMsg;
+	    /** * EditText для ввода катчи*/
 	    EditText captchaEdit;
 
-		private ProgressDialog pd = null;
-		private Button btnLinkToRegisterScreen;
 		private CustomTextView btnTermsService;
 		private CustomTextView btnPrivatePolicy;
-	 
-	    // JSON Response node names
-	    private static String KEY_SUCCESS = "status";
-	    private static String KEY_ERROR = "error";
-	    private static String KEY_ERROR_MSG = "error_msg";
-	    private static String KEY_UID = "uid";
-	    private static String KEY_NAME = "name";
-	    private static String KEY_EMAIL = "email";
-	    private static String KEY_CREATED_AT = "created_at";
-	    private static String KEY_STATUS = "status";
-	    
+		/** *статическое поле userName для использования в FragmentActivity для отправки на сервер*/
 	    public static String userName;
+	    /** *статическое поле userEmail для использования в FragmentActivity для отправки на сервер*/
 	    public static String userEmail;
+	    /** *статическое поле пароля пользователя для использования в FragmentActivity для отправки на сервер*/
 	    public static String userPass;
+	    /** *статическое поле подтверждения ввода пароля для использования в FragmentActivity для отправки на сервер*/
 	    public static String userConf;
+	    /** *статическое поле строки каптчи для использования в FragmentActivity для отправки на сервер*/
 	    public static String userCaptcha;
 	    
-	    
+	    /** *ImageView для отображения каптчи*/
 	    public static ImageView captcha;
+	    /** * экземпляр интерфейса  IClickListener*/
 	    IClickListener listener;
+	    
+	    String name;
+	    String email;
+	    String password;
+	    String confpassword;
+	    String captchaString;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -72,7 +76,10 @@ public class RegisterFragment extends Fragment implements IClickListener{
         btnTermsService = (CustomTextView)view.findViewById(R.id.btnTermsService);
         btnPrivatePolicy = (CustomTextView)view.findViewById(R.id.btnPrivatePolicy);
         captcha  = (ImageView) view.findViewById(R.id.captchaView);
-
+       
+        
+        
+        
         inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
@@ -116,6 +123,7 @@ public class RegisterFragment extends Fragment implements IClickListener{
 				return false;
 			}
     	});
+    	
     	captchaEdit.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				if (captchaEdit.getText().toString().equals("Incorrect"))
@@ -124,6 +132,7 @@ public class RegisterFragment extends Fragment implements IClickListener{
 				return false;
 			}
     	});
+    	
     	btnTermsService.setOnClickListener(new View.OnClickListener() {
 
     	    public void onClick(View v) {
@@ -144,13 +153,11 @@ public class RegisterFragment extends Fragment implements IClickListener{
     	
         btnProceed.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-               boolean errorFlag = false;
-//               String name = inputFullName.getText().toString();
-//               String email = inputEmail.getText().toString();
-//               String password = inputPassword.getText().toString();
-//               String confpassword = confPassword.getText().toString();
-//               String captcha = captchaEdit.getText().toString();
-//                
+               name = inputFullName.getText().toString();
+               email = inputEmail.getText().toString();
+               password = inputPassword.getText().toString();
+               confpassword = confPassword.getText().toString();
+               captchaString = captchaEdit.getText().toString();
 //                if (inputEmail.length()<2)
 //                {
 //                            	
@@ -225,9 +232,17 @@ public class RegisterFragment extends Fragment implements IClickListener{
 //				         MainTabGroup parentActivity = (MainTabGroup)getParent();
 //				         parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
 //                }
+               
+               	 userName = name;
+	    		 userEmail  = email;
+	    		 userPass = password;
+	    		 userConf = confpassword;
+	    		 userCaptcha = captchaString;
+               setSharedPreferences();
                listener.changeFragment(4);
             
             }
+            
         });
         final View activityRootView = view.findViewById(R.id.scrollViewRegister);
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
@@ -246,6 +261,51 @@ public class RegisterFragment extends Fragment implements IClickListener{
 
 	    return view;
 	  }
+	/** * метод для сохранения данных c помощью sharedPreferences*/
+	private void setSharedPreferences()
+	{
+		 SharedPrefs.getInstance().Initialize(getActivity().getApplicationContext());
+	     SharedPrefs.getInstance().writeString("registerName", name);
+         SharedPrefs.getInstance().writeString("registerEmail", email);
+         SharedPrefs.getInstance().writeString("registerPassword", password);
+         SharedPrefs.getInstance().writeString("registerConfPass", confpassword);
+         SharedPrefs.getInstance().writeString("registerCaptcha", captchaString);
+        
+	}
+	/** * метод для получения данных c помощью sharedPreferences*/
+	private void getSharedPreferences()
+	{
+		Log.i("registerFragment","getSharedPreferences mtdh");
+         
+		String registerName =   SharedPrefs.getInstance().getSharedPrefs().getString("registerName", null);
+		String registerEmail =    SharedPrefs.getInstance().getSharedPrefs().getString("registerEmail", null);
+		String registerPassword  =   SharedPrefs.getInstance().getSharedPrefs().getString("registerPassword", null);
+		String registerConfPass  =   SharedPrefs.getInstance().getSharedPrefs().getString("registerConfPass", null);
+		String registerCaptcha  =   SharedPrefs.getInstance().getSharedPrefs().getString("registerCaptcha", null);
+
+		try{
+
+		if (registerName != null)
+			inputFullName.setText(SharedPrefs.getInstance().getSharedPrefs().getString("registerName", null));
+		if(registerEmail != null)
+			inputEmail.setText(SharedPrefs.getInstance().getSharedPrefs().getString("registerEmail", null));
+		if(registerPassword != null)
+			inputPassword.setText(SharedPrefs.getInstance().getSharedPrefs().getString("registerPassword", null));
+		if(registerConfPass != null)
+			confPassword.setText(SharedPrefs.getInstance().getSharedPrefs().getString("registerConfPass", null));
+		if(registerCaptcha != null)
+			captchaEdit.setText(SharedPrefs.getInstance().getSharedPrefs().getString("registerCaptcha", null));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	/** * метод для установки обькта Bitmap, полученного с сервера в ImageView каптчи*/
+	public static void setImageBitmap(Bitmap data)
+	{
+		captcha.setImageBitmap(data);
+	}
 	 @Override
 	    public void onAttach(Activity activity) {
 	        super.onAttach(activity);
@@ -256,9 +316,19 @@ public class RegisterFragment extends Fragment implements IClickListener{
 	            throw new ClassCastException(activity.toString()
 	                    + " must implement OnHeadlineSelectedListener");
 	        }
-	    }
+	}
 	public void changeFragment(int flag) {
 		// TODO Auto-generated method stub
 		
 	}
+	/** * используется, если каптча уже скачана, её установка в ImageView*/
+	@Override
+	  public void onResume() {
+	    
+	     super.onResume();
+	     if (RegisterFragmentActivity.captchaForSave != null)
+	    	 captcha.setImageBitmap(RegisterFragmentActivity.captchaForSave);
+	     getSharedPreferences();
+	     
+	  }
 }

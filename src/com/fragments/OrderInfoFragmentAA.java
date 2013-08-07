@@ -3,39 +3,48 @@ package com.fragments;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.R;
-import com.datamodel.Category;
-import com.datamodel.Level;
-import com.datamodel.ProductAssignment;
-import com.datamodel.Subject;
-import com.j256.ormlite.dao.Dao;
-import com.library.DatabaseHandler;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.R;
+import com.customitems.CustomTextView;
+import com.datamodel.Category;
+import com.datamodel.Level;
+import com.datamodel.ProductAssignment;
+import com.datamodel.Subject;
+import com.j256.ormlite.dao.Dao;
+import com.library.DatabaseHandler;
+/** * фрагмент для отображения информации по заказу (Assignment)*/
 public class OrderInfoFragmentAA extends Fragment{
-	private TextView productTextView;
-	private TextView priceTextView;
-	private TextView timezoneTextView;
-	private TextView subjTextView;
-	private TextView postedTextView;
-	private TextView categoryTextView;
-	private TextView levelTextView;
-	private TextView deadlineTextView;
-	private TextView taskTextView;
-	private TextView requireTextView;
-	private LinearLayout layout;
-	
+	/** * CustomTextView для отображения продукта заказа*/
+	private CustomTextView productTextView;
+	/** * CustomTextView для отображения цены*/
+	private CustomTextView priceTextView;
+	/** * CustomTextView для отображения временной зоны*/
+	private CustomTextView timezoneTextView;
+	/** * CustomTextView для отображения темы заказа*/
+	private CustomTextView subjTextView;
+	/** * CustomTextView для отображения темы заказа*/
+	private CustomTextView postedTextView;
+	/** * CustomTextView для отображения категории заказа*/
+	private CustomTextView categoryTextView;
+	/** * CustomTextView для отображения уровня заказа*/
+	private CustomTextView levelTextView;
+	/** * CustomTextView для отображения срока выполнения заказа*/
+	private CustomTextView deadlineTextView;
+	/** * CustomTextView для отображения задачи заказа*/
+	private CustomTextView taskTextView;
+	private CustomTextView requireTextView;
+	/** * коллекция для списка тем заказа*/
 	List<Subject> subjectsList;
+	/** * коллекция для списка категорий*/
 	List<Category> categoryList;
+	/** * коллекция для списка уровней заказов*/
 	List<Level> levelList;
 
 	@Override
@@ -43,22 +52,21 @@ public class OrderInfoFragmentAA extends Fragment{
 	      Bundle savedInstanceState) {
 	    View view = inflater.inflate(R.layout.order_info_aa,
 	        container, false);
-	    productTextView = (TextView)view.findViewById(R.id.productTextView);
-	    priceTextView =   (TextView)view.findViewById(R.id.priceTextView);
-	    timezoneTextView = (TextView)view.findViewById(R.id.timezoneTextView);
-	    subjTextView = (TextView)view.findViewById(R.id.subjTextView);
-	    postedTextView =  (TextView)view.findViewById(R.id.postedTextView);
-	    categoryTextView =  (TextView)view.findViewById(R.id.categoryTextView);
-	    levelTextView =  (TextView)view.findViewById(R.id.levelTextView);
-	    deadlineTextView =  (TextView)view.findViewById(R.id.deadlineTextView);
-	    taskTextView =  (TextView)view.findViewById(R.id.taskTextView);
-	    requireTextView =  (TextView)view.findViewById(R.id.requireTextView);
+	    productTextView = (CustomTextView)view.findViewById(R.id.productTextView);
+	    priceTextView =   (CustomTextView)view.findViewById(R.id.priceTextView);
+	    timezoneTextView = (CustomTextView)view.findViewById(R.id.timezoneTextView);
+	    subjTextView = (CustomTextView)view.findViewById(R.id.subjTextView);
+	    postedTextView =  (CustomTextView)view.findViewById(R.id.postedTextView);
+	    categoryTextView =  (CustomTextView)view.findViewById(R.id.categoryTextView);
+	    levelTextView =  (CustomTextView)view.findViewById(R.id.levelTextView);
+	    deadlineTextView =  (CustomTextView)view.findViewById(R.id.deadlineTextView);
+	    taskTextView =  (CustomTextView)view.findViewById(R.id.taskTextView);
+	    requireTextView =  (CustomTextView)view.findViewById(R.id.requireTextView);
 	    
-	    layout = (LinearLayout)view.findViewById(R.id.infoMessageListLayout);
 	    fillFields();
 	    return view;
 	  }
-	
+	/** * метод заполнения значениями полей информации*/
 	private void fillFields()
 	{
 		  DatabaseHandler db = new DatabaseHandler(getActivity());
@@ -94,21 +102,12 @@ public class OrderInfoFragmentAA extends Fragment{
 						daoLevel.queryForId(DashboardActivityAlt.listItem.getLevel().getLevelId()).getLevelTitle()));
 				
 				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch(NullPointerException e)
-			{
-				DashboardActivityAlt.listItem.getCategory().setCategoryTitle("");
-				DashboardActivityAlt.listItem.getCategory().getCategorySubject().setSubjectTitle("");
-				DashboardActivityAlt.listItem.getLevel().setLevelTitle("");
-			}
-					
 			
-		    
-		    
-		    priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
+					
+		    if (DashboardActivityAlt.listItem.getPrice()==0)
+		    priceTextView.setText("N/A");
+		    	else
+		    priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice())+"$");
 		    timezoneTextView.setText(DashboardActivityAlt.listItem.getTimezone());
 		    subjTextView.setText(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectTitle());
 		    postedTextView.setText(DashboardActivityAlt.listItem.getCreated_at().toString());
@@ -130,5 +129,16 @@ public class OrderInfoFragmentAA extends Fragment{
 		    	
 		    productTextView.setText(DashboardActivityAlt.listItem.getProduct().getProductType());
 		    Log.i("listItem in orderInfoAA", DashboardActivityAlt.listItem.toString());
+		    
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch(NullPointerException e)
+			{
+				DashboardActivityAlt.listItem.setCategory(new Category());
+				DashboardActivityAlt.listItem.getCategory().setCategorySubject(new Subject());
+				DashboardActivityAlt.listItem.setLevel(new Level());
+			}
 	}
 }

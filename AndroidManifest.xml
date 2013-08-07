@@ -13,13 +13,11 @@
   	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
   	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   	<uses-permission android:name="android.permission.READ_CALENDAR"> </uses-permission>
-	<uses-permission android:name="android.permission.WRITE_CALENDAR"> </uses-permission>
 	<uses-permission android:name="android.permission.GET_TASKS"> </uses-permission>
  	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
  	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
- 	<uses-permission android:name="android.permission.GET_TASKS"></uses-permission>
     <application
-       android:name="com.assignmentexpert.ApplicationMemory"
+       android:name="com.library.ApplicationMemory"
         android:icon="@drawable/launcher"
         android:label="@string/app_name"
          android:theme="@android:style/Theme.Black.NoTitleBar"
@@ -30,9 +28,9 @@
 		    <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
 		   </intent-filter>
 		  </receiver>
-         
         <activity 
             android:name=".LoginActivity"
+            android:noHistory="true"
              android:configChanges="keyboardHidden|orientation"
              android:windowSoftInputMode="stateAlwaysHidden"
              > 
@@ -69,7 +67,9 @@
             android:label="DashboardAlt"
             android:windowSoftInputMode="stateAlwaysHidden" 
             android:configChanges="keyboardHidden|orientation">
-           
+            <intent-filter>
+        		<action android:name="new_order" />
+    		</intent-filter>
         </activity>
         <activity
             android:name="com.assignmentexpert.InteractionsActivity"
@@ -120,12 +120,14 @@
        		 android:name=".AssignmentPref"
         	 android:label="Assignment"
         	  android:windowSoftInputMode="stateAlwaysHidden" 
-            android:configChanges="keyboardHidden|orientation">
-        	 
+            android:configChanges="keyboardHidden|orientation"
+            >
+        	
         </activity>
       <activity
        		 android:name="com.tabscreens.LoginTabScreen"
-  		    android:windowSoftInputMode="stateAlwaysHidden"           
+  		    android:windowSoftInputMode="stateAlwaysHidden"         
+  		    android:noHistory="true"  
   		     android:configChanges="keyboardHidden|orientation">
         	    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -139,7 +141,9 @@
         	 android:label="Assignment"
         	  android:windowSoftInputMode="stateAlwaysHidden" 
             android:configChanges="keyboardHidden|orientation">
-        	
+        	 <intent-filter>
+        		<action android:name="tab_change_listener_order" />
+    		</intent-filter>
         </activity>
           <activity
        		 android:name=".ProfilePref"
@@ -155,41 +159,13 @@
         	
         </activity>
          
-         <activity
-       		 android:name="com.activitygroups.MainTabGroup"
-        	 android:label="MainTabGroup"
-        	android:windowSoftInputMode="stateHidden"
-        	>
-        </activity>
-        <activity        		
-             android:name="com.activitygroups.TabGroup2Activity"
-               android:windowSoftInputMode="stateHidden" 
-            android:configChanges="keyboardHidden|orientation"/>
-        	    
-        <activity        	
-            	 android:name="com.activitygroups.TabGroup1Activity"
-                 android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation"/> 
-            <activity        	
-            	 android:name="com.activitygroups.ProfileGroup"
-               android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation"/> 
               <activity        	
             	 android:name=".ExitActivity"
                 android:windowSoftInputMode="adjustPan"
             android:configChanges="keyboardHidden|orientation"/>
-               <activity        	
-            	 android:name="com.activitygroups.InteractionTabGroup"
-               android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation"/>
                 <activity        	
             	 android:name="com.tabscreens.OrderInfoTabScreen"
                android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation"/>
-       <activity        	
-            	 android:name="com.activitygroups.OrderInfoTabGroup"
-              android:windowSoftInputMode="stateHidden"
-               
             android:configChanges="keyboardHidden|orientation"/>
        
        <activity        	
@@ -212,6 +188,18 @@
             	 android:name="com.fragmentactivities.OrderInfoFragmentActivity"
                  android:windowSoftInputMode="stateHidden" 
            	     android:configChanges="keyboardHidden|orientation"/>
+           <activity        	
+            	 android:name=".GifActivity"
+                 android:windowSoftInputMode="stateHidden" 
+           	     android:configChanges="keyboardHidden|orientation"/>
+           
+             <activity android:name="com.facebook.LoginActivity"
+           android:theme="@android:style/Theme.Translucent.NoTitleBar"
+           android:label="@string/app_name" />
+
+              
+              
+           <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
        
     </application>
 

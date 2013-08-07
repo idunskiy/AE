@@ -18,17 +18,16 @@ import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask для загрузки каптчи*/
 public class CaptchaAsync extends AbstractTaskLoader{
 	Context context;
-	private static String KEY_STATUS = "status";
 	private boolean errorFlag  = false;
 	protected CaptchaAsync(Context context) {
 		super(context);
 		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
-
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		CaptchaAsync loader = new CaptchaAsync(fa);
@@ -50,7 +49,7 @@ public class CaptchaAsync extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
-
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 			 UserFunctions a = new UserFunctions();

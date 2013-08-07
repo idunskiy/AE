@@ -13,6 +13,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:shrinkColumns="0"
+    android:stretchColumns="0"
    >
    <TableRow
           android:id="@+id/tableRow1"
@@ -129,14 +130,15 @@
 		 <TableRow
           android:id="@+id/tableRow1"
           style="@style/text_row" 
-           android:layout_marginRight="0dp"
-          android:layout_marginLeft="0dp"
           android:layout_weight="1"
           >
 	 
     <com.customitems.CustomTextView
                android:id="@+android:id/title"
      		   android:layout_width="wrap_content"
+     		   android:textColor="#FFFFFF"
+     		   android:textSize="17sp"
+     		    android:layout_marginLeft="20dp"
      		   style="@style/custom_edittext"
      		  android:text="Sign me in when AE starts"
               foo:customFont="Roboto-Medium.ttf"/>
@@ -147,7 +149,6 @@
         android:layout_height="wrap_content" 
         android:text=""
         android:gravity="left"
-        android:checked="true"
         android:textSize="20sp"/>
 
   </TableRow>
@@ -159,12 +160,15 @@
    <TableRow
           android:id="@+id/tableRow3"
           style="@style/button_row" 
+          android:layout_width="fill_parent"
+          android:layout_weight="1.0"
           >
  	    <Button
             android:id="@+id/btnProceed"
             style="@style/custom_button"
-            android:layout_marginRight="0dp"
-            android:layout_marginLeft="0dp"
+            android:layout_weight="1.0"
+            android:layout_marginRight="22dp"
+            android:layout_marginLeft="22dp"
             android:text="Finish"
              />
 	    </TableRow>

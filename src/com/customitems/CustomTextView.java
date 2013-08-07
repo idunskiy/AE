@@ -8,8 +8,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.assignmentexpert.R;
-import com.assignmentexpert.R.styleable;
-
+import com.library.singletones.TypeFaceSingletone;
+/** *кастомизированный элемент TextView. Предоставляет возможность использовать любой кастомный шрифт.  */
 public class CustomTextView  extends TextView {
     private static final String TAG = "TextView";
 
@@ -19,7 +19,6 @@ public class CustomTextView  extends TextView {
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCustomFont(context, attrs);
     }
 
     public CustomTextView(Context context, AttributeSet attrs, int defStyle) {
@@ -37,9 +36,9 @@ public class CustomTextView  extends TextView {
     public boolean setCustomFont(Context ctx, String asset) {
         Typeface tf = null;
         try {
-        tf = Typeface.createFromAsset(ctx.getAssets(), asset);  
+        tf = TypeFaceSingletone.getInstance().getCustomFont(ctx,asset);//Typeface.createFromAsset(ctx.getAssets(), asset);  
         } catch (Exception e) {
-            Log.e(TAG, "Could not get typeface: "+e.getMessage());
+            Log.e(TAG, "Could not get typeface: "+e.getMessage() + ctx.getClass().toString());
             return false;
         }
 

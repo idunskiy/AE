@@ -20,16 +20,18 @@
         android:id="@+id/orderTitle"
         android:layout_marginRight="10dp"
         android:singleLine="true"
+         android:layout_marginLeft= "25dp"
       	android:imeOptions="actionNext"
         style="@style/custom_edittext"
+         android:layout_weight="1"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Order title"/>
   
  	<ImageView
      android:id="@+id/orderInfo"
-    android:layout_marginRight="17dp"
-    android:layout_marginTop="10dp"
+    android:layout_marginRight="22dp"
+    android:layout_marginTop="9dp"
     android:layout_marginLeft="0dp"
     android:layout_width="5sp"
     android:maxWidth="10dp"
@@ -53,9 +55,12 @@
         android:id="@+id/taskText"
         style="@style/custom_edittext"
         android:gravity="top|left"
+        android:layout_marginLeft= "25dp"
         android:layout_height="110dp"
         android:imeOptions="actionDone"
+         android:layout_weight="1"
         android:layout_width="fill_parent"
+        android:scrollbars = "vertical"
         android:layout_marginRight="10dp"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Task/Specific requirements"/>
@@ -64,8 +69,8 @@
       android:id="@+id/taskInfo"
       style="@style/custom_button"
       android:layout_marginLeft="0dp"
-      android:layout_marginRight="17dp"
-      android:layout_marginBottom="30dp"
+      android:layout_marginRight="22dp"
+      android:layout_marginBottom="32dp"
       android:layout_marginTop="0dp"
       android:maxWidth="10dp"
       android:src="@drawable/info_big"
@@ -80,17 +85,16 @@
 		</TableRow>
    <TableRow
           android:id="@+id/tableRow3"
-          style="@style/text_row" 
+          style="@style/button_row" 
           >
  	   <Button
 		    android:id="@+id/btnSelectFiles"
 		    android:layout_width="wrap_content"
+		       android:layout_weight="1"
 		    style="@style/custom_button"
-		    android:layout_marginRight="0dp"
-		    android:layout_marginLeft="0dp"
 		   	android:layout_marginBottom="15dp" 
 		    android:background="@drawable/gray_button"
-		    android:text="Add more files"
+		    android:text="Add files"
 		    
 		    />
        </TableRow>

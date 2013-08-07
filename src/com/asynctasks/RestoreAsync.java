@@ -14,11 +14,9 @@ import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask восстановления пароля пользователя */
 public class RestoreAsync  extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
-	private static String KEY_MESSAGE = "message";
-	private static String KEY_EXCEPTION= "exception";
 	private Context context;
 	private boolean errorFlag = false;
 	public static String restoreRes =  "";
@@ -33,7 +31,7 @@ public class RestoreAsync  extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		RestoreAsync loader = new RestoreAsync(fa);
@@ -49,7 +47,7 @@ public class RestoreAsync  extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
-
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 			UserFunctions reg = new UserFunctions();

@@ -7,15 +7,10 @@ import java.util.Locale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,21 +26,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.assignmentexpert.R;
-import com.customitems.CountriesListPref;
 import com.customitems.CustomEditPreference;
-import com.customitems.CustomEditText;
-import com.library.SharedPrefs;
-
+import com.library.singletones.SharedPrefs;
+/** * фрагмент дл€ завершающего этапа регистрации*/
 public class RegisterFragmentCompl extends Fragment implements IClickListener{
+	/** * кнопка дл€ завершени€ регистрации и отправки данных на сервер*/
 	private Button btnProceed;
+	 /** * экземпл€р интерфейса  IClickListener*/
 	private IClickListener listener;
+	/** * CustomEditPreference дл€ отображени€ списка стран*/
 	private CustomEditPreference counrtyEditPref;
-	private SharedPreferences sharedPreferences;
-	private Editor editor;
 	private ImageView orderInfo;
-	private CustomEditText registerPhone;
+	/** * CustomEditPreference дл€ отображени€ имени регистрирующегос€*/
 	private CustomEditPreference registerName;
+	/** * CustomEditPreference дл€ отображени€ email'a регистрирующегос€*/
 	private CustomEditPreference registerEmail;
+	/** * CheckBox дл€ входа в приложение без прохождени€ этапа login'a*/
 	private CheckBox signMeCheck;
 
 	@Override
@@ -53,7 +49,6 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
 	      Bundle savedInstanceState) {
 	    View view = inflater.inflate(R.layout.register_compl,
 	        container, false);
-	    registerPhone  = (CustomEditText)view.findViewById(R.id.registerPhone);
 		registerName = (CustomEditPreference)view.findViewById(R.id.registerName);
 		registerEmail = (CustomEditPreference)view.findViewById(R.id.registerEmail);
 	    btnProceed = (Button)view.findViewById(R.id.btnProceed);
@@ -65,8 +60,6 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
 	    });
 		counrtyEditPref = (CustomEditPreference)view.findViewById(R.id.counrtyEditPref);
 		
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	    editor = sharedPreferences.edit();
 	        
 		orderInfo = (ImageView)view.findViewById(R.id.orderInfo);
 		orderInfo.setOnClickListener(new OnClickListener() {
@@ -106,16 +99,12 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
             }
             });
 		 
-		 CountriesListPref registerCountry = new CountriesListPref(getActivity());
 		String currLocale = this.getResources().getConfiguration().locale.getCountry();
 		
 		registerName.setTitle("Name");
 		registerEmail.setTitle("Email");
 		registerName.setSummary(RegisterFragment.userName);
 		registerEmail.setSummary(RegisterFragment.userEmail);
-		registerCountry.setSummary(currLocale);
-		registerCountry.setTitle("Country");
-		registerCountry.setKey("registerCountry");
 		
 		Locale[] locales = Locale.getAvailableLocales();
         ArrayList<String> countries = new ArrayList<String>();
@@ -128,8 +117,6 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
         Collections.sort(countries);
         CharSequence[] chars = countries.toArray(new CharSequence[countries.size()]);
         System.out.println( "# countries found: " + chars.length);
-        registerCountry.setEntries(chars);
-        registerCountry.setEntryValues(chars);
         counrtyEditPref.setSummary(Locale.getDefault().getDisplayCountry());
         counrtyEditPref.setOnClickListener(new View.OnClickListener() {
          	   
@@ -138,7 +125,7 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
 			public void onClick(View view) {
             			
             	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            	builder.setTitle("Select Color Mode");
+            	builder.setTitle("Select your country");
 
             	ListView modeList = new ListView(getActivity());
             	Locale[] locales = Locale.getAvailableLocales();
@@ -151,9 +138,9 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
     	            }
     	        }
     	        Collections.sort(countries);
-            	final ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, countries);
+            	final ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(getActivity(), R.layout.dialog_list_item, R.id.tv, countries);
             	modeList.setAdapter(modeAdapter);
-
+            	modeList.setCacheColorHint(Color.WHITE);
             	builder.setView(modeList);
             	dialog = builder.create();
             	dialog.show(); 

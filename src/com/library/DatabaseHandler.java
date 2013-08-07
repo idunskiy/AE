@@ -1,10 +1,8 @@
+
 package com.library;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,6 +14,7 @@ import com.datamodel.EssayType;
 import com.datamodel.Level;
 import com.datamodel.NumberOfReferences;
 import com.datamodel.NumberPages;
+import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Subject;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -23,28 +22,43 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-
+/**
+ *	 класс для работы с базой данных. Реализуется ORM подход.
+ */
 public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	 private static final String TAG = DatabaseHandler.class.getSimpleName();
     // All Static variables
     // Database Version
+	 /**
+	  *	 версия базы данных
+	  */
     private static final int DATABASE_VERSION = 2;
  
     // Database Name
     private static final String DATABASE_NAME = "cashdata";
- 
+	 /**	  *	 DAO обьект для доступа к Category  */
     private Dao<Category, Integer> simpleCategoryDao;
+    /**	  *	 DAO обьект для доступа к Level  */
     private Dao<Level, Integer> simpleLevelDao;
+    /**	  *	 DAO обьект для доступа к ProcessStatus  */
     private Dao<ProcessStatus, Integer> simpleStatusDao;
+    /**	  *	 DAO обьект для доступа к Subject  */
     private Dao<Subject, Integer> simpleSubjectDao;
+    /**	  *	 DAO обьект для доступа к EssayType  */
     private Dao<EssayType, Integer> simpleEssayTypetDao;
+    /**	  *	 DAO обьект для доступа к EssayCreationStyle  */
     private Dao<EssayCreationStyle, Integer> simpleEssayCreationStyleDao;
+    /**	  *	 DAO обьект для доступа к NumberPages  */
     private Dao<NumberPages, Integer> simpleNumberPagesDao;
+    /**	  *	 DAO обьект для доступа к NumberOfReferences  */
     private Dao<NumberOfReferences, Integer> simpleNumberReferencesDao;
+    /**	  *	 DAO обьект для доступа к Order  */
+    private Dao<Order, Integer> simpleOrderDao;
     // Login table name
+    /**	  *	 DAO обьект для доступа к Order  */
     private static final String TABLE_LOGIN = "login";
     private static final AtomicInteger usageCounter = new AtomicInteger(0);
-    
+    /**	  *	 RuntimeExceptionDao обьект, перебрасыващий RuntimeException в случае возникновения какого-либо Exception   */
     private RuntimeExceptionDao<Category, Integer> categoryRuntimeDao = null;
     private RuntimeExceptionDao<Level, Integer> levelRuntimeDao = null;
     private RuntimeExceptionDao<ProcessStatus, Integer> statusRuntimeDao = null;
@@ -53,50 +67,21 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     private RuntimeExceptionDao<EssayCreationStyle, Integer> essayCreationStyleRuntimeDao = null;
     private RuntimeExceptionDao<NumberPages, Integer> numberPagesRuntimeDao = null;
     private RuntimeExceptionDao<NumberOfReferences, Integer> numberReferencesRuntimeDao = null;
-    //private Dao<Category, Integer> categoryDao;
-    // Categories table name
-   // private CategoryDAO categoryDao = null;
-	private Context _context;
-	
-    private static final String TABLE_CATEGORIES = "categories";
-     // Categories Table Columns names
-    private static final String KEY_CATEGORIES_ID = "id";
-    private static final String KEY_CATEGORIES_TITLE = "title";
+    private RuntimeExceptionDao<Order, Integer> simpleOrderRuntimeDao = null;
+    // Categories Table Columns names
 
-    // Subjects table name
-    private static final String TABLE_SUBJECTS = "subjects";
-    // Subjects Table Columns names
-    private static final String KEY_SUBJECTS_ID = "id";
-    private static final String KEY_SUBJECTS_TITLE = "title";
-    
-    // Process statuses table name
-    private static final String TABLE_PROCESS_STATUS = "process_statuses";
-    // Process statuses Table Columns names
-    private static final String KEY_STATUS_ID = "id";
-    private static final String KEY_STATUS_TITLE = "title";
-    private static final String KEY_STATUS_IDENTIFICATOR = "identificator";
-    
-    // Process statuses table name
-    private static final String TABLE_LEVELS = "levels";
-    // Process statuses Table Columns names
-    private static final String KEY_LEVELS_ID = "id";
-    private static final String KEY_LEVELS_TITLE = "title";
-    
-    
     private static DatabaseHandler helper;
 	private static DatabaseHandler _helperInstance;
-	private SQLiteDatabase myDataBase;
-    public DatabaseHandler(Context context) {
+	public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         
     }
-    // Creating Tables
-    @Override
+	/**	  *	создание таблиц  */
+	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) 
     {
     	 try
          {	
-    		
             TableUtils.createTable(connectionSource, Category.class);
             TableUtils.createTable(connectionSource, Level.class);
             TableUtils.createTable(connectionSource, ProcessStatus.class);
@@ -113,7 +98,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
          }
 	}
 
-    // Upgrading database
+	/**	  *	изменение таблиц  */
 	  @Override
 	   public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVer, int newVer)
 	  {
@@ -128,6 +113,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	           TableUtils.dropTable(connectionSource, EssayCreationStyle.class,true);
 	           TableUtils.dropTable(connectionSource, NumberPages.class,true);
 	           TableUtils.dropTable(connectionSource, NumberOfReferences.class,true);
+	        //   TableUtils.dropTable(connectionSource, Order.class,true);
 	           onCreate(db, connectionSource);
 	       	}
 	       catch (SQLException e){
@@ -137,6 +123,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
    
 	   }
 	
+	  /**	  *	метод для создания и возврата обьекта DAO для Category
+	   * 	@return возвращает обьект Dao<Category, Integer>	
+	   *   */
 
 	  public Dao<Category, Integer> getCategoryDao() throws SQLException 
 	    {
@@ -145,7 +134,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleCategoryDao;
 		}
-
+	  /**	  *	метод для создания и возврата обьекта DAO для ProcessStatus
+	   * 	@return возвращает обьект Dao<ProcessStatus, Integer>	
+	   *   */
 	  public Dao<ProcessStatus, Integer> getStatusDao() throws SQLException 
 	    {
 			if (simpleStatusDao == null) {
@@ -153,7 +144,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleStatusDao;
 		}
-	  
+	  /**	  *	метод для создания и возврата обьекта DAO для Level
+	   * 	@return возвращает обьект Dao<Level, Integer>	
+	   *   */
 	  public Dao<Level, Integer> getLevelDao() throws SQLException 
 	    {
 			if (simpleLevelDao == null) {
@@ -161,7 +154,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleLevelDao;
 		}
-	  
+	  /**	  *	метод для создания и возврата обьекта DAO для Subject
+	   * 	@return возвращает обьект Dao<Subject, Integer>	
+	   *   */
 	  public Dao<Subject, Integer> getSubjectDao() throws SQLException 
 	    {
 			if (simpleSubjectDao == null) {
@@ -169,6 +164,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleSubjectDao;
 		}
+	  /**	  *	метод для создания и возврата обьекта DAO для EssayType
+	   * 	@return возвращает обьект Dao<EssayType, Integer>	
+	   *   */
 	  public Dao<EssayType, Integer> getEssayTypeDao() throws SQLException 
 	    {
 			if (simpleEssayTypetDao == null) {
@@ -176,6 +174,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleEssayTypetDao;
 		}
+	  /**	  *	метод для создания и возврата обьекта DAO для EssayCreationStyle
+	   * 	@return возвращает обьект Dao<EssayCreationStyle, Integer>	
+	   *   */
 	  public Dao<EssayCreationStyle, Integer> getEssayCreationStyleDao() throws SQLException 
 	    {
 			if (simpleEssayCreationStyleDao == null) {
@@ -183,6 +184,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleEssayCreationStyleDao;
 		}
+	  /**	  *	метод для создания и возврата обьекта DAO для NumberPages
+	   * 	@return возвращает обьект Dao<NumberPages, Integer>	
+	   *   */
 	  public Dao<NumberPages, Integer> getNumberPagesDao() throws SQLException 
 	    {
 			if (simpleNumberPagesDao == null) {
@@ -190,6 +194,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleNumberPagesDao;
 		}
+	  /**	  *	метод для создания и возврата обьекта DAO для NumberOfReferences
+	   * 	@return возвращает обьект Dao<NumberOfReferences, Integer>	
+	   *   */
 	  public Dao<NumberOfReferences, Integer> getNumberReferencesDao() throws SQLException 
 	    {
 			if (simpleNumberReferencesDao == null) {
@@ -197,13 +204,23 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleNumberReferencesDao;
 		}
+	  /**	  *	метод для создания и возврата обьекта DAO для Order
+	   * 	@return возвращает обьект Dao<Order, Integer>	
+	   *   */
+	  public Dao<Order, Integer> getOrderDao() throws SQLException 
+	    {
+			if (simpleOrderDao == null) {
+				simpleOrderDao = getDao(Order.class);
+			}
+			return simpleOrderDao;
+		}
+	  
+	  
 
 	  
-//		/**
-//		 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
-//		 * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
-//		 */
-	  
+	  	/**	  *	метод для создания и возврата обьекта DAO для Order
+	   		  * @return возвращает обьект Dao<Order, Integer>	
+	   *   */
 		public RuntimeExceptionDao<Category, Integer> getSimpleCategoryDao() {
 			if (categoryRuntimeDao == null) {
 				categoryRuntimeDao = getRuntimeExceptionDao(Category.class);
@@ -255,8 +272,16 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return numberReferencesRuntimeDao;
 		}
-		
-		
+		  public RuntimeExceptionDao<Order, Integer> getSimpleOrderRuntimeDao() throws SQLException 
+		    {
+				if (simpleOrderRuntimeDao == null) {
+					simpleOrderRuntimeDao = getDao(NumberOfReferences.class);
+				}
+				return simpleOrderRuntimeDao;
+			}
+			/**	  *	метод, предполагающий одновременное обращение, для создания и возврата обьекта DatabaseHandler
+	   		  * @return возвращает DatabaseHandler
+	   *   */
 	  public static synchronized DatabaseHandler getHelper(Context context) 
 	   {
 			if (helper == null) 
@@ -267,7 +292,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			return helper;
 		}
 	  
-
+		/**	  * метод, позволяющий открыть соединение с базой данных
+		 *   */
 	  public void open() throws SQLException {
 		  helper.getReadableDatabase();
 		  helper.getWritableDatabase();
@@ -275,23 +301,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 		  
 	  }
 	  
-//	  private ConnectionSource connectionSource = null;
-//	  @Override
-//	  public ConnectionSource getConnectionSource() {
-//	      if (connectionSource == null) {
-//	          connectionSource = super.getConnectionSource();
-//	      }
-//	      return connectionSource;
-//	  }
-	  private ConnectionSource connectionSource = null;
-	
-	  @Override
-	  public ConnectionSource getConnectionSource() {
-	      if (connectionSource == null) {
-	          connectionSource = super.getConnectionSource();
-	      }
-	      return connectionSource;
-	  }
+	  /**	  * метод, создающий и возвращающий обьект DatabaseHandler
+		 *   */
 	  public static DatabaseHandler getInstance(Context context)
 	    {
 		  
@@ -301,53 +312,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	        return _helperInstance;
 	    }
 	  
-	   	  
-    public void addUser(String name, String email, String uid, String created_at) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
- 
-        // Inserting Row
-        db.insert(TABLE_LOGIN, null, values);
-        db.close(); // Closing database connection
-    }
-    
-    public void addCategories(Category id,Category title)
-    {
-    	
-    	SQLiteDatabase db = this.getWritableDatabase();
-    	ContentValues values = new ContentValues();
-    	values.put(KEY_CATEGORIES_ID, id.toString()); // ID
-        values.put(KEY_CATEGORIES_TITLE, title.toString()); // TITLE
-     // Inserting Row
-        db.insert(TABLE_LOGIN, null, values);
-        db.close(); // Closing database connection
-        
-    }
-    
- 
     /**
      * Getting user data from database
      * */
-    public HashMap<String, String> getUserDetails(){
-        HashMap<String,String> user = new HashMap<String,String>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOGIN;
- 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if(cursor.getCount() > 0){
-            user.put("name", cursor.getString(1));
-            user.put("email", cursor.getString(2));
-            user.put("uid", cursor.getString(3));
-            user.put("created_at", cursor.getString(4));
-        }
-        cursor.close();
-        db.close();
-        // return user
-        return user;
-    }
  
     /**
      * Getting user login status
@@ -366,8 +333,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
     }
  
     /**
-     * Re crate database
-     * Delete all tables and create them again
+     * Пересоздание базы данных - удаление и создание всех таблиц.
      * */
     public void resetTables(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -375,7 +341,9 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
         db.delete(TABLE_LOGIN, null, null);
         db.close();
     }
-
+    /**
+     * Закрытие базы данных. Обнуление всех обьетов DAO. 
+     * */
     @Override
     public void close(){
         super.close();

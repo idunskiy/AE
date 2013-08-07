@@ -1,45 +1,53 @@
 package com.datamodel;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+/** * класс сообщения для заказа. Используется сериализация.*/
 public class Messages implements Parcelable
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	/** * id сообщения для заказа */
 	@SerializedName("id")
 	int id;
+	/** *время создания заказа */
 	@SerializedName("created_at")
 	DateTime created_at;
+	/** *тело сообщения */
 	@SerializedName("body")
 	String body;
+	/** *срок выполнения заказа */
 	@SerializedName("deadline")
 	DateTime deadline;
+	/** *цена заказа */
 	@SerializedName("price")
 	float price;
+	
 	@SerializedName("icch")
 	boolean is_cat_ch;
 	@SerializedName("idch")
 	boolean is_dl_ch;
 	@SerializedName("ipch")
 	boolean is_pr_ch;
+	/** *список прикрепленных файлов к данному сообщению */
 	@SerializedName("files")
 	ArrayList<Files> files;
+	/** *обьект класса Threads */
 	@SerializedName("tread")
 	Threads thread;
+	/** *флаг, определяющий кем было отосланно данное сообщение - клиентом или оператором */
+	@SerializedName("server_flag")
+	boolean server_flag;
+	String name;
 	int position;
-	// need for ORMlite
+	/** *конструктор для ORMLite*/
 	public Messages()
 	{}
+	/** *основной конструктор*/
 	public Messages (int id, DateTime created_at , String body, DateTime deadline, float price, 
-			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<Files> files, Threads thread, int position)
+			boolean is_cat_ch, boolean is_dl_ch, boolean is_pr_ch , ArrayList<Files> files, Threads thread, int position, boolean flag)
     {
         this.id = id;
         this.created_at = created_at;
@@ -52,6 +60,7 @@ public class Messages implements Parcelable
         this.files = files;
         this.thread = thread;
         this.position = position;
+        this.server_flag = flag;
     }
 	public Messages(Parcel in) {
 		readFromParcel(in);
@@ -71,8 +80,7 @@ public class Messages implements Parcelable
 	{
 		 return this.body;
     }
-	
-		
+
 	public DateTime getMessagedeadline() 
 	{
 		 return this.deadline;
@@ -108,7 +116,15 @@ public class Messages implements Parcelable
 	{
 		 return this.position;
     }
-		
+	public boolean getServerFlag()
+	{
+		return this.server_flag;
+	}
+	public String getName()
+	{
+		return this.name;
+	}
+	
 	public void setMessageId(int id)
 	{
 		 this.id = id;
@@ -161,6 +177,14 @@ public class Messages implements Parcelable
 	{
 		  this.position = position;
     }
+	public void setServerFlag(boolean flag)
+	{
+		this.server_flag = flag;
+	}
+	public void setServerName(String name)
+	{
+		this.name = name;
+	}
 	public int describeContents() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -195,8 +219,8 @@ public class Messages implements Parcelable
 		
 		
 	}
-	public static final Parcelable.Creator CREATOR =
-	    	new Parcelable.Creator() {
+	public static final Parcelable.Creator <Messages> CREATOR =
+	    	new Parcelable.Creator<Messages>() {
 	            public Messages createFromParcel(Parcel in) {
 	                return new Messages(in);
 	            }

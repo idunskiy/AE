@@ -1,15 +1,17 @@
 package com.fragmentactivities;
 
-import android.content.Intent;
+import java.io.ByteArrayOutputStream;
+
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.assignmentexpert.R;
@@ -19,13 +21,19 @@ import com.asynctasks.RegisterAsync;
 import com.fragments.IClickListener;
 import com.fragments.RegisterFragment;
 import com.fragments.RegisterFragmentCompl;
-
+import com.library.singletones.SharedPrefs;
+/** * FragmentActivity регистрации. Оперерует фрагментами RegisterFragment, RegisterFragmentCompl
+ * @see RegisterFragment
+ * @see RegisterFragmentCompl  */
 public class RegisterFragmentActivity extends FragmentActivity implements IClickListener, ITaskLoaderListener{
-	
-	private Button btnOne;
+	/** * экземпляр класса Fragment. Используется для RegisterFragment	  */
 	Fragment registerFragment;
+	/** * экземпляр класса FragmentTransaction для проведения оперций над обьектами Fragment	  */
 	 FragmentTransaction fragmentTransaction;
+	 /** * экземпляр класса FragmentManager для для работы с обьектами Fragment внутри Activity	  */
 	 FragmentManager fragmentManager;
+	 /** * Bitmap для сохранении каптчи, при её наличии	  */
+	 public static Bitmap captchaForSave;
 	@Override
   public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -38,9 +46,11 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
       fragmentTransaction.commit();
       CaptchaAsync.execute(this, this);
 	}
+	/** *метод для переключения фрагментов внутри активности и вызова операций в отдельном потоке(RegisterAsync).   */
 	public void changeFragment(int flag) {
 		if (flag==4)
 		{
+			Log.i("RegisterFragmentActivity", "add registerFragmentCompl Frag");
 			 Fragment newFragment = new RegisterFragmentCompl();
 			  FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		      fragmentTransaction.replace(R.id.myfragment, newFragment);
@@ -53,10 +63,14 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 		}
 		
 	}
+	 /** *метод интерфейса ITaskLoaderListener. служит для обработки данных после успешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onLoadFinished(Object data) {
 			 if (data instanceof Bitmap & data != null)
 	    	 {
-	    		 RegisterFragment.captcha.setImageBitmap((Bitmap)data);
+				 
+	    		 RegisterFragment.setImageBitmap((Bitmap)data);//.setImageBitmap((Bitmap)data);
+	    		 captchaForSave = (Bitmap)data;
+	    		 setRegisterCaptha();
 	    	 }
 			 if (data instanceof String)
 			 {
@@ -66,6 +80,7 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 		
 		
 	}
+	/** *метод интерфейса ITaskLoaderListener. служит для обработки данных после неуспешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onCancelLoad() {
 		// TODO Auto-generated method stub
 		
@@ -87,15 +102,17 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 //		}
 	
 	
-	
+	/** *вызывается в случае нажатии кнопки Back. Если пользователь находиться во фрагменте завершения регистрации, то после нажатия он попадает на RegisterFragment */
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i("RegisterFragmentActivity", "onKeyDown mthd");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+        	
         	 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.myfragment);
         	if (fragment instanceof RegisterFragmentCompl) {
         	 Log.i("registerFragment", "onBackPressed");
+        	 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         	 Fragment registerFragment2 = new RegisterFragment();
-        	 Log.i("registerFragment", fragment.getClass().toString());
         	 fragmentTransaction.replace(R.id.myfragment, registerFragment2).commit();
         	 getSupportFragmentManager().executePendingTransactions();
         	  return true;
@@ -106,5 +123,54 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
         	}
         }
         return false;//super.onKeyDown(keyCode, event);
+    }
+	/** *метод получения имени текущего используемого фрагмента
+	 * @return имя текущего фрагмента*/
+	public String getCurrentFragment()
+	{
+		 Fragment insFragment = getSupportFragmentManager().findFragmentById(R.id.myfragment);
+		return insFragment.getClass().getName();
+		
+	}
+	/** *метод возвращения на первый этап регистрации, в RegisterFragment	 */
+	public void returnToFirstStep()
+	{
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+		 Fragment registerFragment2 = new RegisterFragment();
+    	 fragmentTransaction.replace(R.id.myfragment, registerFragment2).commit();
+    	 Log.i("RegisterFragmentActivity", " returnTo1Step");
+    	 getRegisterCaptcha();
+	}
+	/** *метод установки каптчи	 */
+	private void setRegisterCaptha()
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		captchaForSave.compress(Bitmap.CompressFormat.JPEG, 100, baos);   
+		byte[] b = baos.toByteArray(); 
+
+		String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+		SharedPrefs.getInstance().editSharePrefs().putString("captcha_decode", encodedImage).commit();
+		
+	}
+	/** *метод получения сохраненной каптчи в SharedPreferences	 */
+	private void getRegisterCaptcha()
+	{
+		String previouslyEncodedImage =  SharedPrefs.getInstance().getSharedPrefs().getString("captcha_decode", "");
+		if( !previouslyEncodedImage.equalsIgnoreCase("") ){
+			Log.i("RegisterFragmentActivity","getRegisterCaptcha");
+		    byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
+		    Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+		    RegisterFragment.setImageBitmap(bitmap);
+		    Log.i("RegisterFragmentActivity , getRegisterCaptcha", Integer.toString(bitmap.getDensity()));
+		    //RegisterFragment.captcha.setImageBitmap(bitmap);
+		  
+		}
+	}
+	@Override
+	public void onBackPressed() {
+    	
+    	Log.i("RegisterFragmentActivity", "onBackPressed");
+
     }
 }

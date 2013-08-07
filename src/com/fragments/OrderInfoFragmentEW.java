@@ -9,39 +9,46 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.R;
+import com.customitems.CustomTextView;
 import com.datamodel.Category;
 import com.datamodel.Level;
 import com.datamodel.ProductWriting;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.library.DatabaseHandler;
-
+/** * фрагмент для отображения информации по заказу (Essay)*/
 public class OrderInfoFragmentEW extends Fragment{
-	private TextView productTextView;
-	private TextView priceTextView;
-	private TextView subjTextView;
-	private TextView timezoneTextView;
-	private TextView postedTextView;
-	private TextView categoryTextView;
-	private TextView levelTextView;
-	private TextView deadlineTextView;
-	private TextView taskTextView;
-	private TextView requireTextView;
-	private TextView typeTextView;
-	private LinearLayout layout;
-	private TextView citationTextView;
-	private TextView referenceTextView;
-	private TextView pagesTextView;
+	/** * CustomTextView для отображения продукта заказа*/
+	private CustomTextView productTextView;
+	/** * CustomTextView для отображения цены заказа*/
+	private CustomTextView priceTextView;
+	/** * CustomTextView для отображения темы заказа*/
+	private CustomTextView subjTextView;
+	/** * CustomTextView для отображения временной зоны*/
+	private CustomTextView timezoneTextView;
+	/** * CustomTextView для отображения даты, когда заказ был создан*/
+	private CustomTextView postedTextView;
+	/** * CustomTextView для отображения уровня заказа*/
+	private CustomTextView levelTextView;
+	/** * CustomTextView для отображения срока выполнения заказа*/
+	private CustomTextView deadlineTextView;
+	/** * CustomTextView для отображения задачи заказа*/
+	private CustomTextView taskTextView;
+	/** * CustomTextView для отображения типа essay*/
+	private CustomTextView typeTextView;
+	private CustomTextView citationTextView;
+	private CustomTextView referenceTextView;
+	/** * CustomTextView для отображения количества страниц*/
+	private CustomTextView pagesTextView;
 
-	
+	/** * коллекция для списка тем заказа*/
 	List<Subject> subjectsList;
+	/** * коллекция для списка категорий*/
 	List<Category> categoryList;
+	/** * коллекция для списка уровней заказов*/
 	List<Level> levelList;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,31 +57,28 @@ public class OrderInfoFragmentEW extends Fragment{
 	        container, false);
 	    
 	    
-	    productTextView = (TextView)view.findViewById(R.id.productTextView);
-	    priceTextView =   (TextView)view.findViewById(R.id.priceTextView);
-	    timezoneTextView = (TextView)view.findViewById(R.id.timezoneTextView);
-	    subjTextView = (TextView)view.findViewById(R.id.subjTextView);
-	    postedTextView =  (TextView)view.findViewById(R.id.postedTextView);
-	    categoryTextView =  (TextView)view.findViewById(R.id.categoryTextView);
-	    levelTextView =  (TextView)view.findViewById(R.id.levelTextView);
-	    deadlineTextView =  (TextView)view.findViewById(R.id.deadlineTextView);
-	    taskTextView =  (TextView)view.findViewById(R.id.taskTextView);
-	    requireTextView =  (TextView)view.findViewById(R.id.requireTextView);
-	    typeTextView =  (TextView)view.findViewById(R.id.typeTextView);
-	    layout = (LinearLayout)view.findViewById(R.id.infoMessageListLayout);
+	    productTextView = (CustomTextView)view.findViewById(R.id.productTextView);
+	    priceTextView =   (CustomTextView)view.findViewById(R.id.priceTextView);
+	    timezoneTextView = (CustomTextView)view.findViewById(R.id.timezoneTextView);
+	    subjTextView = (CustomTextView)view.findViewById(R.id.subjTextView);
+	    postedTextView =  (CustomTextView)view.findViewById(R.id.postedTextView);
+	    levelTextView =  (CustomTextView)view.findViewById(R.id.levelTextView);
+	    deadlineTextView =  (CustomTextView)view.findViewById(R.id.deadlineTextView);
+	    taskTextView =  (CustomTextView)view.findViewById(R.id.taskTextView);
+	    typeTextView =  (CustomTextView)view.findViewById(R.id.typeTextView);
 	    
-	    citationTextView = (TextView)view.findViewById(R.id.citationTextView);
-	    referenceTextView = (TextView)view.findViewById(R.id.referenceTextView);
-	    pagesTextView = (TextView)view.findViewById(R.id.pagesTextView);
+	    citationTextView = (CustomTextView)view.findViewById(R.id.citationTextView);
+	    referenceTextView = (CustomTextView)view.findViewById(R.id.referenceTextView);
+	    pagesTextView = (CustomTextView)view.findViewById(R.id.pagesTextView);
 	    
 	    fillFields();
 	    return view;
 	  }
+	/** * метод заполнения значениями полей информации*/
 	private void fillFields()
 	{
 		  DatabaseHandler db = new DatabaseHandler(getActivity());
 		    Dao<Subject, Integer> daoSubject = null;
-		    Dao<Category, Integer> daoCategory = null;
 		    Dao<Level, Integer> daoLevel = null;
 			try {
 				daoSubject = db.getSubjectDao();
@@ -109,7 +113,10 @@ public class OrderInfoFragmentEW extends Fragment{
 			
 		    
 		    try{
-		    priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice()));
+		    if (DashboardActivityAlt.listItem.getPrice()==0)
+		 		priceTextView.setText("N/A");
+		 	else
+		 		priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice())+"$");
 		    timezoneTextView.setText(DashboardActivityAlt.listItem.getTimezone());
 		    subjTextView.setText(DashboardActivityAlt.listItem.getSubject().getSubjectTitle());
 		    postedTextView.setText(DashboardActivityAlt.listItem.getCreated_at().toString());

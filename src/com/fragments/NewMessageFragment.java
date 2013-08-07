@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,11 +22,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -47,41 +44,60 @@ import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.FileManagerActivity;
 import com.assignmentexpert.R;
 import com.customitems.CustomTextView;
+import com.library.Constants;
 import com.library.FrequentlyUsedMethods;
 import com.paypal.android.MEP.PayPalActivity;
-
+/** * фрагмент для посылки нового сообщения*/
 public class NewMessageFragment extends Fragment implements IClickListener{
+	/** * экземпляр интерфейса  IClickListener*/
 	IClickListener listener;
-	private View page;
+	/** * PayPal Button, если PayPal библиотека не активирована(статус заказа не discussion).*/
 	private Button btnPay;
+	/** * кнопка для добавления файлов*/
 	private Button btnAddFilesMessage;
+	/** * кнопка для отправки нового сообщения*/
 	private Button btnSendMessage;
+	/** * EditText для ввода текста нового сообщения*/
 	private EditText editMessage;
-	private TextView interId;
-	private TextView interMess;
-	private TextView textDate;
-	private TextView emptyList;
+	/** * View для отображения списка файлов*/
 	private View messageFileList;
+	/** * ListView для отображения списка файлов*/
 	private ListView fileslist;
+	/** * кнопка для удаления файлов*/
 	private Button btnFilesRemove;
+	/** * CustomTextView для отображения общего количества файлов в списке*/
 	private CustomTextView textHead;
-	private CustomTextView test1TextView;
+	/** * CustomTextView для отображения общего размера файлов в списке*/
 	private CustomTextView fileSizeHead;
-	private RelativeLayout panelInteractions;
+	/** * TextView для отображения срока выполнения заказа*/
 	private TextView deadline;
+	/** * TextView для отображения цены заказа*/
 	private TextView priceLabel;
+	/** * RelativeLayout для отображения списка файлов*/
 	private RelativeLayout newMessagePanel;
+	/** * кнопка Cancel*/
 	private View btnCancelNewMessage;
+	/** * экземпляр класса часто используемых функций*/
 	private FrequentlyUsedMethods faq;
 	private SharedPreferences.Editor prefEditor;
 	private SharedPreferences prefs;
+	/** * поле для сохранения строки нового сообщения*/
 	public static String newMessage;
+	/** * коллекция для сохранения состояний checkbox'ов файлов*/
 	private ArrayList<Integer> checks = new ArrayList<Integer>();
+	/** * флаг проверки наличия списка файлов. Если контейнер файлов не пуст, то к newMessagePanel добавляется messageFileList, в котором отображается список файлов.*/
 	boolean fileListExist  = true;
+	/** * обьект ScrollView, который является главным View и используется для определения наличия клавиатуры*/
 	private ScrollView scrollView;
+	private CheckBox fileCheckHead;
+	/** * RelativeLayout панели отображения информации по текущему заказу. Используется для setup'a PayPal кнопки. */
+	public static RelativeLayout panelInteractions;
 	private static final int request = 1;
+	/** * строка результа PayPal транзакции */
 	public static String resultTitle;
+	/** * строка информации PayPal транзакции */
 	public static String resultInfo;
+	/** * строка дополнительной информации PayPal транзакции */
 	public static String resultExtra;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,20 +109,17 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	     btnAddFilesMessage = (Button) view.findViewById(R.id.btnAddFilesMessage);
 	     btnSendMessage =(Button) view.findViewById(R.id.btnSendMessage);
 	     editMessage =(EditText) view.findViewById(R.id.editMessage);
-	     page = inflater.inflate(R.layout.interactions_item, null);
-	     interId = (TextView) page.findViewById(R.id.interactionId);
-	     interMess = (TextView) page.findViewById(R.id.interactionMessage);
-	     textDate = (TextView) page.findViewById(R.id.interactionDate);
-	     emptyList = (TextView) view.findViewById(R.id.emptyResult);
 	     messageFileList = view.findViewById(R.id.messageFileList);
+	     panelInteractions = (RelativeLayout) view.findViewById(R.id.panelInteractions);
 	     fileslist = (ListView) messageFileList.findViewById(R.id.fileslist);
 	     btnFilesRemove = (Button)messageFileList.findViewById(R.id.btnRemoveFiles);
-	     textHead  = (CustomTextView)fileslist
+	     textHead  = (CustomTextView)messageFileList
  				.findViewById(android.R.id.title); 
-	     test1TextView = (CustomTextView) messageFileList.findViewById(android.R.id.title);
 	     fileSizeHead = (CustomTextView) messageFileList.findViewById(R.id.fileSize);
+	     fileCheckHead = (CheckBox)messageFileList
+ 				.findViewById(R.id.fileCheck); 
 	     
-	     panelInteractions =  ((RelativeLayout)view.findViewById(R.id.panelInteractions));
+	     
 	     deadline = (TextView)view.findViewById(R.id.deadlineLabel);
 	   	 priceLabel = (TextView)view.findViewById(R.id.priceLabel);
 	   	 
@@ -118,9 +131,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	     newMessagePanel = (RelativeLayout)view.findViewById(R.id.newMessagePanel);
 	     btnCancelNewMessage.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
-	        	   
 	        	 listener.changeFragment(9);
-	               
 	           }
 	       });
 
@@ -132,8 +143,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	                Bundle mBundle = new Bundle();
 	                mBundle.putString("FileManager", "NewMessage");
 	                i.putExtras(mBundle);
-	                startActivityForResult(i,5);
-	               
+	                startActivityForResult(i,Constants.addFilesResult);
 	           }
 	       });
 	   
@@ -150,8 +160,6 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	     editMessage.setOnKeyListener(new EditText.OnKeyListener() {
 	         public boolean onKey(View v, int keyCode, KeyEvent event) {
 	             if(keyCode==66){
-	            	
-		            	
 	            	 InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
 	            		      Context.INPUT_METHOD_SERVICE);
 	            		imm.hideSoftInputFromWindow(editMessage.getWindowToken(), 0);
@@ -205,7 +213,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
           if(checks.get(i)==1){
         	   adapter.remove(adapter.getItem(i));
                 checks.remove(i);
-                test1TextView.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+                textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
                 long wholeSize = 0;
                 for (File file: FileManagerActivity.getFinalMessageFiles())
                 {
@@ -215,10 +223,15 @@ public class NewMessageFragment extends Fragment implements IClickListener{
                 
                  i--;
               }
-          if( FileManagerActivity.getFinalMessageFiles().isEmpty())
-           	  newMessagePanel.removeView(messageFileList);
+          
+          		btnAddFilesMessage.setText("Add files");
               fileListExist  = false;
             }
+         if( FileManagerActivity.getFinalMessageFiles().isEmpty())
+      	  {
+   	  		newMessagePanel.removeView(messageFileList);
+   	  		fileCheckHead.setChecked(false);
+      	  }
 
           }
        });
@@ -239,8 +252,48 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	             }
 	        });
 
+	    	fileCheckHead.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        	{
+
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    				if (isChecked)
+    				{
+    					for (Integer i : checks)
+    					{
+    						checks.set(checks.indexOf(i), 1);
+    					}
+    					for (int i = 0;i<(fileslist).getCount();i++)
+    					{
+    					
+    						View a = (fileslist).getChildAt(i);
+    						CheckBox b = (CheckBox) a.findViewById(R.id.fileCheck);
+    						b.setChecked(true);
+    					}
+    					btnFilesRemove.setEnabled(true);
+    				}
+    				else 
+    				{
+    					for (Integer i : checks)
+    					{
+    						checks.set(checks.indexOf(i), 0);
+    					}
+    					for (int i = 0;i<(fileslist).getCount();i++)
+    					{
+    					
+    						View a = (fileslist).getChildAt(i);
+    						CheckBox b = (CheckBox) a.findViewById(R.id.fileCheck);
+    						b.setChecked(false);
+    					}
+    					btnFilesRemove.setEnabled(false);
+    					
+    				}
+    			}
+        		
+        	});
 	    return view;
 	  }
+	/** * инициализация экземпляра IClickListener*/
 	@Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -252,6 +305,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
                     + " must implement OnHeadlineSelectedListener");
         }
     }
+	/** *обновление layout'a*/
 	 public void updateLayout()
 	    {
 	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==2 | DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==3)
@@ -260,10 +314,10 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	    	}
 	    	else
 	    	 { 
-	    		priceLabel.setTextColor(Color.GREEN);
-	   		    priceLabel.setText("$"+Float.toString(DashboardActivityAlt.listItem.getPrice()));
+	   		    priceLabel.setText(Float.toString(DashboardActivityAlt.listItem.getPrice())+"$");
 	    	 }
-	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==4 & DashboardActivityAlt.listItem.getPrice()>0)
+	    	//if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==4 & DashboardActivityAlt.listItem.getPrice()>0)
+	    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==2)
 				   	    {
 				   	    	btnPay.setVisibility(View.GONE);
 				   	    	listener.changeFragment(8);
@@ -280,6 +334,9 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		      deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
 	    	
 	    }
+	 /** *метод получения порядкового номера файла в списке 
+	  * @param v  - View, на который было нажатие.
+	  * @return номер файла в списке*/
 	 public int getFilePosition(View v)
 	 {
 		 int pos = 0;
@@ -298,7 +355,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 			    Log.i("view class", arg0.getClass().getName());
 			    final int pos = getFilePosition(arg0);
 			    Log.i("position ", Integer.toString(pos));
-			    Integer position  = (Integer) ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
+			    ((CustomTextView)arg0.findViewById(android.R.id.title)).getTag();
 				builder.setItems(items, new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog, int item) {
 				    	if (item == 0)
@@ -320,11 +377,13 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 				    			   adapter.clear();
 				    			   adapter.notifyDataSetChanged();
 				    			   newMessagePanel.removeView(messageFileList);
+				    			   btnAddFilesMessage.setText("Add files");
 				    		   }
 				    		   else
 				    			   { 
 				    				   try
 				    				   {
+				    					   
 					    				     adapter.remove(FileManagerActivity.getFinalMessageFiles().get(pos));
 					    				     textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
 					    	                    long wholeSize = 0;
@@ -407,8 +466,8 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		Log.i("file exist flag",Boolean.toString(fileListExist));
 		messageFileList.setVisibility(View.VISIBLE);
 		
-		test1TextView.setTextSize(17);
-		test1TextView.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+		textHead.setTextSize(17);
+		textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
        long wholeSize = 0;
        for (File file: FileManagerActivity.getFinalMessageFiles())
        {
@@ -450,9 +509,21 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 						checkBox.setChecked(getTrigger());
 						Log.i("checkable state", Boolean.toString(checkBox.isChecked()));
 						if (checkBox.isChecked())
-							  checks.set(position, 1);
+						{
+							checks.set(position, 1);
+							btnFilesRemove.setEnabled(true);
+						}
 						else
-							  checks.set(position, 0);
+						{
+							checks.set(position, 0);
+							int sum =0;
+							for (int k=0;k<checks.size();k++)
+							{
+								sum += checks.get(k).intValue();
+							}
+							if (sum==0)
+								btnFilesRemove.setEnabled(false);
+						}
 		            }
 		        });
 				checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -461,7 +532,19 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 							boolean isChecked) {
 						if (isChecked){
 							checks.set(position, 1);
+							btnFilesRemove.setEnabled(true);
 			            }
+						else 
+						{
+							checks.set(position, 0);
+							int sum =0;
+							for (int k=0;k<checks.size();k++)
+							{
+								sum += checks.get(k).intValue();
+							}
+							if (sum==0)
+								btnFilesRemove.setEnabled(false);
+						}
 					}
 			    });
 				textView.setOnLongClickListener(filesClicklistener);
@@ -474,12 +557,15 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		{
 			e.printStackTrace();
 		}
+		if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
+			btnAddFilesMessage.setText("Add more files");
     }
 	public void changeFragment(int flag) {
 		// TODO Auto-generated method stub
 	}
 	
 	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		 	Log.i("newFragment ActRes", Integer.toString(resultCode));
 	    	if(requestCode != request)
 	    		return;
 	    	switch(resultCode){
@@ -507,13 +593,26 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 			//addFiles();
 			Log.i("messages files length", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
 			break;
-		case 5:
+		case Constants.addFilesResult:
+			Log.i("newFragment Act", "I've received the result");
+			 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
+		 		{ 
+		 			checks.add(b,0);
+		 	    } 
 			addFiles();
 			
 			
 	    	}
 	    
 	    }
+	 public void addMessageFiles()
+	 {
+		 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
+	 		{ 
+	 			checks.add(b,0);
+	 	    } 
+		addFiles();
+	 }
 	 	private int getEditTextY()
 	 	{
 	 		View globalView = scrollView; // the main view of my activity/application
@@ -535,14 +634,12 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		    super.onResume();
 		    if (editMessage.getText().toString().length()==0)
 		    	btnSendMessage.getBackground().setAlpha(120);
-		    if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
-		     {
-		    	 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
-			 		{ 
-			 			checks.add(b,0);
-			 	    } 
-		    	 addFiles();
-		     }
+//		    if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
+//		     {
+//		    	
+//		    	
+//		    	 addFiles();
+//		     }
 		}
 
 }

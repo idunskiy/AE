@@ -2,17 +2,13 @@ package com.asynctaskbase;
 
 import java.util.UUID;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.inputmethod.InputMethodManager;
-
-import com.assignmentexpert.R;
-
+/** *класс, реализующий диалог, отображаемый при выполнении AsyncTask'a .*/
 public class TaskProgressDialogFragment extends
 		AbstractTaskProgressDialogFragment {
 		
@@ -22,7 +18,7 @@ public class TaskProgressDialogFragment extends
 	 
 	 public static boolean dialogIsProceeding = false;
 	/**
-	 * Static helper to build and run loader
+	 * статический хелпер для создания и запуска загрузчика. 
 	 *
 	 */
 	public static class Builder{

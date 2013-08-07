@@ -2,7 +2,6 @@ package com.library;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,15 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-
 import com.assignmentexpert.R;
 import com.customitems.CustomTextView;
 import com.datamodel.Messages;
 
-
+/**  *	 класс адаптер для списка сообщений для выбранного заказа*/
 public class InteractionsAdapter extends  ArrayAdapter<Messages>{
-
-
     Context context; 
     int layoutResourceId;
     int position;
@@ -35,15 +31,7 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
         this.messages = messages;
         this.position  = position;
     }
-//    @Override
-//    public int getCount() {
-//        return 1;
-//    }
-    public void setPosition(int position)
-    {
-    	this.position = position;
-    }
-
+    /**  *	метод для привязки элементов UI к данным конкретного сообщения */
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
         InteractionHolder holder = null;
@@ -51,13 +39,10 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
         if(row == null)
         {
 
-            //LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-        	//LayoutInflater inflater=(LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         	LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(R.layout.interactions_item, parent, false);
           
             holder = new InteractionHolder();
-            
             
             holder.interactionId= (TextView)row.findViewById(R.id.interactionId);
             holder.interactionAbove = (TextView)row.findViewById(R.id.interactionAbove);
@@ -65,9 +50,6 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
             holder.interactionMessage = (TextView)row.findViewById(R.id.interactionMessage);
             holder.interactionDate = (TextView)row.findViewById(R.id.interactionDate);
             linearLayout = (LinearLayout)row.findViewById(R.id.interactionsCursor);
-//            holder.prev =  (TextView)row.findViewById(R.id.cursorMess1);
-//            holder.curr =  (TextView)row.findViewById(R.id.cursorMess2);
-//            holder.next =  (TextView)row.findViewById(R.id.cursorMess3);
             row.setTag(holder);
         }
         else
@@ -77,6 +59,10 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
         
             Messages message = messages.get(position);
         	Log.i("position",Integer.toString(position));
+        	if (message.getServerFlag())
+        		message.setServerName("Me");
+        	else 
+        		message.setServerName("Operator");
         	
 	        holder.interactionId.setText(Integer.toString(message.getMessageId()));
 	        holder.interactionAbove.setText(Integer.toString(position));
@@ -92,22 +78,10 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
 	                LayoutParams.WRAP_CONTENT));
 	        mess.setGravity(Gravity.CENTER);
 	        linearLayout.addView(mess);
-//	        holder.prev.setText(Integer.toString(position-1));
-//        	holder.curr.setText(Integer.toString(position));
-//        	holder.next.setText(Integer.toString(position+1));
-        	
-//        	  holder.prev.setText("hyu");
-//          	holder.curr.setText("qwe");
-//          	holder.next.setText("adsa");
-	        	
-	        
-	        
         	Log.i("end size",Integer.toString(position));
-       
-
         return row;
     }
-	    
+    /**  *	 класс - холдер для элементов сообщения заказа*/
     static class InteractionHolder
     {
     	TextView interactionId;
@@ -115,10 +89,6 @@ public class InteractionsAdapter extends  ArrayAdapter<Messages>{
     	TextView interactionAbove;
         TextView interactionBelow;
         TextView interactionMessage;
-        
-//        TextView prev;
-//        TextView curr;
-//        TextView next;
         
     }
     

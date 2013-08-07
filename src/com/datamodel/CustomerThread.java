@@ -6,15 +6,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
+/** *  ласс, описывающий обьект потока сообщений конкретного заказа. »спользуетс€ сериализаци€ */
 public class CustomerThread implements Parcelable{
+	/** * id заказа */
 		@SerializedName("id")
 		int id;
+		/** * список сообщений */
 		@SerializedName("messages")
 		ArrayList<Messages> messages;
-		// need for ORMlite
-		public CustomerThread()
-		{}
+		/** * основной конструктор */
 		public CustomerThread (int id, ArrayList<Messages> messlist)
 	    {
 	        this.id = id;
@@ -23,22 +23,23 @@ public class CustomerThread implements Parcelable{
 		public CustomerThread(Parcel in) {
 			readFromParcel(in);
 		}
+		/** * order id getter*/
 		public int getThreadId() 
 		{
 			
 			 return this.id;
 	    }
-			 
+		/** * List of messages getter*/
 		public ArrayList<Messages> getMessages() 
 		{
 			 return this.messages;
 	    }
-		
+		/** * order id setter*/
 		public void setMessageId(int id)
 		{
 			 this.id = id;
 		}
-
+		/** * Messages list getter*/
 		public void setMessages(ArrayList<Messages> messages)
 		{
 			 this.messages = messages;
@@ -67,8 +68,8 @@ public class CustomerThread implements Parcelable{
 			messages = in.readArrayList(Messages.class.getClassLoader());
 			
 		}
-		public static final Parcelable.Creator CREATOR =
-		    	new Parcelable.Creator() {
+		public static final Parcelable.Creator <CustomerThread> CREATOR =
+		    	new Parcelable.Creator<CustomerThread>() {
 		            public CustomerThread createFromParcel(Parcel in) {
 		                return new CustomerThread(in);
 		            }

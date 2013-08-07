@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,66 +24,74 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.RelativeLayout.LayoutParams;
 
-import com.activitygroups.MainTabGroup;
 import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.InteractionsActivityViewPager;
-import com.assignmentexpert.NewMessageActivity;
 import com.assignmentexpert.R;
-import com.assignmentexpert.InteractionsActivityViewPager.PageSlider;
-import com.asynctasks.InactivateAsync;
-import com.asynctasks.PayPalAsync;
 import com.customitems.CustomTextView;
 import com.datamodel.Files;
 import com.datamodel.Messages;
 import com.datamodel.Order;
 import com.library.FrequentlyUsedMethods;
-import com.library.ResultPayPalDelegate;
 import com.library.ServiceIntentMessages;
-import com.library.StaticFields;
 import com.paypal.android.MEP.CheckoutButton;
-import com.paypal.android.MEP.PayPal;
-import com.paypal.android.MEP.PayPalInvoiceData;
-import com.paypal.android.MEP.PayPalInvoiceItem;
-import com.paypal.android.MEP.PayPalPayment;
-
+import com.tabscreens.DashboardTabScreen;
+/** * фрагмент для отображения сообщений выбранного заказа */
 public class InteractionFragment extends Fragment implements IClickListener{
-	private Context cxt;
+	/** * экземпляр класса PageSlider*/
 	private PageSlider ps;
 	private Intent intent;
+	/** * контейнер сообщений*/
 	List<Messages> messagesList;
-	List<Order> ordersFromService;	
+	/** * контейнер заказов*/
+	List<Order> ordersFromService;
+	/** * кнопка "Cancel"*/
 	Button btnClose;
+	/** * id сообщения"*/
 	TextView interId;
+	/** * текст сообщения"*/
 	TextView interMess;
+	/** * дата сообщения*/
 	TextView textDate;
+	/** * ArrayAdapter файлов */
 	private ArrayAdapter<Files> fileAdapter;
+	/** * ViewPager для списка сообщений */
 	private ViewPager pager;
+	/** * CustomTextView для отображения предыдущего номера сообщения в списке*/
 	private CustomTextView currMess1;
+	/** * CustomTextView для отображения текущего номера сообщения в списке*/
 	private CustomTextView currMess2;
+	/** * CustomTextView для отображения следующего номера сообщения в списке*/
 	private CustomTextView currMess3;
+	/** * Button для посылки сообщения на сервер*/
 	private Button btnReply;
+	/** * Button для деактивации заказа*/
 	private Button btnInactivate;
+	/** * экземпляр интерфейса  IClickListener*/
 	private IClickListener listener;
+	/** * PayPal Button, если PayPal библиотека не активирована(статус заказа не discussion).*/
 	private Button btnPay;
+	/** * TextView для отображения срока выполнения заказа */
 	private TextView deadline;
+	/** * TextView для отображения цены заказа */
 	private TextView priceLabel;
+	/** * RelativeLayout - панель порядковых номеров заказа*/
 	private RelativeLayout messagesPanel;
+	/** * TextView - для отображения сообщения при пустом контейнере заказов*/
 	private TextView emptyList;
 	public static RelativeLayout panelInteractions;
-	private FrequentlyUsedMethods faq;
-
+	/** * PayPal Button, если PayPal библиотека активирована(статус заказа discussion).*/
+	private static CheckoutButton launchSimplePayment;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -103,23 +110,41 @@ public class InteractionFragment extends Fragment implements IClickListener{
    	    
    	    btnPay  = (Button) view.findViewById(R.id.btnPay);
    	    
-   	    faq = new FrequentlyUsedMethods(getActivity());
    		deadline = (TextView)view.findViewById(R.id.deadlineLabel);
-   		priceLabel = (TextView)view.findViewById(R.id.priceLabel);
+   		priceLabel = (CustomTextView)view.findViewById(R.id.priceLabel);
    		panelInteractions =  ((RelativeLayout)view.findViewById(R.id.panelInteractions));
    		messagesPanel = (RelativeLayout)view.findViewById(R.id.messagesPanel);
    		
    		emptyList = (TextView) view.findViewById(R.id.emptyResult);
    		
+		// Get the CheckoutButton. There are five different sizes. The text on the button can either be of type TEXT_PAY or TEXT_DONATE.
+	//	launchSimplePayment = pp.getCheckoutButton(getActivity(), PayPal.BUTTON_194x37, CheckoutButton.TEXT_PAY);
+   		
+   		
    		btnReply.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	listener.changeFragment(6);
+            	if (!DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("uploading"))
+            		listener.changeFragment(6);
+            	else
+            	{
+            		
+            	}
             }
         });
 	    btnInactivate.setOnClickListener(new View.OnClickListener() {
         	 
             public void onClick(View view) {
-            	listener.changeFragment(7);
+            	if (!DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("uploading"))
+            		listener.changeFragment(7);
+            	else 
+            	{
+            		DashboardActivityAlt.forPrint.remove(DashboardActivityAlt.listItem);
+            		getActivity().finish();
+            		Intent i =new Intent(getActivity(), DashboardTabScreen.class);
+            		getActivity().startActivity(i);
+            		
+            		
+            	}
             	//InactivateAsync.execute(InteractionsActivityViewPager.this, InteractionsActivityViewPager.this);
                 
             }
@@ -168,6 +193,7 @@ public class InteractionFragment extends Fragment implements IClickListener{
 	    });
 	    return view;
 	  }
+	/** * инициализация экземпляра IClickListener*/
 	@Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -179,8 +205,8 @@ public class InteractionFragment extends Fragment implements IClickListener{
                     + " must implement OnHeadlineSelectedListener");
         }
     }
+	/** * PagerAdapter для отображения сообщений заказа */
 	public class PageSlider extends PagerAdapter{
-		private LinearLayout linearLayout;
 		int count=0;
 		private LinearLayout interactionsFilesPanel;
 		private ListView fileslist;
@@ -206,7 +232,6 @@ public class InteractionFragment extends Fragment implements IClickListener{
 	    	 interMess = (TextView) page.findViewById(R.id.interactionMessage);
 	    	 textDate = (TextView) page.findViewById(R.id.interactionDate);
 	    	 messageFiles =  (DashboardActivityAlt.messagesExport).get(position).getFiles();
-	    	 linearLayout = (LinearLayout)page.findViewById(R.id.interactionsCursor);
 	    	 interactionsFilesPanel = (LinearLayout)page.findViewById(R.id.interactionsFilesPanel);
 	    	 fileslist = (ListView)page.findViewById(R.id.fileslist);
 	    	 if (!DashboardActivityAlt.messagesExport.isEmpty())
@@ -298,7 +323,7 @@ public class InteractionFragment extends Fragment implements IClickListener{
 	        return view==((View)object);
 	    }
 	}
-	
+	/** *BroadcastReceiver для обновления списка новыми сообщениями */
 	 private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 	        @Override
 	        public void onReceive(Context context, Intent intent) {
@@ -320,15 +345,25 @@ public class InteractionFragment extends Fragment implements IClickListener{
 			getActivity().stopService(intent);
 			//unregisterReceiver(downloadFilesReceiver);
 		}	
-
+		/** *метод обновления layout при получении новых сообщений */
 	    private void updateUI(Intent intent)
 	    {
-	    	 pager.setAdapter(ps);   
+	    	Log.i("interactions fragment", "updateUI method");
+	    	
+	    	 //pager.setAdapter(ps);   
+	    	ps.notifyDataSetChanged();
 	    	 updateLayout();
+	    	 
 	    	
 	    }
 	    
-	   
+	    public static void updatePayPalBtn()
+		 {
+			 launchSimplePayment.updateButton();
+		 }
+	    /** *метод для инверсии порядка размещению сообщений в контейнере. (Для отображения начиная с последнего в списке)
+	     * @param orig - список сообщений, принадлежащих текущему заказу
+	     * @return контейнер сообщений в обратном порядке.*/
 	  public ArrayList<Messages> reverse( List<Messages> orig )
 	    {
 	       ArrayList<Messages> reversed = new ArrayList<Messages>() ;
@@ -340,6 +375,7 @@ public class InteractionFragment extends Fragment implements IClickListener{
 	       }
 	       return reversed ;
 	    }
+	  /** *OnClickListener для списка прикрепленных файлов к сообщению */
 	  OnClickListener filesClicklistener = new OnClickListener() {
 			public void onClick(View arg0) {
 				final CharSequence[] items = {"Open", "Details"};
@@ -396,13 +432,21 @@ public class InteractionFragment extends Fragment implements IClickListener{
 			    
 			}
 		};
-	private CheckoutButton launchSimplePayment;
+	
 
-		
+		/** *метод обновления layout */
 		    public void updateLayout()
 		    {
+		    	try{
+		    	if(DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("uploading"))
+		    	{
+		    		btnInactivate.setText("Remove order");
+		    		btnReply.setText("Try again");
+		    	}
 		    	if (!DashboardActivityAlt.messagesExport.isEmpty())
 		 	    {
+		    		 emptyList.setVisibility(View.INVISIBLE);
+		    		 messagesPanel.setVisibility(View.VISIBLE);
 		    		Log.i("interactions","regular selection");
 		 		    if(DashboardActivityAlt.messagesExport.size() == 1)
 		 		    {
@@ -410,7 +454,7 @@ public class InteractionFragment extends Fragment implements IClickListener{
 		 	   	 	}
 		 		     else
 		 		     {
-		 		    	currMess3.setText("   ");
+		 		    	 currMess3.setText("   ");
 		 		    	 currMess2.setText(Integer.toString(DashboardActivityAlt.messagesExport.size()));
 		 		    	 currMess1.setText(Integer.toString(DashboardActivityAlt.messagesExport.size()-1  ));
 		 		     }
@@ -422,14 +466,13 @@ public class InteractionFragment extends Fragment implements IClickListener{
 		    	}
 		    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==9)
 		    	{
-		    		for (Messages mes : DashboardActivityAlt.messagesExport)
-		    		{
-		    			Log.i("messages", mes.toString());
-		    		}
-		    		btnInactivate.setEnabled(false);
+		    		btnReply.setVisibility(View.INVISIBLE);
+		    		btnInactivate.setVisibility(View.INVISIBLE);
 		    	}
 		    	if (DashboardActivityAlt.listItem.getPrice() ==0)
 		    		 priceLabel.setText("N/A");
+		    	else
+		    		priceLabel.setText(DashboardActivityAlt.listItem.getPrice() + "$");
 //		    	if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==2 | DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId()==3)
 //		    	{
 //			    		 emptyList.setVisibility(View.VISIBLE);
@@ -456,16 +499,19 @@ public class InteractionFragment extends Fragment implements IClickListener{
 					   	    	btnPay.setClickable(false);
 					   	    	btnPay.setEnabled(false);
 					   	  }
-	   		      deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
-	   		  
-	   		    
-	   		      pager.setAdapter(ps);
+	   		   deadline.setText(DashboardActivityAlt.listItem.getDeadline().toString());
+	   		   pager.setAdapter(ps);
 	   		   pager.setCurrentItem(DashboardActivityAlt.messagesExport.size());
 	   		 Log.i("interactions pager", Integer.toString(DashboardActivityAlt.messagesExport.size()));
+		    	}
+		    	catch(Exception  e)
+		    	{
+		    		e.printStackTrace();
+		    	}
 		    }
 	
-	private int currentMessPos;
-	
+		    private int currentMessPos;
+		    /** *метод получения позиции файла в списке, принадлежащего конкретному сообщению */
 		 public int getFilePosition(View v)
 		 {
 			 int pos = 0;
@@ -476,11 +522,12 @@ public class InteractionFragment extends Fragment implements IClickListener{
 			}
 			 return pos;
 		 }
-		 
+		 /** *метод получения позиции текущего сообщения */
 		 public int getCurrMessPos()
 			{
 				return this.currentMessPos;
 			}
+		 /** *метод установки позиции текущего сообщения */
 			public void setCurrMessPos(int currPoss)
 			{
 				this.currentMessPos = currPoss;
@@ -490,4 +537,5 @@ public class InteractionFragment extends Fragment implements IClickListener{
 				// TODO Auto-generated method stub
 				
 			}
+			   
 }

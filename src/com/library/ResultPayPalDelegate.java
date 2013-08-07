@@ -3,11 +3,9 @@ package com.library;
 import java.io.Serializable;
 
 import android.app.Activity;
-import android.content.Context;
 
-import com.assignmentexpert.NewMessageActivity;
 import com.paypal.android.MEP.PayPalResultDelegate;
-
+/**  *	делегат для возвращения результатa работы библиотеки PayPal*/
 public class ResultPayPalDelegate implements PayPalResultDelegate, Serializable {
 	Activity ctx;
 	String resultTitle;
@@ -39,10 +37,10 @@ public class ResultPayPalDelegate implements PayPalResultDelegate, Serializable 
 	}
 	private static final long serialVersionUID = 10001L;
 	/**
-	 * Notification that the payment has been completed successfully.
+	 * Уведомление, что оплата прошла успешно
 	 * 
-	 * @param payKey			the pay key for the payment
-	 * @param paymentStatus		the status of the transaction
+	 * @param payKey			ключ оплаты
+	 * @param paymentStatus		статус транзакции
 	 */
 	public void onPaymentSucceeded(String payKey, String paymentStatus) {
 		setResultTitle("SUCCESS");
@@ -50,13 +48,13 @@ public class ResultPayPalDelegate implements PayPalResultDelegate, Serializable 
 		setResultExtra("Key: " + payKey);
 	}
 	/**
-	 * Notification that the payment has failed.
+	 * Уведомление, что оплата закончилась провалом. 
 	 * 
-	 * @param paymentStatus		the status of the transaction
-	 * @param correlationID		the correlationID for the transaction failure
-	 * @param payKey			the pay key for the payment
-	 * @param errorID			the ID of the error that occurred
-	 * @param errorMessage		the error message for the error that occurred
+	 * @param paymentStatus		статус транзакции
+	 * @param correlationID		correlationID провала оплаты
+	 * @param payKey			ключ оплаты
+	 * @param errorID			ID ошибки
+	 * @param errorMessage		сообщение ошибки
 	 */
 	public void onPaymentFailed(String paymentStatus, String correlationID,
 			String payKey, String errorID, String errorMessage) {
@@ -66,9 +64,9 @@ public class ResultPayPalDelegate implements PayPalResultDelegate, Serializable 
 				+ correlationID + "\nPay Key: " + payKey;
 	}
 	/**
-	 * Notification that the payment was canceled.
+	 *	Уведомление, что оплату отменили.
 	 * 
-	 * @param paymentStatus		the status of the transaction
+	 * @param paymentStatus		статус транзакции
 	 */
 	public void onPaymentCanceled(String paymentStatus) {
 		resultTitle = "CANCELED";

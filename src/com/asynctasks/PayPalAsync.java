@@ -9,25 +9,24 @@ import android.util.Log;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
-import com.fragments.InteractionFragment;
 import com.library.FrequentlyUsedMethods;
 import com.paypal.android.MEP.PayPal;
-
+/** * AsyncTask дл€ инициализации PayPal библиотеки. */
 public class PayPalAsync  extends AbstractTaskLoader {
 	Context context;
 	FrequentlyUsedMethods faq = new FrequentlyUsedMethods(context);
-	private boolean errorFlag = false;
 	protected PayPalAsync(Context context) {
 		super(context);
 		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
+	/** *метод вызова выполнени€ запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		PayPalAsync loader = new PayPalAsync(fa);
 
 		new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
-				.setCancelable(true)
+				.setCancelable(false)
 				.setTaskLoaderListener(taskLoaderListener)
 				.show();
 	}
@@ -38,9 +37,10 @@ public class PayPalAsync  extends AbstractTaskLoader {
 	}
 	@Override
 	public void setArguments(Bundle args) {
-		// TODO Auto-generated method stub
+		
 		
 	}
+	/** *метод выполнени€ запроса*/
 	@Override
 	public Object loadInBackground() {
 		Integer result = 0;

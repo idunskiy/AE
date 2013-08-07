@@ -6,17 +6,13 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-
-import com.assignmentexpert.LoginActivity;
-import com.assignmentexpert.ProfileCompl;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.fragments.ProfileFragmentCompl;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask для обновления полей профиля пользователя. */
 public class ProfileUpdateAsync extends AbstractTaskLoader {
 	Context context;
 	private static String KEY_STATUS = "status";
@@ -29,6 +25,7 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
 		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		ProfileUpdateAsync loader = new ProfileUpdateAsync(fa);
@@ -48,6 +45,7 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
 		// TODO Auto-generated method stub
 		
 	}
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 		

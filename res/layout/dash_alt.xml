@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dashboardSwitcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+<RelativeLayout 
       xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:tag="dash_alt"
+    android:id="@+id/dash_alt_layout"
     android:orientation="vertical"
     android:background="#000000">
  <!-- <android.gesture.GestureOverlayView
@@ -16,9 +21,8 @@
         android:id="@+id/altOrderslist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:cacheColorHint="@android:color/transparent"
-        android:scrollingCache="false"
-        android:background="#000000"
+        android:scrollingCache="true"
+          android:fastScrollEnabled="true"
         android:divider="#323232"
         android:layout_below="@+id/dashboardHeader"
         android:dividerHeight="1dp"
@@ -81,4 +85,15 @@
   </LinearLayout>
  <!-- </android.gesture.GestureOverlayView>-->
 </RelativeLayout>
-
+<LinearLayout android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+     <TextView 
+        android:textSize="20sp"
+        android:text="@string/no_orders"
+        android:layout_width="fill_parent"
+        android:gravity="center|center"
+        android:layout_height="fill_parent"
+        android:textColor="#FFFFFF"
+        />
+</LinearLayout>
+</ViewSwitcher>

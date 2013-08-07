@@ -27,60 +27,66 @@
 	    android:orientation="horizontal" >
 		
 
-           <LinearLayout
+             <RelativeLayout
                android:id="@+id/deadlineLayout"
                android:layout_width="170dp"
                android:layout_height="fill_parent"
+                android:focusableInTouchMode="true"
+  			  android:focusable="true"
                android:orientation="vertical"
-               android:weightSum="1.0" >
+              >
 		   
 	           <com.customitems.CustomTextView
 	            android:id="@+id/textLabel"
 	            android:text="Deadline:"
-	            android:layout_height="fill_parent"
+	            android:layout_height="wrap_content"
 	            android:layout_width="115dp"
-	            android:layout_marginRight="10dp"
+	            android:layout_marginBottom="0dp"
+	            android:layout_marginTop="10dp"
+	             android:focusableInTouchMode="true"
+    			android:focusable="true"
 	            foo:customFont="Roboto-Regular.ttf"
 	            android:textSize="14sp"
-	            android:layout_weight=".50" 
-	            android:gravity="center_vertical|center_horizontal"
-	            android:padding="10dip"
+	            android:gravity="left|center"
+	            android:paddingLeft="10dp"
+	            android:paddingTop="10dp"
 	            android:textColor="#43576b"
 	            android:textStyle="bold" />
 
 	           <com.customitems.CustomTextView
 	               android:id="@+id/deadlineLabel"
 	               android:layout_width="fill_parent"
-	               android:layout_height="fill_parent"
-	               android:layout_marginRight="10dp"
+	               android:layout_height="wrap_content"
 	               foo:customFont="Roboto-Regular.ttf"
-	               android:layout_weight=".50"
-	               android:gravity="left|center_horizontal"
-	               android:padding="10dip"
+					android:layout_below="@+id/textLabel"
+	               android:gravity="top|left"
+	               android:paddingLeft="10dp"
 	               android:text="Deadline:"
 	               android:textColor="#000000"
 	               android:textSize="14sp"
 	               android:textStyle="bold" />
-
-	</LinearLayout>
+		</RelativeLayout>
 	            <Button
 	                android:id="@+id/btnPay"
-	                android:layout_width="75dp"
-	                android:layout_height="40dp"
+	                android:layout_width="80dp"
+	                android:layout_height="45dp"
 				      android:layout_centerVertical="true"
 	                android:layout_marginLeft="5dp"
-	                android:layout_marginRight="30dp"
+	                 android:focusableInTouchMode="true"
+   					 android:focusable="true"
+   					 android:background="@drawable/button_inactive"
+	                android:layout_marginRight="20dp"
 	               	android:visibility="gone"
 	                android:layout_toRightOf="@+id/deadlineLayout"
 	                android:gravity="center_vertical|center_horizontal"
 	                android:text="Pay"
-	                android:textColor="#FFFFFF"
+	                android:textColor="#11375e"
 	                android:textSize="18dp"
 	                android:textStyle="bold" />
 	          <com.customitems.CustomTextView
 	            android:id="@+id/priceLabel"
 	            android:text="N/A:"
-	             android:textSize="14sp"
+	             android:textSize="18sp"
 	            android:layout_height="fill_parent"
 	            android:layout_width="75dp"
 	            android:layout_alignParentRight="true"
@@ -101,15 +107,17 @@
    >
 	 <TableRow
           android:id="@+id/tableRow1"
+          android:layout_marginTop="10dp"
           style="@style/edit_row" 
           android:layout_weight="1"
           >
 	              <com.customitems.CustomTextView
              android:id="@+id/interactionId"
              android:layout_width="150dp"
+             android:layout_weight="1"
              android:layout_height="fill_parent"
              android:text="Reply"
-             android:layout_marginTop="3dp"
+             android:layout_marginTop="5dp"
              android:layout_marginLeft="25dp"
              android:textColor="#FFFFFF"
              android:textSize="14sp"
@@ -128,9 +136,11 @@
     <com.customitems.CustomEditText
         android:id="@+id/editMessage"
         style="@style/custom_edittext"
+        android:layout_weight="1"
         android:layout_width="fill_parent"
         android:gravity="top|left"
         android:layout_height="120dp"
+        android:scrollbars = "vertical"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Write your message">
     </com.customitems.CustomEditText>
@@ -150,6 +160,7 @@
             
             android:id="@+id/btnAddFilesMessage"
             style="@style/custom_button"
+            android:layout_weight="1"
             	android:background="@drawable/gray_button"
             android:layout_centerHorizontal="true"
             android:text="Add files"
@@ -181,18 +192,17 @@
 	        <Button
 	            android:id="@+id/btnSendMessage"
 	             style="@style/custom_button"
+	             android:layout_marginRight="10dp"
 	            android:text="Send"
-	            android:layout_weight="0.5"/>
+	            android:layout_weight="0.58"/>
 	
 	         <Button
 	             android:id="@+id/btnCancelNewMessage"
 	            style="@style/custom_button"
-	        	android:layout_marginLeft="5dp"
-	        	android:paddingLeft="10dp"
+	            android:layout_marginLeft="10dp"
 	        	android:text="Cancel"
-	        	android:layout_marginBottom="10dp"
 	        	android:background="@drawable/gray_button"
-	             android:layout_weight="0.5" />
+	             android:layout_weight="0.42" />
 		</LinearLayout>
 	</LinearLayout>
 

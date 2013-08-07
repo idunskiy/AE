@@ -34,7 +34,7 @@ import com.library.DatabaseHandler;
 import com.library.FrequentlyUsedMethods;
 import com.library.RestClient;
 import com.library.UserFunctions;
-
+/** * AsyncTask для логина пользователя. Получение массивов категорий, статусов, тем заказов, иформации о пользователе. */
 public class LoginAsync  extends AbstractTaskLoader {
 	private static String KEY_STATUS = "status";
     private static String KEY_MESSAGE = "message";
@@ -56,12 +56,13 @@ public class LoginAsync  extends AbstractTaskLoader {
 	private boolean errorFlag = false;
 //    SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
 //    editor = sharedPreferences.edit();
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		LoginAsync loader = new LoginAsync(fa);
 
 		new TaskProgressDialogFragment.Builder(fa, loader, "Loading…")
-				.setCancelable(true)
+				.setCancelable(false)
 				.setTaskLoaderListener(taskLoaderListener)
 				.show();
 	}
@@ -70,6 +71,7 @@ public class LoginAsync  extends AbstractTaskLoader {
 		super(context);
 		this.context = context;
 	}
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 		
@@ -88,7 +90,7 @@ public class LoginAsync  extends AbstractTaskLoader {
                 String res = json.getString(KEY_STATUS);
                 if(Integer.parseInt(res) == 1)
                 {	
-                	LoginActivity.appendLog(json.getString(KEY_DATA));
+                	//LoginActivity.appendLog(json.getString(KEY_DATA));
                 	DataParsing u = new DataParsing();
                 	LoginActivity.passUserId = u.wrapUserId(json);
             		List<Category> catlist = u.wrapCategories(json);

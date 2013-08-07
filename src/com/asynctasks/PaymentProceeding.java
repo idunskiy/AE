@@ -1,6 +1,5 @@
 package com.asynctasks;
 
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask для осуществления платежа. */
 public class PaymentProceeding  extends AbstractTaskLoader{
 	Context context;
 	private boolean errorFlag = false;
@@ -22,6 +21,7 @@ public class PaymentProceeding  extends AbstractTaskLoader{
 		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		PaymentProceeding loader = new PaymentProceeding(fa);
@@ -43,13 +43,12 @@ public class PaymentProceeding  extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
-
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 		 UserFunctions func = new UserFunctions();
-		 JSONObject res =  null;
          try {
-        	 res = 	func.sendPayment(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),Float.toString(DashboardActivityAlt.listItem.getPrice()));
+        	 func.sendPayment(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),Float.toString(DashboardActivityAlt.listItem.getPrice()));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

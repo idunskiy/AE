@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.assignmentexpert.R;
@@ -15,10 +14,13 @@ import com.asynctasks.ProfileUpdateAsync;
 import com.fragments.IClickListener;
 import com.fragments.ProfileFragmentCompl;
 import com.fragments.ProfileFragmentPref;
-
+import com.fragments.RegisterFragment;
+import com.fragments.RegisterFragmentCompl;
+/** * FragmentActivity информации профил€ и его изменени€. ќперерует фрагментами ProfileFragmentPref, ProfileFragmentCompl
+ * @see ProfileFragmentPref
+ * @see ProfileFragmentCompl  */
 public class ProfileFragmentActivity extends FragmentActivity  implements IClickListener, ITaskLoaderListener{
-	
-	private Button btnOne;
+	/** * экземпл€р класса FragmentTransaction дл€ проведени€ оперций над обьектами Fragment	  */
 	FragmentTransaction fragmentTransaction;
 	@Override
   public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class ProfileFragmentActivity extends FragmentActivity  implements IClick
       fragmentTransaction.commit();
       
 	}
+	/** *метод дл€ переключени€ фрагментов внутри активности и вызова операций в отдельном потоке(ProfileUpdateAsync).   */
 	public void changeFragment(int flag) {
 		if (flag==1)
 		{
@@ -53,6 +56,7 @@ public class ProfileFragmentActivity extends FragmentActivity  implements IClick
 			ProfileUpdateAsync.execute(this, this);
 		
 	}
+	 /** *метод интерфейса ITaskLoaderListener. служит дл€ обработки данных после успешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onLoadFinished(Object data) {
 		if (data instanceof String & ((String)data).equalsIgnoreCase("success"))
 		{
@@ -72,6 +76,7 @@ public class ProfileFragmentActivity extends FragmentActivity  implements IClick
 		Toast.makeText(this, "Your profile wasn't updated. "+ ProfileUpdateAsync.errorMessage, Toast.LENGTH_LONG).show();
 		
 	}
+	/** *метод интерфейса ITaskLoaderListener. служит дл€ обработки данных после неуспешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onCancelLoad() {
 		// TODO Auto-generated method stub
 		

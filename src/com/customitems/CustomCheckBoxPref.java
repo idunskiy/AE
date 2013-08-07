@@ -14,7 +14,7 @@ import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
+/** *кастомизированный CheckBoxPreference. используетс€ дл€ отображени€ CheckBox'ов в настройках отправки нового заказа. */
 public class CustomCheckBoxPref extends CheckBoxPreference implements OnClickListener, OnTouchListener{
 	private String fileTitle;
 	TextView titleView ;
@@ -49,7 +49,6 @@ public class CustomCheckBoxPref extends CheckBoxPreference implements OnClickLis
     protected void onBindView(View view) {
         super.onBindView(view);
         TextView titleView = (TextView) view.findViewById(android.R.id.title);
-        CheckBox checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
         //checkBox.setChecked(true);
         titleView.setTextColor(Color.WHITE);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);

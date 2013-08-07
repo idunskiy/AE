@@ -1,6 +1,5 @@
 package com.asynctasks;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -8,28 +7,21 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.LoginActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
-import com.datamodel.Category;
-import com.datamodel.Level;
 import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
-import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 import com.library.DataParsing;
 import com.library.DatabaseHandler;
-import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask дл€ загрузки списка заказов*/
 public class DashboardAsync extends AbstractTaskLoader{
 	Context context;
 	List<String[]> results = null;
@@ -42,14 +34,13 @@ public class DashboardAsync extends AbstractTaskLoader{
  	DashboardActivityAlt dashboardAct = new DashboardActivityAlt();
 		String result = "";
 		List<Order> orders;
-		private boolean errorFlag  = false;
-		
+		/** *метод вызова выполнени€ запроса из активностей*/
 		public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 			DashboardAsync loader = new DashboardAsync(fa);
 
-			new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
-					.setCancelable(true)
+			new TaskProgressDialogFragment.Builder(fa, loader, "Loading ordersЕ")
+					.setCancelable(false)
 					.setTaskLoaderListener(taskLoaderListener)
 					.show();
 		}
@@ -70,14 +61,15 @@ public class DashboardAsync extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
+	/** *метод выполнени€ запроса*/
 	@Override
 	public Object loadInBackground() {
 		try{
 		db = new DatabaseHandler(context.getApplicationContext());
 		Dao<ProcessStatus,Integer> dao = db.getStatusDao();
-		Dao<Level,Integer> daoLevel = db.getLevelDao();
-		Dao<Subject,Integer> daoSubject = db.getSubjectDao();
-		Dao<Category,Integer> daoCategory = db.getCategoryDao();
+		db.getLevelDao();
+		db.getSubjectDao();
+		db.getCategoryDao();
 		
 		Log.i("page in async", Integer.toString(DashboardActivityAlt.page));
 		Log.i("per_page in async", Integer.toString(DashboardActivityAlt.perpage));
@@ -87,15 +79,14 @@ public class DashboardAsync extends AbstractTaskLoader{
     		{
     			Log.i("empty orders","orders are empty");
     			DashboardActivityAlt.stopDownload = true;
-    			cancelLoad();
+    			result = "empty";
     			res = true;
+    			onStopLoading();
     		}
     		else
     		{
-			
-    		}
 		QueryBuilder<ProcessStatus,Integer> query = dao.queryBuilder();
-		Where where = query.where();
+		query.where();
 	    	for(Order r : orders)
 	    	{
 		         GenericRawResults<String[]> rawResults = dao.queryRaw("select "+ ProcessStatus.STATUS_TITLE +" from process_status where "+ ProcessStatus.STATUS_ID + " = " + r.getProcess_status().getProccessStatusId());
@@ -112,26 +103,26 @@ public class DashboardAsync extends AbstractTaskLoader{
 		         
 		        DashboardActivityAlt.forPrint.add(r);
 	         }
-	    	res = false;
+	    	result = "success";
 		    DashboardActivityAlt.page+=1;
+    		}
 		}
 	    catch (Exception e1) {
-	    	
+	    	   Log.i("DashboardAsync", "catch  loadInBackground");
 			e1.printStackTrace();
-			errorFlag    = true;
+			result = "error";
 			onStopLoading();
 		}
-	    
-		return null;
+		return result;
 	}
 	@Override 
 	 protected void onStopLoading() {
 	        Log.i("DashboardAsync", "onStopLoading method");
-	        this.setCanseled(true);
-	        TaskProgressDialogFragment.cancel();
-	        if (errorFlag)
-	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
-	        cancelLoad();
+//	        this.setCanseled(true);
+//	        TaskProgressDialogFragment.cancel();
+//	        if (errorFlag)
+//	        new FrequentlyUsedMethods(context).someMethod("Something went wrong. Please try later.");
+//	        cancelLoad();
 	    }
 
 }

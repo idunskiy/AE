@@ -36,6 +36,8 @@
 	 <declare-styleable name="CustomEditPreference">
     	<attr name="customFont"  />
         <attr name="android:title"	     />
+         <attr name="android:enabled"	     />
+         <attr name="alpha"	 format="integer"     />
         <attr name="iconDisable"	format="integer"     />
 	</declare-styleable>
 	

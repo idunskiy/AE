@@ -1,20 +1,25 @@
 package com.datamodel;
 
-import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
-
+/** * класс обьекта клиента. Используется сериализация.*/
 public class User {
+	/** * id клиента*/
   @SerializedName("id")
   int id;
+  /** * имя клиента*/
   @SerializedName("first_name")
   String first_name;
+  /** * фамилия клиента*/
   @SerializedName("last_name")
   String last_name;
+  /** * email клиента*/
   @SerializedName("email")
   String email;
+  /** * временная зона клиента*/
   @SerializedName("timezone")
   String timezone;
+  /** * время, когда был добавлен клиент*/
   @SerializedName("created_at")
   DateTime created_at;
  

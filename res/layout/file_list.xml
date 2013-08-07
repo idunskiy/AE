@@ -44,7 +44,16 @@
         	android:layout_height="wrap_content"
         foo:customFont="Roboto-Regular.ttf">
     </com.customitems.CustomTextView>
- 
+  <CheckBox
+   	   	 android:id="@+id/fileCheck" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text=""
+        android:checked="false"
+        android:layout_alignParentRight="true"
+        android:paddingRight="8dp"
+        android:gravity="right"
+        android:textSize="20sp"/>
  
  
  </RelativeLayout>
@@ -57,6 +66,7 @@
                 <Button
 		    android:id="@+id/btnRemoveFiles"
 		    style="@style/custom_button"
+		    android:enabled="false"
 		    android:layout_width="fill_parent"
 		    android:background="@drawable/gray_button"
 		    android:text="Remove"

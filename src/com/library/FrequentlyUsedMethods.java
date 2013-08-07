@@ -4,20 +4,21 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.preference.ListPreference;
+import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -27,9 +28,10 @@ import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.R;
+import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.InactivateAsync;
 import com.datamodel.Level;
 import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
@@ -39,9 +41,10 @@ import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalInvoiceData;
 import com.paypal.android.MEP.PayPalInvoiceItem;
 import com.paypal.android.MEP.PayPalPayment;
-
+/**  *	 класс для часто используемых функций в разных местах приложения */
 public class FrequentlyUsedMethods {
 	private static final int server = PayPal.ENV_SANDBOX;
+	  /**	 *	  id для PayPal библиотеки	 */
 	private static final String appID = "APP-80W284485P519543T";
 //	private static final String appID = "APP-8HA162973U847442G";
 	private static final int request = 1;
@@ -71,8 +74,8 @@ public class FrequentlyUsedMethods {
 		Log.i("freq method", activity.getClass().toString());
 		return this.activity;
 	}
-	
-	
+	  /**	 *	  метод инициализации PayPal библиотеки
+	       * @param arg  - обьект Context для инициализации	 */
 	public boolean initLibrary(Context arg) {
 		PayPal pp = PayPal.getInstance();
 		// If the library is already initialized, then we don't need to initialize it again.
@@ -104,9 +107,13 @@ public class FrequentlyUsedMethods {
 		}
 		return PayPal.getInstance().isLibraryInitialized();
 	}
+	 /**	 *	  метод setup кнопки PayPal
+     * @param arg  - обьект Context для инициализации
+     * @param panelInteractions  - RelativeLayout для setup'a кнопки на нем	 */
   public void setupButtons(Context arg, RelativeLayout panelInteractions) {
 		PayPal pp = PayPal.getInstance();
-		arg = getContext();
+		//arg = getContext();
+		Log.i("FAQ context", arg.getClass().toString());
 		// Get the CheckoutButton. There are five different sizes. The text on the button can either be of type TEXT_PAY or TEXT_DONATE.
 		launchSimplePayment = pp.getCheckoutButton(arg, PayPal.BUTTON_194x37, CheckoutButton.TEXT_PAY);
 		// You'll need to have an OnClickListener for the CheckoutButton. For this application, MPL_Example implements OnClickListener and we
@@ -117,45 +124,68 @@ public class FrequentlyUsedMethods {
 		lp.leftMargin =(int) getContext().getResources().getDimension(R.dimen.paypal_left_margin); 
 		lp.topMargin = (int) getContext().getResources().getDimension(R.dimen.paypal_top_margin);
 		setActivity((Activity)arg);
+		Log.i("getAct FAQ", getActivity().getClass().toString());
 		launchSimplePayment.setOnClickListener(mCorkyListener);
 		// The CheckoutButton is an android LinearLayout so we can add it to our display like any other View.
 		panelInteractions.addView(launchSimplePayment,lp);
 		
 	}
+  /**	 *	  метод вывода ошибки при попытке инициализации PayPal библиотеки  */
   public void showFailure(Context ctx) {
 	  Toast.makeText(ctx, "Sorry, could not initialize the PayPal library. Try to make it later",  Toast.LENGTH_LONG).show();
-		
 	}
-  
-  
+  /**	 *	  метод деактивации заказов   	 */
+  	public void inactivateOrder()
+  	{
+  		AlertDialog.Builder alt_bld = new AlertDialog.Builder(getContext());
+          alt_bld.setMessage("Are you sure you want to inactive the order?")
+          .setCancelable(false)
+          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int id) {
+              // Action for 'Yes' Button
+              	InactivateAsync.execute((FragmentActivity)getContext(), (ITaskLoaderListener)getContext());
+              }
+          })
+          .setNegativeButton("No", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int id) {
+              //  Action for 'NO' Button
+
+                  dialog.cancel();
+              }
+          });
+          AlertDialog alert = alt_bld.create();
+          // Title for AlertDialog
+          alert.setTitle("Order inactivation");
+          // Icon for AlertDialog
+          alert.show();
+  	}
+  	 /**	 *	 OnClickListener для PayPal кнопки  	 */
   private OnClickListener mCorkyListener = new OnClickListener() {
 	    public void onClick(View v) {
-	    	PayPalPayment newPayment = new PayPalPayment();
-      	
-      	Log.i("item current price" , Float.toString(DashboardActivityAlt.listItem.getPrice()));
-      	//if (new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice()))!= null) 
-      	newPayment.setSubtotal(new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice())));
-      	newPayment.setCurrencyType("USD");
-      	newPayment.setRecipient("ivand_1356619309_biz@aeteam.org");
-      	newPayment.setMerchantName("BrainRouter LTD");
-      	newPayment.setIpnUrl(StaticFields.testHost+"/app_dev.php/payment/notifier/");
-      	newPayment.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
-      	PayPalInvoiceData invoice = new PayPalInvoiceData();
-        	invoice.setTax(new BigDecimal("0"));
-      	  invoice.setShipping(new BigDecimal("0"));
-      	 PayPalInvoiceItem  item =new PayPalInvoiceItem();
-      	 item.setName("something");
-      	 item.setID(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
-      	 item.setQuantity(1);
-      	 invoice.getInvoiceItems().add(item);
-      	 newPayment.setInvoiceData(invoice);
-      	Log.i("btnListener click", ((Activity)getContext()).getClass().toString());
-      	
-      	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getActivity(),new ResultPayPalDelegate());
-	    getActivity().startActivityForResult(paypalIntent, request);
+		    	PayPalPayment newPayment = new PayPalPayment();
+		    	 //launchSimplePayment.updateButton();
+		      	Log.i("item current price" , Float.toString(DashboardActivityAlt.listItem.getPrice()));
+		      	//if (new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice()))!= null) 
+		      	newPayment.setSubtotal(new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice())));
+		      	newPayment.setCurrencyType("USD");
+		      	newPayment.setRecipient("ivand_1356619309_biz@aeteam.org");
+		      	newPayment.setMerchantName("BrainRouter LTD");
+		      	newPayment.setIpnUrl(Constants.testHost+"/app_dev.php/payment/notifier/");
+		      	newPayment.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
+		      	PayPalInvoiceData invoice = new PayPalInvoiceData();
+		        	invoice.setTax(new BigDecimal("0"));
+		      	  invoice.setShipping(new BigDecimal("0"));
+		      	 PayPalInvoiceItem  item =new PayPalInvoiceItem();
+		      	 item.setName("something");
+		      	 item.setID(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
+		      	 item.setQuantity(1);
+		      	 invoice.getInvoiceItems().add(item);
+		      	 newPayment.setInvoiceData(invoice);
+		      	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getActivity(),new ResultPayPalDelegate());
+			    getActivity().startActivityForResult(paypalIntent, request);
 	    }
    };
-   
+	 /**	 *	 OnClickListener для открытия файла  	 */
    public OnClickListener fileInfoListenter = new OnClickListener() {
 	    public void onClick(View v) {
 	    	  File choosed = findFile(((TextView)v).getText().toString());
@@ -165,10 +195,9 @@ public class FrequentlyUsedMethods {
   			getContext().startActivity(intent);
      	
    }};
-   
+	 /**	 *	 метод для поиска файла на карте памяти по имени файла  	 */
    public File findFile(String name)
    {
-	   List<String> paths = new ArrayList<String>();
 	   File directory = new File("/mnt/sdcard/download/AssignmentExpert");
 	   File choosedFile = null;
 	   File[] files = directory.listFiles();
@@ -188,27 +217,16 @@ public class FrequentlyUsedMethods {
 	   }
 	   return choosedFile;
    }
-   private int savedPosition;
-   private int savedListTop;
-   public boolean payPalActivate()
-   {
-	   boolean result;
-	   if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("Discussion") )
-		   result  = true;
-	   else result = false;
-	   return result;
-   }
+   /**	 *	 метод конвертации пикселей в dp 
+     * @param px - пиксели для конвертации
+    *  @param ctx - Activity для которой будет осуществляться конвертация  	 */
    public float convertPixelsToDp(float px, Activity ctx){
    	DisplayMetrics metrics = new DisplayMetrics();
    	ctx.getWindowManager().getDefaultDisplay().getMetrics(metrics);
    	float dp = metrics.density;
    	return dp;
    }
-   private float dpFromPx(float px)
-   {
-       return px / getContext().getResources().getDisplayMetrics().density;
-   }
-   
+   /**	 *	 метод проверки на налачие подключения к интернету    	 */
    public boolean isOnline() {
 	   boolean res = false;
        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -223,6 +241,20 @@ public class FrequentlyUsedMethods {
         }
        return res;
    }
+   
+   public boolean isOnlineOrderSend() {
+	   boolean res = false;
+       ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+       NetworkInfo netInfo = cm.getActiveNetworkInfo();
+       if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+    	   res= true;
+       }
+       else
+    	   res= false;
+       return res;
+   }
+   /**	 *	 метод обновления всех полей текущего заказа
+    * @param ord - заказ для обновления    	 */
    public Order updateOrderFields(Order ord)
    {
 	   		
@@ -247,23 +279,10 @@ public class FrequentlyUsedMethods {
 			}
 			
 			return ord;
-			
    }
-   public void setListPos(int savedPosition, int savedListTop)
-	{
-		this.savedPosition = savedPosition;
-		this.savedListTop = savedListTop;
-	}
 	
-	public int getListPos()
-	{
-		return this.savedPosition;
-	}
-	public int getListTop()
-	{
-		return this.savedListTop;
-	}
-   
+   /**	 *	 метод добавления временных зон в ListPreference
+    * @param   timezonePref - ListPreference в который будут добавляться временные зоны  	 */
 	 public void addTimeZones(ListPreference timezonePref) {
 			final String[] TZ = TimeZone.getAvailableIDs();
 
@@ -310,8 +329,10 @@ public class FrequentlyUsedMethods {
 		    	currTimeZone = TZ1.get(q);
 		    }
 		    timezonePref.setSummary(currTimeZone );
-			
 		}
+	 
+	 /**	 *	 метод валидации временных зон, которые соответствуют необходимому формату
+	    * @param   email - строка для  валидации	 */
 	 public boolean timezoneValidate(String email)
 	    {
 	        
@@ -328,6 +349,7 @@ public class FrequentlyUsedMethods {
 		    Log.i("RegisterAct curr context", context.getClass().toString());
 		        return context;
 		}
+	 /**	 *	создание отдельного потока для вывода строки во всех Activities приложения	   	 */
 	 private class ToastRunnable implements Runnable {
 		    String mText;
 
@@ -339,16 +361,10 @@ public class FrequentlyUsedMethods {
 		         Toast.makeText(getContext(), mText, Toast.LENGTH_SHORT).show();
 		    }
 		}
+	 /**	 *	метод вывода строки во всех Activities приложения   
+	  * @param message - сообщение для вывода 	 */
 	 public void someMethod(String message) {
 		    mHandler.post(new ToastRunnable(message));
 		}
-	 
-//	 public static List<Order> cloneList(List<Order> dogList) {
-//		    List<Order> clonedList = new ArrayList<Order>(dogList.size());
-//		    for (Order dog : dogList) {
-//		        clonedList.add(new Order(dog));
-//		    }
-//		    return clonedList;
-//		}
 	
 }

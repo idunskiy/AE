@@ -2,6 +2,7 @@
    
      <ScrollView
          xmlns:android="http://schemas.android.com/apk/res/android"
+		       xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
 		    android:id="@+id/scrollOrderInfo"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
@@ -30,20 +31,22 @@
 		    android:layout_weight=".50"
 		     >
 
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/productLabel"
-	         
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:layout_width="fill_parent"
 	         android:gravity="left"
-	         android:padding="10dip"
-	         android:text="Product"
+	         android:paddingLeft="10dip"
+	         android:paddingTop="10dip"
+	         android:text="Product:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/productTextView"
 	         android:layout_width="fill_parent"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
 			 android:paddingLeft="10dp"	
@@ -59,23 +62,26 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
-	      <TextView
+	      <com.customitems.CustomTextView
 	         android:id="@+id/citationLabel"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right"
-	         android:padding="10dip"
-	         android:text="Citation style"
+	         android:paddingRight="10dip"
+	         foo:customFont="Roboto-Medium.ttf"
+	         android:paddingTop="10dip"
+	         android:text="Citation style:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
 	         />
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/citationTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:paddingRight="10dp"	
 	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 
@@ -101,22 +107,23 @@
 		    android:layout_weight=".50"
 		     >
 
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/subjLabel"
-	         
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:layout_width="fill_parent"
 	         android:gravity="left"
-	         android:padding="10dip"
-	         android:text="Subject"
+	          android:paddingLeft="10dip"
+	         android:text="Subject:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/subjTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:text=""
 	         android:paddingLeft="10dp"	
 	         android:textColor="#FFFFFF"
@@ -130,23 +137,25 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
-	      <TextView
+	      <com.customitems.CustomTextView
 	         android:id="@+id/referenceLabel"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
-	         android:gravity="left"
-	         android:padding="10dip"
+	         android:gravity="right"
+	         android:paddingRight="10dip"
 	          android:lines="1"	         
-	         android:text="References number"
+	          foo:customFont="Roboto-Medium.ttf"
+	         android:text="References number:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
 	         />
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/referenceTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="right|top"
 			android:paddingRight="10dp"
 	         android:text=""
@@ -173,22 +182,24 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
- 	<TextView
+ 	<com.customitems.CustomTextView
 	         android:id="@+id/levelLabel"
 	         android:layout_height="wrap_content"
 	         android:layout_width="fill_parent"
 	         android:gravity="left"
-	         android:padding="10dip"
-	         android:text="Level"
+	         android:paddingLeft="10dip"
+	         android:text="Level:"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/levelTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
 	         android:text=""
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:paddingLeft="10dp"	
 	         android:textColor="#FFFFFF"
 	         android:textStyle="bold"
@@ -203,21 +214,23 @@
 	           android:layout_weight=".50"
 	           android:orientation="vertical" >
 
-	           <TextView
+	           <com.customitems.CustomTextView
 	               android:id="@+id/priceLabel"
 	               android:layout_width="fill_parent"
 	               android:layout_height="wrap_content"
 	               android:gravity="right"
-	               android:padding="10dip"
-	               android:text="Price"
+	               foo:customFont="Roboto-Medium.ttf"
+	               android:paddingRight="10dip"
+	               android:text="Price:"
 	               android:textColor="#a5a5a5"
 	               android:textSize="14dp"
 	               android:textStyle="bold" />
 
-	           <TextView
+	           <com.customitems.CustomTextView
 	               android:id="@+id/priceTextView"
 	               android:layout_width="fill_parent"
 	               android:layout_height="wrap_content"
+	               foo:customFont="Roboto-Medium.ttf"
 	               android:gravity="right|top"
 	               android:textColor="#FFFFFF"
 	               android:textSize="14dp"
@@ -244,21 +257,22 @@
 		    android:layout_weight=".50"
 		     >
 
-	    <TextView
+	    <com.customitems.CustomTextView
 	         android:id="@+id/typeLabel"
-	         
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:layout_width="fill_parent"
 	         android:gravity="left"
-	         android:padding="10dip"
-	         android:text="Type of essay"
+	         android:paddingLeft="10dip"
+	         android:text="Type of essay:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/typeTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="left|top"
 	         android:text=""
 	         android:paddingLeft="10dp"	
@@ -274,23 +288,25 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
-	      <TextView
+	      <com.customitems.CustomTextView
 	         android:id="@+id/timezoneLabel"
 	         android:layout_width="fill_parent"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:gravity="right"
-	         android:padding="10dip"
-	         android:text="Timezone"
+	         android:paddingRight="10dip"
+	         android:text="Time zone:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
 	         />
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/timezoneTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:paddingRight="10dp"
 	         android:text=""
 	         android:textColor="#FFFFFF"
@@ -317,22 +333,23 @@
 		    android:layout_weight=".50"
 		     >
 
-	    <TextView
+	    <com.customitems.CustomTextView
 	         android:id="@+id/pagesLabel"
-	         
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:layout_height="wrap_content"
 	         android:layout_width="fill_parent"
 	         android:gravity="left"
-	         android:padding="10dip"
-	         android:text="Number of pages"
+	          android:paddingLeft="10dip"
+	         android:text="Number of pages:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	     <TextView
+	     <com.customitems.CustomTextView
 	         android:id="@+id/pagesTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:text=""
 	         android:paddingLeft="10dp"	
 	         android:textColor="#FFFFFF"
@@ -346,22 +363,24 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
-	      <TextView
+	      <com.customitems.CustomTextView
 	         android:id="@+id/postedLabel"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="right"
-	         android:padding="10dip"
-	         android:text="Posted"
+	          android:paddingRight="10dip"
+	         android:text="Posted:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
 	         />
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/postedTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="right|top"
 	         android:paddingRight="10dp"
 	         android:text=""
@@ -389,20 +408,22 @@
 		    android:layout_weight=".50"
 		     >
 
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/tasklabel"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="left|top"
-	         android:text="Task"
-	          android:padding="10dip"
+	         android:text="Task:"
+	          android:paddingLeft="10dip"
 	         android:textColor="#a5a5a5"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:textStyle="bold"
 	         android:textSize="14dp" />
-	 <TextView
+	 <com.customitems.CustomTextView
 	         android:id="@+id/taskTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="left|top"
 	         android:text=""
 	         android:paddingLeft="10dp"	
@@ -417,25 +438,26 @@
 		    android:orientation="vertical"
 		    android:layout_weight=".50"
 		     >
-	      <TextView
+	      <com.customitems.CustomTextView
 	         android:id="@+id/deadlineLabel"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
-	         
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:gravity="right"
-	         android:padding="10dip"
-	         android:text="Deadline"
+	           android:paddingRight="10dip"
+	         android:text="Deadline:"
 	         android:textColor="#a5a5a5"
 	         android:textStyle="bold" 
 	         android:textSize="14dp"
 	         
 	         />
-	       <TextView
+	       <com.customitems.CustomTextView
 	         android:id="@+id/deadlineTextView"
 	         android:layout_width="fill_parent"
 	         android:layout_height="wrap_content"
 	         android:gravity="right|top"
 	         android:paddingRight="10dp"
+	         foo:customFont="Roboto-Medium.ttf"
 	         android:text=""
 	         android:textColor="#FFFFFF"
 	         android:textStyle="bold" 

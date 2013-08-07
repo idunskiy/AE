@@ -15,79 +15,6 @@
     android:focusableInTouchMode="true"
     android:focusable="true"
     android:stretchColumns="*">
-     <!--
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_height="71dp"
-        android:layout_width="fill_parent"
-     >
-        <TextView
-            android:id="@+id/imageView1"
-          	style="@style/headerStyle"
-            />
-        
-        </TableRow>
-         <TableRow
-        android:id="@+id/tableRow1"
-      	style="@style/button_row"
-         >
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:orientation="horizontal"
-            android:weightSum="1.0" 
-            android:layout_width="fill_parent"
-            android:layout_height="61dp">
-
-            <com.customitems.CustomMenuButton
-                android:id="@+id/btnLogin"
-                style="@style/menu_item"
-                android:layout_weight=".33"
-                android:gravity="center|center_horizontal"
-                android:paddingBottom="2dp"
-                android:paddingTop="8dp"
-                android:text="Log In"
-                android:textColor="#FFFFFF"
-                foo:customFont="Roboto-Medium.ttf" />
-
-			<TextView
-			    android:layout_width="1dp"
-			    android:layout_height="fill_parent"
-			    android:background="#0e1b29"
-			/>
-            <com.customitems.CustomMenuButton
-                android:id="@+id/btnLinkToRegisterScreen"
-                android:layout_weight=".33"
-                android:text="Sign Up"
-                android:paddingTop="8dp"
-                android:paddingBottom="2dp"
-                android:textColor="#FFFFFF"
-                 foo:customFont="Roboto-Medium.ttf"
-                style="@style/menu_item" />
-			<TextView
-			    android:layout_width="1dp"
-			    android:layout_height="fill_parent"
-			    android:background="@drawable/menu_separator"
-			/>
-            <com.customitems.CustomMenuButton
-                android:id="@+id/btnClose"
-                style="@style/menu_item"
-                android:paddingTop="8dp"
-                android:paddingBottom="2dp"
-                android:layout_weight=".34"
-                android:gravity="center_vertical|center_horizontal"
-                android:text="Close"
-                foo:customFont="Roboto-Medium.ttf"
-                android:textColor="#FFFFFF" />
-
-        </LinearLayout>
-         </TableRow>
-    <TableRow android:layout_height="1px" android:background="#323232">
-   <TextView android:layout_span="1" android:layout_height="3dp" 
-             android:layout_width="fill_parent" android:text=""
-             android:background = "#326ba1">
-   </TextView>
-	</TableRow>
-	 -->
           <TableRow
           android:id="@+id/tableRow1"
           style="@style/text_row" 
@@ -98,7 +25,7 @@
         android:id="@+id/textViewPlus1"
         android:layout_width="fill_parent"
         style="@style/custom_textview"
-        android:text="Enter your credentails to log in"
+        android:text="Enter your credentials to sign in"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
 		 </TableRow>
@@ -159,10 +86,16 @@
             android:id="@+id/btnProceed"
             style="@style/custom_button"
             android:layout_centerHorizontal="true"
-            android:text="Log In"
+            android:text="Sign in"
              />
 	    </TableRow>
 	
+ 	<TableRow
+        android:id="@+id/tableRow3"
+        style="@style/button_row"
+        >
+        
+        </TableRow>
 		<TableRow
 		     
         android:id="@+id/tableRow1"

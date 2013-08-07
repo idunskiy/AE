@@ -8,8 +8,6 @@ import java.util.TimeZone;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,38 +28,50 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.assignmentexpert.LoginActivity;
-import com.assignmentexpert.ProfileCompl;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.customitems.CustomEditPreference;
 import com.customitems.CustomEditText;
 import com.library.FrequentlyUsedMethods;
-import com.library.SharedPrefs;
-
+import com.library.singletones.SharedPrefs;
+/** * фрагмент для изменения профиля пользователя*/
 public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListener , IClickListener{
+	/** * CustomEditPreference контейнер для хранения списка стран*/
 	public static  CustomEditPreference counrtyEditPref;
+	/** * CustomEditPreference контейнер для хранения списка временных зон*/
 	public static  CustomEditPreference timeZonePref;
 	Dialog dialog;
+	
 	ArrayAdapter<String> adapter; 
 	ArrayAdapter<String> modeAdapter;
+	/** * кнока выхода из фрагмента изменения профиля*/
 	private Button cancelProfile;
+	/** * кнока сохранения информации по профилю*/
 	private Button saveProfile;
 	private ImageView orderInfo;
+	/** * CustomEditText для изменения first name пользователя*/
 	public static CustomEditText firstnameTextView;
+	/** * CustomEditText для изменения пароля пользователя*/
 	public static  CustomEditText passTextView;
+	/** * CustomEditText для изменения номера телефона пользователя*/
 	public static  CustomEditText phoneTextView;
+	/** * CheckBox для входа в приложение без прохождения этапа login'a*/
 	private CheckBox signMeCheck;
-	private SharedPreferences sharedPreferences;
-	private Editor editor;
+	/** * CustomEditText для подтверждения пароля*/
 	private CustomEditText confPassTextView;
 	
 	
-	
+	/** *статическое поле first name для использования в FragmentActivity для отправки на сервер*/
 	public static String firstName;
+	/** *статическое поле last name для использования в FragmentActivity для отправки на сервер*/
 	public static String lastName;
+	/** *статическое поле password для использования в FragmentActivity для отправки на сервер*/
 	public static String password;
+	/** *статическое поле timezone для использования в FragmentActivity для отправки на сервер*/
 	public static String timeZone;
+	/** *статическое поле телефона для использования в FragmentActivity для отправки на сервер*/
 	public static String phone;
+	/** * экземпляр интерфейса  IClickListener*/
 	public IClickListener listener;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,12 +92,18 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 		confPassTextView = (CustomEditText)view.findViewById(R.id.confPassTextView);
 
 		
-		
-		firstnameTextView.setText(LoginActivity.getUser.getUser().getUserFirstName());
-		phoneTextView.setText(LoginActivity.getUser.getPhone());
-		passTextView.setText(LoginActivity.forFragmentPassword);
-		confPassTextView.setText(LoginActivity.forFragmentPassword);
-		
+		try{
+			
+			firstnameTextView.setText(LoginActivity.getUser.getUser().getUserFirstName());
+			phoneTextView.setText(LoginActivity.getUser.getPhone());
+			passTextView.setText(LoginActivity.forFragmentPassword);
+			confPassTextView.setText(LoginActivity.forFragmentPassword);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		signMeCheck = (CheckBox) view.findViewById(R.id.signMeCheck);
 	     if ( SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false) ==true)
 	    	  signMeCheck.setChecked(true);
@@ -176,15 +192,14 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 	           }
 	       });
       adapter = new ArrayAdapter<String>(
-  			getActivity(), android.R.layout.simple_spinner_item);
-      adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  			getActivity(),  R.layout.dialog_list_item, R.id.tv);
       addTimeZones();
       timeZonePref.setOnClickListener(new View.OnClickListener() {
      	   
           public void onClick(View view) {
           			
           	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-          	builder.setTitle("Select time zone");
+          	builder.setTitle("Select your time zone");
 
           	ListView modeList = new ListView(getActivity());
           	modeList.setAdapter(adapter);
@@ -211,7 +226,7 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
           public void onClick(View view) {
           			
           	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-          	builder.setTitle("Select country");
+          	builder.setTitle("Select your country");
 
           	ListView modeList = new ListView(getActivity());
           	
@@ -224,9 +239,9 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
   	                countries.add(country);
   	            }
   	        }
+  	     
   	        Collections.sort(countries);
-  	        modeAdapter= new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,countries);
-  	        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+  	        modeAdapter= new ArrayAdapter<String>(getActivity(),   R.layout.dialog_list_item, R.id.tv,countries);
           	modeList.setAdapter(modeAdapter);
           	modeList.setBackgroundColor(Color.WHITE);
           	modeList.setCacheColorHint(Color.WHITE);
@@ -247,6 +262,7 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
       });
 	    return view;
 	  }
+	/** * метод добавления временных зон в список*/
 	public void addTimeZones()
 		{
 			final String[] TZ = TimeZone.getAvailableIDs();

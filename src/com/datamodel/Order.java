@@ -7,64 +7,95 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
+/** *класс обьекта заказа. Используется сериализация.*/
 public class Order implements Parcelable{
-
+	public static final String STATUS_ID = "id";
+	public static final String STATUS_TITLE = "title";
+	public static final String SUBJECT_ID = "subject_id";
+	public static final String CATEGORY_ID = "category_id";
+	public static final String LEVEL_ID = "level_id";
+	/** *поле списка файлов.*/
 	@SerializedName("files")
 	List<Files> files;
+	/** *поле срока выполнения заказа*/
 	@SerializedName("customer_deadline_sent")
 	boolean customer_deadline_sent;
+	/** *поле флага, определяющего был ли оплачен заказ или нет. */
 	@SerializedName("payed")
 	boolean payed;
+	/** *поле флага, определяющего была ли провалена попытка оплатить заказ. */
 	@SerializedName("payment_failed")
 	boolean payment_failed;
 	@SerializedName("not_payed_sent")
 	boolean not_payed_sent;
+	/** *поле информации по заказу. */
 	@SerializedName("info")
 	String info;
+	/** *id заказа */
 	@SerializedName("id")
 	int id;
+	/** *категория заказа */
 	@SerializedName("category")
 	Category category;
+	/** *временная зона, где был сделан заказ */
 	@SerializedName("timezone")
 	String timezone;
+	/** *название заказа */
 	@SerializedName("title")
 	String title;
+	/** *уровень заказа */
 	@SerializedName("level")
 	Level level;
+	/** *время обновления заказа */
 	@SerializedName("updated_at")
 	DateTime updated_at;
+	/** *цена заказа */
 	@SerializedName("price")
 	float price;
+	/** *время чекпоинта заказа */
 	@SerializedName("checkpoint_deadline")
 	DateTime checkpoint_deadline;
 	@SerializedName("h_notified")
 	boolean h_notified;
+	/** *количество возвращаемых денег */
 	@SerializedName("refund")
 	float refund;
+	/** *поле специальной информации */
 	@SerializedName("special_info")
 	String special_info;
+	/** *флаг о посылке уведомления о чекпоинте заказа */
 	@SerializedName("checkpoint_deadline_sent")
 	boolean checkpoint_deadline_sent;
+	/** *статус заказа */
 	@SerializedName("process_status")
 	ProcessStatus process_status;
+	/** *время создания заказа */
 	@SerializedName("created_at")
 	DateTime created_at;
+	/** *обьект, содержащий список сообщений */
 	@SerializedName("owc_thread")
 	CustomerThread cus_thread;
+	/** *флаг детального обьяснения по заказу*/
 	@SerializedName("dtl_expl")
 	boolean den;
+	/** *время выполнения заказа*/
 	@SerializedName("deadline")
 	DateTime deadline;
+	/** *флаг активности заказа*/
 	@SerializedName("is_active")
 	boolean is_active;
+	/** *продукт заказа*/
 	@SerializedName("product")
 	Product product;
+	/** *тема заказа*/
 	@SerializedName("subject")
 	Subject subject;
+	/** *список заказов*/
 	List<Order> orders;
+	/** *конструктор для ORMLite*/
 	public Order()
 	{}
+	/** *основной конструктор*/
 	public Order(ArrayList<Files> files, boolean customer_deadline_sent,
 			boolean payed, boolean payment_failed, boolean not_payed_sent,
 			String info, int id, Category category, String timezone,

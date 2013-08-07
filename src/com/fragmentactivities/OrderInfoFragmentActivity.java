@@ -1,6 +1,5 @@
 package com.fragmentactivities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -8,15 +7,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.assignmentexpert.DashboardActivityAlt;
-import com.assignmentexpert.OrderInfoActivityAA;
-import com.assignmentexpert.OrderInfoActivityEW;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.fragments.IClickListener;
 import com.fragments.OrderInfoFragmentAA;
 import com.fragments.OrderInfoFragmentEW;
+import com.fragments.ProfileFragmentCompl;
 import com.fragments.ProfileFragmentPref;
-
+/** * FragmentActivity информации по заказу. Оперерует фрагментами OrderInfoFragmentAA, OrderInfoFragmentEW
+ * @see OrderInfoFragmentAA
+ * @see OrderInfoFragmentEW  */
 public class OrderInfoFragmentActivity extends FragmentActivity implements ITaskLoaderListener, IClickListener{
 	  private FragmentTransaction fragmentTransaction;
 

@@ -8,18 +8,16 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.assignmentexpert.RegisterActivity;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.fragments.RegisterFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
-
+/** * AsyncTask для регистрации пользователя. */
 public class RegisterAsync  extends AbstractTaskLoader{
 	Context context;
 	private static String KEY_STATUS = "status";
-	private static String KEY_MESSAGE = "message";
 	private static String KEY_EXCEPTION= "exception";
 	private boolean errorFlag = false;
 	protected RegisterAsync(Context context) {
@@ -27,7 +25,7 @@ public class RegisterAsync  extends AbstractTaskLoader{
 		this.context = context;
 		// TODO Auto-generated constructor stub
 	}
-
+	/** *метод вызова выполнения запроса из активностей*/
 	public static void execute(FragmentActivity fa,	ITaskLoaderListener taskLoaderListener) {
 
 		RegisterAsync loader = new RegisterAsync(fa);
@@ -48,7 +46,7 @@ public class RegisterAsync  extends AbstractTaskLoader{
 		// TODO Auto-generated method stub
 		
 	}
-
+	/** *метод выполнения запроса*/
 	@Override
 	public Object loadInBackground() {
 		String res = "";
@@ -74,7 +72,7 @@ public class RegisterAsync  extends AbstractTaskLoader{
 					String exceptionMess = a.getString(KEY_EXCEPTION).toString();
 					String mainMess = "Registration failed. ";
 					if (exceptionMess.equalsIgnoreCase("PDOException"))
-					  res = mainMess + "Duplicate entry "+ RegisterActivity.userEmail ;
+					  res = mainMess + "Duplicate entry "+ RegisterFragment.userEmail ;
 					else
 					  res = mainMess;
 				}

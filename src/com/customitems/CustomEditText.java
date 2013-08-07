@@ -1,17 +1,16 @@
 package com.customitems;
 
 import com.assignmentexpert.R;
+import com.library.singletones.TypeFaceSingletone;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
-
+/** *кастомизированный элемент EditText. Предоставляет возможность использовать любой кастомный шрифт.  */
 public class CustomEditText extends EditText {
     private static final String TAG = "EditText";
 
@@ -21,7 +20,6 @@ public class CustomEditText extends EditText {
 
     public CustomEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCustomFont(context, attrs);
     }
 
     public CustomEditText(Context context, AttributeSet attrs, int defStyle) {
@@ -39,7 +37,7 @@ public class CustomEditText extends EditText {
     public boolean setCustomFont(Context ctx, String asset) {
         Typeface tf = null;
         try {
-        tf = Typeface.createFromAsset(ctx.getAssets(), asset);  
+        tf = TypeFaceSingletone.getInstance().getCustomFont(ctx,asset);//Typeface.createFromAsset(ctx.getAssets(), asset);  
         } catch (Exception e) {
             Log.e(TAG, "Could not get typeface: "+e.getMessage());
             return false;

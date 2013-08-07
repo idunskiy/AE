@@ -75,7 +75,7 @@
   	 </TextView>
 		</TableRow>
 		    <TableRow
-          android:id="@+id/tableRow1"
+          android:id="@+id/tableRow2"
           style="@style/text_row" 
           android:layout_width="fill_parent"
           android:layout_marginRight="0dp"
@@ -129,7 +129,7 @@
   	 </TextView>
 		</TableRow>
 		  <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/tableRow4"
         android:layout_width="fill_parent"
          style="@style/edit_row"
         >
@@ -151,7 +151,7 @@
   	 </TextView>
 		</TableRow>
 		  <TableRow
-        android:id="@+id/tableRow1"
+        android:id="@+id/tableRow5"
          style="@style/edit_row"
          android:layout_width="fill_parent"
         >
@@ -162,7 +162,7 @@
        android:layout_weight="1"
         android:singleLine="true"
         android:inputType="textPassword"
-      	android:imeOptions="actionNext"
+      	android:imeOptions="actionDone"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Password confirmation">
     </com.customitems.CustomEditText>
@@ -173,23 +173,25 @@
   	 </TextView>
 		</TableRow>
 		 <TableRow
-          android:id="@+id/tableRow1"
-          style="@style/text_row" 
+          android:id="@+id/tableRow6"
           android:layout_weight="1"
           >
-	  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	  <RelativeLayout
     android:orientation="horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+     android:layout_weight="1">
+    
     <com.customitems.CustomTextView
    	    
         android:id="@+android:id/title"
         	android:textSize="18sp"
-     		android:paddingTop="10dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+     		  android:layout_marginLeft="22dp"
+     		  android:layout_marginTop="13dp"
      		android:textColor="#FFFFFF"
-     			android:text="Sign me in when AE starts"
-     		android:layout_width="wrap_content" 
-        	android:layout_height="wrap_content"
+     		android:text="Sign me in when AE starts"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
 
@@ -198,8 +200,9 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:text=""
-        android:layout_alignParentRight="true"
-        android:gravity="right"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight = "true"
+        android:gravity="right|center"
         android:textSize="20sp"/>
  
  </RelativeLayout>
@@ -210,37 +213,35 @@
   	 </TextView>
 		</TableRow>
    <TableRow
-          android:id="@+id/tableRow1"
-          style="@style/text_row" 
-          android:layout_weight="1"
+          android:id="@+id/tableRow7"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:weightSum="1.0"
+          
           >
- 	  <LinearLayout 
-              android:layout_width="fill_parent"
-              android:layout_height="70dp"
-              android:orientation="horizontal"
-              android:weightSum="1.0"
-             >
-             
-    <Button android:text="Save"
-          android:id="@+id/saveProfile"
-            android:layout_weight="0.5"
-            style="@style/custom_button"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_width="fill_parent"
-             />
+    <LinearLayout 
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1.0">
+
+    <Button
+        android:id="@+id/saveProfile"
+        style="@style/custom_button"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="0dp"
+        android:layout_weight="0.57"
+        android:text="Save" />
+
     <Button android:text="Cancel"
         android:id="@+id/cancelProfile"
         	style="@style/custom_button"
-        	android:layout_weight="0.5"
-            android:layout_marginRight="0dp"
-        	android:paddingLeft="10dp"
+        	android:layout_weight="0.43"
+            android:layout_marginRight="20dp"
         	android:layout_marginBottom="10dp"
         	android:background="@drawable/gray_button"
-            android:layout_width="fill_parent"
             />
-   
-    </LinearLayout>
+   </LinearLayout>
 	    </TableRow>
 		
 		 

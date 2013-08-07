@@ -13,10 +13,9 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-
+/** *родительский класс для реализации диалога, отображаемого при выполнении AsyncTask'a .*/
 public abstract class AbstractTaskProgressDialogFragment extends DialogFragment
 		implements LoaderCallbacks<Object>, OnCancelListener {
-	private static final String TAG = "AbstractTaskProgressDialogFragment";
 	
 	private ProgressDialog progressDialog;
 	

@@ -1,19 +1,23 @@
 package com.datamodel;
 
 import com.google.gson.annotations.SerializedName;
-
+/** *класс обьекта продукта заказа. »спользуетс€ сериализаци€.*/
 public class Product implements IProductType{
 	ProductAssignment prodAss;
 	ProductWriting prodWr;
+	/** *id продукта.*/
 	@SerializedName("id")
 	int id;
+	/** *название имени продукта.*/
 	@SerializedName("product_type")
 	String product_type;
+	/** * поле профил€ продукта.*/
 	@SerializedName("product_profile")
 	ProductType product_profile;
 	
 	public Product()
 	{}
+	/** * основной конструктор*/
 	public Product(int id, String product_type, ProductType product_profile)
 	{
 		this.id = id;

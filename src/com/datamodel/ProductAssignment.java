@@ -1,19 +1,25 @@
 package com.datamodel;
 
 import com.google.gson.annotations.SerializedName;
-
+/** * класс обьекта заказа, тип - assignment. Используется сериализация. */
 public class ProductAssignment extends ProductType{
 	ProductAssignment thisObj;
+	/** * название заказа */
 	@SerializedName("title")
 	String title;
+	/** * информация по заказу */
 	@SerializedName("info")
 	String info;
+	/** * флаг детальной информации по заказу */
 	@SerializedName("dtl_expl")
 	boolean dtl_expl;
+	/** *поле специальной информации по заказу*/
 	@SerializedName("special_info")
 	String special_info;
+	/** *флаг эксклюзивного видео для заказа*/
 	@SerializedName("shoot_exclusive_video")
 	boolean shoot_exclusive_video;
+	/** *флаг видео для заказа*/
 	@SerializedName("shoot_common_video")
 	boolean shoot_common_video;
 	public ProductAssignment()

@@ -17,6 +17,9 @@
 	<string name="numberReferences">Number of references</string>
 	<string name="numberPages">Number of pages</string>
 	<string name="profileText">Here you can edit your personal  \ninformation and see balance</string>
+	<string name  = "app_id">501352106580475</string>
+	<string name="get_started">To get started, log in using Facebook</string>
+	<string name="no_orders">Currently no orders</string>
 </resources>
 
 <!--  <string name="profileText"><![CDATA[Here you can edit personal <br />information and see balance 2]]></string>

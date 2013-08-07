@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.ListView;
-
+/** *кастомизированный ListView. Предоставляет возможность использовать вложенные ListView.  */
 public class ExpandedListView extends ListView {
     private android.view.ViewGroup.LayoutParams params;
     

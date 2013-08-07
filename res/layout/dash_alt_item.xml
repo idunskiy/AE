@@ -5,20 +5,22 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="5dip" 
+     android:id="@+id/dash_alt_item_layout"
     android:background="#000000">
     <RelativeLayout
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginRight="5dip"
-        android:padding="3dip" >
+        android:gravity="center|center"
+        >
 
         <com.customitems.CustomTextView
             android:id="@+id/altOrderId"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="ID"
+            android:layout_marginTop="6dp"
             android:gravity="center|center"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
@@ -55,7 +57,7 @@
         android:id="@+id/altOrderTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="@+id/altOrderPrice"
+        android:layout_alignParentLeft="@+id/profileSwitcher"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="45dp"
         android:layout_marginTop="1dip"
@@ -73,19 +75,43 @@
 			    android:layout_marginRight="8dp"
 			    android:layout_height="50dp"
 			   android:background="#565656"
-			/>	
- 
+			/>
+   <!--   <com.customitems.CustomTextView
+		        android:id="@+id/altOrderPrice"
+		        android:layout_width="wrap_content"
+		        android:layout_marginTop="12dp"
+		        android:layout_height="wrap_content"
+		        android:layout_marginRight="5dp"
+		        android:layout_marginLeft="8dp"
+		          android:layout_alignParentRight="true"
+		        android:text="$"
+		        android:textColor="#4da400"
+		        android:textSize="18sp"
+		        android:textStyle="bold"
+		        foo:customFont="Roboto-Medium.ttf" /> -->
+ <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profileSwitcher"
+    android:layout_width="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_alignParentRight="true"
+    android:layout_height="wrap_content">
 		    <com.customitems.CustomTextView
 		        android:id="@+id/altOrderPrice"
 		        android:layout_width="wrap_content"
 		        android:layout_marginTop="12dp"
 		        android:layout_height="wrap_content"
-		        android:layout_alignParentRight="true"
-		        android:layout_marginRight="5dp"
-		        android:layout_marginLeft="8dp"
+		        android:layout_marginLeft="12dp"
 		        android:text="$"
+		        android:gravity="center_horizontal|center_vertical"
 		        android:textColor="#4da400"
 		        android:textSize="18sp"
 		        android:textStyle="bold"
 		        foo:customFont="Roboto-Medium.ttf" />
+		     <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true" />
+		     </ViewSwitcher>
 </RelativeLayout>

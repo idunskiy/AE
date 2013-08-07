@@ -1,83 +1,72 @@
 package com.library;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
-import com.assignmentexpert.FileManagerActivity;
 
-
-
+/**  * класс связующих функций клиент - серверного взаимодействия. В функциях происходит передача необходимых параметров по соответсвующим url'ам и получение JSON'a в качестве ответа.  */
 public class UserFunctions {
 	private JSONParser jsonParser;
 	
 //	private static String host =  StaticFields.testHost;
-	
-	private static String host =  StaticFields.finalHost;
+	/**  * Адрес основного host'a, к которому будут подставляться необходимые функции */
+	private static String host =  Constants.finalHost;
 	
 //	private static String host =  StaticFields.IPHost;
-	
+	/**  * url для логина */
 	private static String loginURL = host+"/app_dev.php/api/login_check";
+	/**  * url для получения списка заказов */
     private static String ordersURL = host+"/app_dev.php/api/client/orderList/";
+    /**  * url для регистрации */
     private static String registerURL = host+"/app_dev.php/api/client/register/";
+    /**  * url для получения каптчи */
     private static String captchaURL = host+"/app_dev.php/captcha/regenerate/";
+    /**  * url для восстановления пароля */
     private static String restoreURL = host+"/app_dev.php/api/client/request/resetting/";
-    private static String attachURL = host+"/app_dev.php/api/client/request/resetting/";
     //private static String sendOrderURL = host+"/app_dev.php/api/client/createOrder/";
+    /**  * url для отправки заказа */
     private static String sendOrderURL = host+"/app_dev.php/api/client/order/";
+    /**  * url для отправки сообщения, касающегося текущего заказа */
     private static String sendMessageURL = host+"/app_dev.php/api/client/message/";
+    /**  * url для деактивации заказа */
     private static String deleteOrderURL = host+"/app_dev.php/api/client/order/";
+    /**  * url для обновления профиля пользователя */
     private static String updateProfileURL = host+"/app_dev.php/api/client/user/edit";
-
+    /**  * url для логаута текущего пользователя */
     private static String logOutURL = host+"/app_dev.php/api/logout";
-    
-    private static String payURL = "https://www.paypal.com/cgi-bin/webscr";
-    	
+    /**  * url для обновления полей заказа после его оплаты */
     private static String sendPaymentURL = host+"/app_dev.php/payment/notifier/";
     
-    private static String login_tag = "login";
-    private static String register_tag = "register";
     int flag =0;
 
-	private JSONObject jObj;
-
-	private String json;
-    // constructor
+    /**  * конструктор. инициализация обьекта JSONParser*/
     public UserFunctions(){
         
 		jsonParser = new JSONParser();
         
     }
  
-    /**
-     * function make Login Request
-     * @param email
-     * @param password
-     * @throws Exception 
-     * */
+    
+    /**  * метод логина пользователя
+     * @param email - email пользователя
+     * @param password - пароль пользователя
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject loginUser(String email, String password) throws Exception{
         // Building Parameters
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -86,8 +75,11 @@ public class UserFunctions {
         JSONObject json = jsonParser.getJSONFromUrl(loginURL, params, RequestMethod.POST);
         return json;
     }
-    
-    public JSONObject getOrders(String page, String perpage) throws Exception{
+    /**  * метод получения списка заказов
+     * @param page - номер страницы заказов
+     * @param perpage - количество заказов на каждой из страниц
+     * @return обьект JSON, после парсинга ответа от сервера*/
+	public JSONObject getOrders(String page, String perpage) throws Exception{
         // Building Parameters
     	
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -97,22 +89,29 @@ public class UserFunctions {
     	Log.i("getOrders end",stEnd);
         params.add(new BasicNameValuePair("page", stStart));
         params.add(new BasicNameValuePair("perpage", stEnd));
-        JSONObject json = jsonParser.getJSONFromUrl(ordersURL,params,RequestMethod.POST);
+        JSONObject json = jsonParser.getJSONFromUrl(ordersURL,params,RequestMethod.GET);
       //  Log.i("orders",json.toString());
         return json;
     }
-    
+	/**  * метод логаута текущего пользователя
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject logOut() throws Exception{
         // Building Parameters
     	
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        JSONObject json = jsonParser.getJSONFromUrl(logOutURL,params,RequestMethod.POST);
+        JSONObject json = jsonParser.getJSONFromUrl(logOutURL,params,RequestMethod.GET);
       //  Log.i("orders",json.toString());
         return json;
         
     }
  
-  
+    /**  * метод регистрации пользователя
+     * @param name - имя нового пользователя
+     * @param email - email нового пользователя
+     * @param password - пароль нового пользователя
+     * @param confpass - подтверждение пароля нового пользователя
+     * @param captcha - строковое представление передаваемой каптчи
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject registerUser(String name, String email, String password, String confpass, String captcha) throws Exception
     {
         // Building Parameters
@@ -128,7 +127,8 @@ public class UserFunctions {
         return json;
     }
   
-    
+    /**  * метод получения каптчи от сервера
+     * @return обьект Bitmap, после парсинга ответа от сервера*/
     public Bitmap getCaptcha() throws Exception
     { 
     	List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -141,18 +141,33 @@ public class UserFunctions {
         Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
         return bitmap;
     }
-    
+    /**  * метод восстановления пароля
+     * @param newPass - новый пароль
+     * @param captcha - строковое представление передаваемой каптчи
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject restorePassword(String newPass, String captcha) throws Exception
     { 
     	List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("username", newPass));
         Log.i("restore email", newPass);
-        JSONObject json = jsonParser.getJSONFromUrl(restoreURL, params,RequestMethod.POST);
+        JSONObject json = jsonParser.getJSONFromUrl(restoreURL, params,RequestMethod.GET);
         return json;
         
     }
     
-   
+    /**  * метод отправки нового заказа (тип Assignment)
+     * @param title - название заказа
+     * @param category - категория заказа
+     * @param level - степень выполнения заказа
+     * @param deadline - срок выполнения заказа
+     * @param info - доп. информация заказа
+     * @param explanation - флаг наличия детального обьяснения
+     * @param specInfo - доп. информация заказа
+     * @param timezone - временная зона
+     * @param files - коллекция файлов
+     * @param exclusive_video - флаг наличия exclusive_video
+     * @param common_video - флаг наличия common_video
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject sendAssignment(String title, String category, String level, String deadline, String info, String explanation,
     		String specInfo, String timezone, List<File> files,  
     		String exclusive_video,String common_video ) throws Exception
@@ -181,7 +196,21 @@ public class UserFunctions {
     	return parser.getJSONfromInputStream(is);
     	
     }
-    
+    /**  * метод отправки нового заказа (тип Essay)
+     * @param title - название заказа
+     * @param subject - тема заказа
+     * @param level - степень выполнения заказа
+     * @param deadline - срок выполнения заказа
+     * @param info - доп. информация заказа
+     * @param explanation - флаг наличия детального обьяснения
+     * @param specInfo - доп. информация заказа
+     * @param timezone - временная зона
+     * @param files - коллекция файлов
+     * @param pages_number - количество страниц
+     * @param number_of_references -  количество ссылаемого материала
+     * @param essay_type -  тип essay
+     * @param essay_creation_style -  пребуемый тип создания essay
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject sendWriting(String title, String subject, String level, String deadline, String info, String explanation,
     		String specInfo, String timezone, List<File> files, 
     		String pages_number,String number_of_references ,String essay_type, String essay_creation_style) throws Exception
@@ -212,7 +241,14 @@ public class UserFunctions {
     	return parser.getJSONfromInputStream(is);
     	
     }
-    
+    /**  * метод отправки сообщения заказа
+     * @param category - категория сообщения заказа
+     * @param deadline - срок выполнения заказа
+     * @param price - цена заказа
+     * @param body - тело сообщения
+     * @param order - id заказа
+     * @param files - коллекция файлов
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject sendMessage(String category,  String deadline, String price, String body,
     		String order, List<File> files) throws Exception
     { 
@@ -238,6 +274,9 @@ public class UserFunctions {
      	 return parser.getJSONfromInputStream(is);
         
     }
+    /**  * метод деактивации заказа
+     * @param orderId - id заказа
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject deleteOrder(String orderId) throws Exception
     { 
     	List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -248,7 +287,9 @@ public class UserFunctions {
         return json;
         
     }
-    
+    /**  * метод обновления профиля пользователя
+     * @param orderId - id заказа
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject profileUpdate(String timezone, String firstname, 
     		String lastname, String phone, String password) throws Exception
     { 
@@ -265,6 +306,10 @@ public class UserFunctions {
      	 return parser.getJSONfromInputStream(is);
         
     }
+    /**  * метод оплаты заказа
+     * @param item_number - id заказа
+     * @param price - цена заказа
+     * @return обьект JSON, после парсинга ответа от сервера*/
     public JSONObject sendPayment(String item_number, String price) throws Exception
     {
 
@@ -313,25 +358,20 @@ public class UserFunctions {
     }
  
     
-    /**
-     * Function get Login status
-     * */
-    public boolean isUserLoggedIn(Context context)
-    {
-        DatabaseHandler db = new DatabaseHandler(context);
-        int count = db.getRowCount();
-        if(count > 0){
-            // user logged in
-            return true;
-        }
-        return false;
-    }
- 
+//    /**
+//     * Function get Login status
+//     * */
+//    public boolean isUserLoggedIn(Context context)
+//    {
+//        DatabaseHandler db = new DatabaseHandler(context);
+//        int count = db.getRowCount();
+//        if(count > 0){
+//            // user logged in
+//            return true;
+//        }
+//        return false;
+//    }
+// 
     
-    public boolean logoutUser(Context context){
-        DatabaseHandler db = new DatabaseHandler(context);
-        db.resetTables();
-        return true;
-    }
 
 }

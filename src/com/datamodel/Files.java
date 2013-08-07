@@ -1,34 +1,39 @@
 package com.datamodel;
 
 import java.io.File;
-import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-
+/** *  класс, описывающий класс файлов. Используется сериализация.*/
 public class Files implements Parcelable{
+	/** * id файла*/
 	@SerializedName("id")
 	int id;
+	/** * extension файла*/
 	@SerializedName("extension")
 	String extension;
+	/** * полный путь файла*/
 	@SerializedName("full_path")
 	String full_path;
+	
 	@SerializedName("md5_checksum")
 	String md5_checksum;
 	@SerializedName("mime_path")
 	String mime_path;
+	/** * размер файла*/
 	@SerializedName("size")
 	int size;
+	/** * имя файла*/
 	@SerializedName("name")
 	String name;
 	File file;
-	// need for ORMlite
 	public Files()
 	{}
-	public Files (int id, String title , String name, String full_path , String mime_path, String extension , int size, File file )
+	/** * основной конструктор.*/
+	public Files (int id, String title , String name, String full_path , String mime_path, String extension , int size, File file, String md5_checksum )
     {
         this.id = id;
         this.name = name;
@@ -157,8 +162,8 @@ public class Files implements Parcelable{
 		md5_checksum = in.readString();
 		
 	}
-	public static final Parcelable.Creator CREATOR =
-	    	new Parcelable.Creator() {
+	public static final Parcelable.Creator<Files> CREATOR =
+	    	new Parcelable.Creator<Files>() {
 	            public Files createFromParcel(Parcel in) {
 	                return new Files(in);
 	            }

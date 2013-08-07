@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
+/** * Класс, описывающий обьект получаемого формата даты. Используется сериализация */
 public class DateTime implements Parcelable{
+	/** * строка даты */
 	@SerializedName("str")
 	String str;
+	/** * строка даты в ts формате */
 	@SerializedName("ts")
 	String ts;
 	
@@ -57,8 +59,8 @@ public class DateTime implements Parcelable{
 		str = in.readString();
 		ts = in.readString();
 	}
-	public static final Parcelable.Creator CREATOR =
-	    	new Parcelable.Creator() {
+	public static final Parcelable.Creator <DateTime>CREATOR =
+	    	new Parcelable.Creator<DateTime>() {
 	            public DateTime createFromParcel(Parcel in) {
 	                return new DateTime(in);
 	            }

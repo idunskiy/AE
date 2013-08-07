@@ -49,13 +49,12 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.assignmentexpert.LoginActivity;
-
+import com.library.singletones.CookieStorage;
+/**  *класс, реализующий REST архитектуру*/
 public class RestClient {
 	private ArrayList <NameValuePair> params;
     private ArrayList <NameValuePair> headers;
@@ -76,33 +75,37 @@ public class RestClient {
     public String getResponse() {
         return response;
     }
-
+    /**  	метод, возвращающий строку ошибки*/
     public String getErrorMessage() {
         return message;
     }
-
+    /**  *	метод, возвращающий код ответа сервера*/
     public int getResponseCode() {
         return responseCode;
     }
+    /**  	метод, устанавливающий обьект Context для использования обьекта Rest */
     public void setContextRest(Context ctx)
     {
     	this.context = ctx;
     }
+    /**  	метод, возвращающий обьект Context для использования обьекта Rest*/
     public Context getContextRest()
     {
     	return  this.context;
     }
+    /**  	конструктор класса*/
     public RestClient(String url)
     {
         this.url = url;
         params = new ArrayList<NameValuePair>();
         headers = new ArrayList<NameValuePair>();
     }
+    /**  	конструктор класса*/
     public RestClient(Context context)
     {
     	this.context = context;
     }
-
+    /**  	метод, добавления параметра обьекта BasicNameValuePair*/
     public void AddParam(String name, String value)
     {
         params.add(new BasicNameValuePair(name, value));
@@ -116,7 +119,9 @@ public class RestClient {
     {
         entity.addPart(name, data);
     }
-
+    /**  	метод, выполняющий подключение по передаваемому методу
+     * @param method - один из CRUD методов
+     * @return обьект InputStream*/
     public InputStream Execute(RequestMethod method) throws Exception
     {   
     	HttpResponse httpResponse;
@@ -321,7 +326,8 @@ public class RestClient {
         
         return instream;
     }
-
+    /** 	метод, создающий обьект DefaultHttpClient
+     * @return обьект DefaultHttpClient*/
     public DefaultHttpClient getNewHttpClient() {
         try {
         	KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -345,62 +351,9 @@ public class RestClient {
         }
     }
 
-    public InputStream executeRequest(HttpUriRequest request, String url)
-    {
-
-    	
-        DefaultHttpClient client = getNewHttpClient();
-
-        HttpResponse httpResponse;
-        InputStream instream = null;
-
-        try {
-            httpResponse = client.execute(request);
-            responseCode = httpResponse.getStatusLine().getStatusCode();
-            message = httpResponse.getStatusLine().getReasonPhrase();
-            HttpEntity entity = httpResponse.getEntity();
-            if (entity != null) {
-
-                instream = entity.getContent();
-               // if instream.getClass()
-                response = convertStreamToString(instream);
-                // Closing the input stream will trigger connection release
-                instream.close();
-            }
-            
-
-        } catch (ClientProtocolException e)  {
-            client.getConnectionManager().shutdown();
-            e.printStackTrace();
-        } catch (IOException e) {
-            client.getConnectionManager().shutdown();
-            e.printStackTrace();
-        }
-        return instream;
-    }
-
-    private static String convertStreamToString(InputStream is) {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) 
-            {
-                sb.append(line + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString();
-    }
+    /**  	метод, конвертации InputStream в обьект JSON
+     * @param is - обьект InputStream
+     * @return обьект JSONObject*/
     public JSONObject convertStreamToJSON(InputStream is) {
     	  BufferedReader reader = new BufferedReader(new InputStreamReader(is));
           StringBuilder sb = new StringBuilder();
@@ -430,6 +383,7 @@ public class RestClient {
       
       return jObj;
   }
+    
     public static boolean RestError(boolean res)
     {
     	restError = res;

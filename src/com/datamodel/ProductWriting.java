@@ -1,23 +1,30 @@
 package com.datamodel;
 
 import com.google.gson.annotations.SerializedName;
-
+/** * класс обьекта заказа, тип - writing. Используется сериализация. */
 public class ProductWriting extends ProductType{
-		
+		/** * id заказа */
 		@SerializedName("id")
 		int id;
+		/** * название заказа */
 		@SerializedName("title")
 		String title;
+		/** * количество страниц заказа */
 		@SerializedName("pages_number")
 		String pages_number;
+		/** * количество ссылочных материалов по заказу */
 		@SerializedName("number_of_references")
 		String number_of_references;
+		/** * флаг детальной информации по заказу */
 		@SerializedName("dtl_expl")
 		boolean dtl_expl;
+		/** * информация по заказу */
 		@SerializedName("info")
 		String info;
+		/** * тип essay*/
 		@SerializedName("essay_type")
 		EssayType essayType;
+		/** * стиль essay*/
 		@SerializedName("essay_creation_style")
 		EssayCreationStyle essayStyle;
 		
