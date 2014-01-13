@@ -1,7 +1,13 @@
 package com.assignmentexpert;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.AlertDialog;
@@ -12,6 +18,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.gesture.GestureOverlayView;
 import android.graphics.Color;
@@ -37,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.arrayadapters.OrderAdapter;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
 import com.asynctasks.DashboardAsync;
@@ -46,13 +55,21 @@ import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
 import com.datamodel.Product;
 import com.datamodel.ProductAssignment;
+import com.datamodel.ProductWriting;
+import com.gcmservice.DemoActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.j256.ormlite.dao.Dao;
 import com.library.Constants;
 import com.library.DatabaseHandler;
 import com.library.FrequentlyUsedMethods;
-import com.library.OrderAdapter;
+import com.library.JSONParser;
+import com.library.RequestMethod;
 import com.library.ServiceIntentMessages;
 import com.library.UserFunctions;
 import com.library.singletones.OrderPreferences;
+import com.library.singletones.SharedPrefs;
 import com.tabscreens.OrderInfoTabScreen;
 
 /** *Activity для отображения списка заказов пользователя.*/
@@ -100,7 +117,7 @@ import com.tabscreens.OrderInfoTabScreen;
 	/** *прекращение swipe'a*/
 	 private Action mSwipeDetected = Action.None;
 	 /** *экземпляр класса UserFunctions для выполнения операций посылки заказов*/
-	 UserFunctions launch = new UserFunctions();
+	 UserFunctions userFunc = new UserFunctions();
 	 
 	 /** *getter для определения swipe'a*/
 	    public boolean swipeDetected() {
@@ -139,21 +156,43 @@ import com.tabscreens.OrderInfoTabScreen;
 	    /** *BroadcastReceiver для определения и реакцию на новый заказ*/
 		NewOrderListener newOrderListener;
 		OrderListUpdate orderListUpdateListener;
+		NotificatedOrderOpen notificatedOrderOpenListener;
 		  /** *Boolean для опеределения регистрации BroadcastReceiver'a*/
 		private Boolean MyListenerIsRegistered = false;
 		private Boolean OrderListUpdateIsRegistered = false;
+		private Boolean notificatedOrderOpenListenerRegistered = false;
 		  /** *экземпляр Handler'a для добавления нового заказа в отдельном потоке*/
 		private Handler mHandler;
-		/** *ViewSwitcher для переключения крутящегося диалога в случае загразки нового заказа и цены, если он был загружен*/
+		/** *ViewSwitcher for switching if order list is empty*/
 		private ViewSwitcher switcher;
+		
+		Context context;
+		
+		/** static fields for GCM service */
+		public static final String EXTRA_MESSAGE = "message";
+		public static final String PROPERTY_REG_ID = "registration_id";
+		private static final String PROPERTY_APP_VERSION = "appVersion";
+		private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+		private GoogleCloudMessaging gcm;
+		String regid;
+		AtomicInteger msgId = new AtomicInteger();
+		private static final String TAG="DashboardActivityAlt";
+		/**
+		 * Substitute you own sender ID here. This is the project number you got
+		 * from the API Console, as described in "Getting Started."
+		 */
+		String SENDER_ID = "7999501650";
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		new GestureOverlayView(this);
 		newOrderListener = new NewOrderListener();
 		orderListUpdateListener= new OrderListUpdate();
+		notificatedOrderOpenListener = new NotificatedOrderOpen();
 		mHandler = new Handler();
 		setContentView(R.layout.dash_alt);
+		
 		switcher = (ViewSwitcher) findViewById(R.id.dashboardSwitcher);
 		
 	    dashboardHeader = (LinearLayout) findViewById(R.id.dashboardHeader);
@@ -163,12 +202,13 @@ import com.tabscreens.OrderInfoTabScreen;
 	        	layoutHeight = dashboardHeader.getMeasuredHeight();
 	        }
 	    });
-	    intent = new Intent(DashboardActivityAlt.this, ServiceIntentMessages.class);
+	    context = this;
 		listView1 = (ListView)findViewById(R.id.altOrderslist);
 		
 		listView1.setCacheColorHint(Color.TRANSPARENT);
 		listView1.setCacheColorHint(Color.BLACK);
 		listView1.setScrollingCacheEnabled(false); 
+		
 		new FrequentlyUsedMethods(DashboardActivityAlt.this);
 		final ViewConfiguration vc = ViewConfiguration.get(this);
 		vc.getScaledTouchSlop();
@@ -176,20 +216,12 @@ import com.tabscreens.OrderInfoTabScreen;
 		final float HORIZONTAL_MIN_DISTANCE = 80;//=met.convertPixelsToDp(200,act);
 		final float VERTICAL_MIN_DISTANCE =8;//met.convertPixelsToDp(100,act);
 		ctx = this;
-	    DisplayMetrics displaymetrics = new DisplayMetrics();
-	    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-	    int height = (int)dpFromPx(displaymetrics.heightPixels);
-	    Log.i("height", Integer.toString(height));
-	    height = height - (int)dpFromPx(90);
-	    final int count =(int)dpFromPx(height)/(int)dpFromPx(50);
+		paginationGenerate();
 	    adapter = new OrderAdapter(DashboardActivityAlt.this,
     			R.layout.dash_alt_item, forPrint);
 	    sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
 		editor = sharedPreferences.edit();
-	    Log.i("dp height", Integer.toString(height));
-	    Log.i("count", Integer.toString(count));
-	    
-	    perpage = count;
+		
 
 	    
         Bundle bundle = getIntent().getExtras();
@@ -204,46 +236,17 @@ import com.tabscreens.OrderInfoTabScreen;
 		}
 		if (forPrint.isEmpty() & !stopDownload )
 		{
-			
 			DashboardActivityAlt.page = 1;
 			DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
 			adapter.notifyDataSetChanged();
 			LoginActivity.newUser = false;
 		}
-		else if (LoginActivity.newUser)
-		{
-			Log.i("new user","dashboard");
-			Log.i("if new user in new user", Boolean.toString(LoginActivity.newUser));
-			forPrint.clear();
-			stopDownload = false;
-			DashboardActivityAlt.page = 1;
-			DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
-			adapter.notifyDataSetChanged();
-			Log.i("new page count dashboard",Integer.toString(DashboardActivityAlt.page));
-			LoginActivity.newUser = false;
-		}
-		else
-		{
-			Log.i("old user","dashboard");
-			adapter = new OrderAdapter(DashboardActivityAlt.this,
-        			R.layout.dash_alt_item, forPrint);
-			listView1.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-            if (sharedPreferences != null)
-            {
-            	savedPosition = sharedPreferences.getInt("savedPosition", 0);
-            	savedListTop=  sharedPreferences.getInt("savedListTop", 0 );
-            }
-            if (savedPosition >= 0) {
-  		      listView1.setSelectionFromTop(savedPosition, savedListTop);
-  		    }
-		}
+
 		
-        gestureListener = new View.OnTouchListener() {
+		gestureListener = new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
 	            	boolean result = false;
 	            	int id =0;
-//	            	if (gestureDetector.onTouchEvent(event)){
 	            	switch (event.getAction()) {
 	                case MotionEvent.ACTION_DOWN: {
 	                    downX = event.getX();
@@ -276,7 +279,6 @@ import com.tabscreens.OrderInfoTabScreen;
 	                            	Log.i("swipe detect const", Float.toString(HORIZONTAL_MIN_DISTANCE));
 	                                if (deltaX < -250) {
 	                                	
-	                                    Log.i(logTag, "Swipe Left to Right");
 	                                    mSwipeDetected = Action.LR;
 	                                    if (!openInteractFlag)
 	                                    {
@@ -318,7 +320,6 @@ import com.tabscreens.OrderInfoTabScreen;
 	                                    return true;
 	                                }
 	                                if (deltaX > 250) {
-	                                    Log.i(logTag, "Swipe Right to Left");
 	                                    mSwipeDetected = Action.RL;
 	                                    if (!openInfoFlag )
 	                                    {
@@ -335,7 +336,6 @@ import com.tabscreens.OrderInfoTabScreen;
 	                            if (Math.abs(deltaY) > VERTICAL_MIN_DISTANCE) {
 	                                // top or down
 	                                if (deltaY < 0) {
-	                                    Log.i(logTag, "Swipe Top to Bottom");
 	                                    mSwipeDetected = Action.TB;
 	                                    Log.i(logTag,Boolean.toString(borderDetLeft));
 	                                    if (borderDetLeft){
@@ -348,7 +348,6 @@ import com.tabscreens.OrderInfoTabScreen;
 	                                    result = false;
 	                                }
 	                                if (deltaY > 0) {
-	                                    Log.i(logTag, "Swipe Bottom to Top");
 	                                    if (borderDetRight){
 	                                    	id = listView1.pointToPosition((int) upX, (int) upY);
 	                                    	orderDetectDismiss();
@@ -406,6 +405,7 @@ import com.tabscreens.OrderInfoTabScreen;
 	          public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
 	        	 if (  mSwipeDetected == Action.None)
 	        	 { 
+	        		  
 	        		  CharSequence[] items;
 	        		  AlertDialog.Builder builder = null;
 	   	            if (position<forPrint.size())
@@ -428,11 +428,11 @@ import com.tabscreens.OrderInfoTabScreen;
 					  			    	{
 					  			    		
 						                     try {
-						                    	 messagesExport = listItem.getCusThread().getMessages();
+						                    	 messagesExport = listItem.getMessages();
 						                 	  }
 						                 	  catch (NullPointerException npe) {
 						                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
-						                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+						                    			getResources().getString(R.string.error_swiping), Toast.LENGTH_SHORT);
 						                    	 toast.show();
 						                    	 Intent intent = getIntent();
 						                    	 finish();
@@ -456,11 +456,13 @@ import com.tabscreens.OrderInfoTabScreen;
 			        	}
 			        	else
 			        	{
-				        	  if (DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId() == 2 | 
-				        			  DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId() == 3 | 
-					        			 DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId() == 4 | 
-					        			  DashboardActivityAlt.listItem.getProcess_status().getProccessStatusId() == 5)
-				        		  listItems.add("Inactivate");
+				        	  if (forPrint.get(position).getProcess_status().getProccessStatusId() !=9 &
+				        			  forPrint.get(position).getProcess_status().getProccessStatusId() !=4)
+				        		  {
+				        		  	listItems.add("Inactivate");
+				        		  }
+				        	  else 
+				        		  listItems.remove("Inactivate");
 				        	 items = listItems.toArray(new CharSequence[listItems.size()]);
 				  			builder = new AlertDialog.Builder(DashboardActivityAlt.this);
 				  		    builder.setTitle(Integer.toString(forPrint.get(position).getOrderid())+ "  " +forPrint.get(position).getTitle());
@@ -470,11 +472,11 @@ import com.tabscreens.OrderInfoTabScreen;
 				  			    	{
 				  			    		
 					                     try {
-					                    	 messagesExport = listItem.getCusThread().getMessages();
+					                    	 messagesExport = listItem.getMessages();
 					                 	  }
 					                 	  catch (NullPointerException npe) {
 					                 		 Toast toast = Toast.makeText(DashboardActivityAlt.this, 
-					                    			 "You should to swipe the item properly", Toast.LENGTH_SHORT);
+					                 				getResources().getString(R.string.error_swiping), Toast.LENGTH_SHORT);
 					                    	 toast.show();
 					                    	 Intent intent = getIntent();
 					                    	 finish();
@@ -500,10 +502,25 @@ import com.tabscreens.OrderInfoTabScreen;
 			        	  }
 	        		 
 	        	 }
-	        	  return false;
+	        	 mSwipeDetected = Action.None;
+	        	  return true;
 	         
 	          }
 	      });
+		
+		// Check device for Play Services APK. If check succeeds, proceed with
+				// GCM registration.
+				if (checkPlayServices()) {
+					gcm = GoogleCloudMessaging.getInstance(this);
+					regid = getRegistrationId(context);
+
+					if (regid.isEmpty()) {
+						registerInBackground();
+					}
+					new SendRegistrationIdTask(getRegistrationId(this)).execute();
+				} else {
+					
+				}
 
 	}
 	/** *метод для определения элемента, который был выбран*/
@@ -525,13 +542,8 @@ import com.tabscreens.OrderInfoTabScreen;
 	        return px / ctx.getResources().getDisplayMetrics().density;
 	    }
 
-		  private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-	        @Override
-	        public void onReceive(Context context, Intent intent) {
-	        	updateUI(intent);      
-	        }
-	    };
-	    /** *BroadcastReceiver для получения нового заказа*/
+	    
+	    /** *BroadcastReceiver for posting blank order with status "Uploading" and sending order to the server*/
 	    protected class NewOrderListener extends BroadcastReceiver {
 
 	        @Override
@@ -539,63 +551,98 @@ import com.tabscreens.OrderInfoTabScreen;
 	            // No need to check for the action unless the listener will
 	            // will handle more than one - let's do it anyway
 	            if (intent.getAction().equals(Constants.NEW_ORDER)) {
+	            	Log.i("DashboardActAlt NewOrderLister", "I've got new order");
 	            	switcher.setDisplayedChild(0);
-	            	Log.i("newOrderList", "might be added");
-	            	Log.i("dashboardActivityAlt onReceive",Integer.toString(forPrint.size()));
-	            	Order new2 = new Order();
+	            	Order new2 = new Order(Constants.ORDER_NEW_UPLOADING);
 	            	if (OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("assignment"))
 	            	{
-	            		new2.setProduct(new Product(1,"assignment",new ProductAssignment(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),  OrderPreferences.getInstance().getArrayList()[9].toString(), false, null, false, false)));
+	            		new2.setProduct(new Product(1,"assignment",new ProductAssignment(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),  OrderPreferences.getInstance().getArrayList()[9].toString(), 0, null, false, false)));
 	            	}
-	            	else if (OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("writing"))
+	            	else if (OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("essay"))
 	            	{
-//	            		new2.setProduct(new Product(1,"writing",new ProductWriting(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),OrderPreferences.getInstance().getArrayList()[9].toString(),
-//	            				true,OrderPreferences.getInstance().getArrayList()[3].toString(), OrderPreferences.getInstance().getArrayList()[4].toString(),
-//	            				  OrderPreferences.getInstance().getArrayList()[5].toString(), OrderPreferences.getInstance().getArrayList()[6].toString())));
+
+				            		//	            		new2.setProduct(new Product(1,"writing",new ProductWriting(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),OrderPreferences.getInstance().getArrayList()[9].toString(),
+			//	            				true,OrderPreferences.getInstance().getArrayList()[3].toString(), OrderPreferences.getInstance().getArrayList()[4].toString(),
+			//	            				  OrderPreferences.getInstance().getArrayList()[5].toString(), OrderPreferences.getInstance().getArrayList()[6].toString())));
 	            		
 	            	}
 	            	
-	            	new2.setIsActive(true);
-	            	try{
-	            	if ((forPrint.get(0).getOrderid()+1)!=0)
-	            		new2.setOrderid(forPrint.get(0).getOrderid()+1);
-	            	}
-	            	catch(Exception e)
-	            	{
-	            		e.printStackTrace();
-	            		new2.setOrderid(1);
-	            	}
+	            	new2.setIsActive("active");
 	            	
 	            	ProcessStatus a  = new ProcessStatus();
 	            	a.setProccessStatusId(10);
 	            	a.setProccessStatusTitle("Uploading");
 	            	a.setProccessStatusIdent(null);
+	            	new2.setTitle(OrderPreferences.getInstance().getOrderPrefItem(7).toString());
 	            	new2.setProcess_status(a);
 	            	addMethod(new2);
 	            	adapter.notifyDataSetChanged();
-//	            	OrderPreferences.getInstance().getOrderPrefItem(7).toString(),
-//					 OrderPreferences.getInstance().getOrderPrefItem(1).toString(),
-//					OrderPreferences.getInstance().getOrderPrefItem(2).toString(),
-//					OrderPreferences.getInstance().getOrderPrefItem(8).toString(),   OrderPreferences.getInstance().getOrderPrefItem(9).toString(),"1", "",
-//					OrderPreferences.getInstance().getOrderPrefItem(10).toString()
 	            	
 	            	if ( OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("assignment"))
 	            		new SendAssignment().execute();
-	            	else if (OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("writing"))
+	            	else if (OrderPreferences.getInstance().getOrderPrefItem(11).toString().equalsIgnoreCase("essay"))
 	            		new SendEssay().execute();
 	            }
 	        }
 	    }
-	    /** *BroadcastReceiver для update'a списка заказов*/
+	    /** *BroadcastReceiver for list updating if changes from GCM received*/
 	    protected class OrderListUpdate extends BroadcastReceiver {
 
 	        @Override
 	        public void onReceive(Context context, Intent intent) {
 	            
 	            if (intent.getAction().equals(Constants.ORDER_LIST_UPDATE)) {
+	            	try{
+	                if (intent.getExtras().getString("action").equals("order_payed"))
+	            	{
+	            	int i = Integer.parseInt(intent.getExtras().getString("order_id"));
+	            	Order a= new Order(i);
+	            	DatabaseHandler db = new DatabaseHandler(context.getApplicationContext());
+	    			Dao<ProcessStatus, Integer> daoProcess;
+	    			daoProcess = db.getStatusDao();
+	            	 adapter.getItem(adapter.getPosition(a)).setProcess_status((daoProcess.queryForId(4)));
+	            	 adapter.notifyDataSetChanged();
 	            	//updateList();
-	            	updateUI(intent);
+	            	//updateUI(intent);
+	            	}
+	            	else if (intent.getExtras().getString("action").equals("order_changed"))
+	            	{
+	            		int i= Integer.parseInt(intent.getExtras().getString("order_changed"));
+	            		new DownloadGCMOrder().execute(i);
+	            		
+	            	}
+	            		adapter.notifyDataSetChanged();
+	            	}
+	            	catch(Exception e)
+	            	{e.printStackTrace();}
 	            }
+	        }
+	    }
+	    /** *BroadcastReceiver opening updated order from notification*/
+	    protected class NotificatedOrderOpen extends BroadcastReceiver {
+
+	        @Override
+	        public void onReceive(Context context, Intent intent) {
+	            
+	            	try{
+	                if (intent.getExtras().getInt(Constants.ORDER_NOTIFICATED_UPDATE)!=0)
+	            	{
+	                	Log.i("NotificatedOrderOpen", Integer.toString(intent.getExtras().getInt(Constants.ORDER_NOTIFICATED_UPDATE)));
+	                	int i = intent.getExtras().getInt(Constants.ORDER_NOTIFICATED_UPDATE);
+	            		Order a= new Order(i);
+	            		listItem = adapter.getItem(adapter.getPosition(a));
+	            		messagesExport = listItem.getMessages();
+	            		Intent intent2 = new Intent(getApplicationContext(),
+	      	                  OrderInfoTabScreen.class);
+	            		 Bundle mBundle = new Bundle();
+	                     mBundle.putString("OrderSwiping", "lr");
+	                     intent2.putExtras(mBundle);
+	                   
+	            		startActivity(intent2);
+	            	}
+	            	}
+	                catch(Exception e)
+	            	{e.printStackTrace();}
 	        }
 	    }
 	    /** *Runnable для добавления нового заказа в список*/
@@ -626,8 +673,8 @@ import com.tabscreens.OrderInfoTabScreen;
 			if (savedPosition >= 0) {
 			      listView1.setSelectionFromTop(savedPosition, savedListTop);
 			    }
-			startService(intent);
-			registerReceiver(broadcastReceiver, new IntentFilter(ServiceIntentMessages.ORDERS_IMPORT));
+//			startService(intent);
+//			registerReceiver(broadcastReceiver, new IntentFilter(ServiceIntentMessages.ORDERS_IMPORT));
 			 if (!MyListenerIsRegistered) {
 		            registerReceiver(newOrderListener, new IntentFilter(Constants.NEW_ORDER));
 		            MyListenerIsRegistered = true;
@@ -637,6 +684,12 @@ import com.tabscreens.OrderInfoTabScreen;
 				  registerReceiver(orderListUpdateListener, new IntentFilter(Constants.ORDER_LIST_UPDATE));
 				  OrderListUpdateIsRegistered = true;
 			 }
+			 if (!notificatedOrderOpenListenerRegistered)
+			 {
+				 registerReceiver(notificatedOrderOpenListener, new IntentFilter(Constants.ORDER_NOTIFICATED_UPDATE)); 
+				 notificatedOrderOpenListenerRegistered=true;
+			 }
+		   checkPlayServices();
 		}
 	    
 	    
@@ -648,8 +701,6 @@ import com.tabscreens.OrderInfoTabScreen;
 		@Override
 		public void onPause() {
 			super.onPause();
-			unregisterReceiver(broadcastReceiver);
-		   stopService(intent);
 		   savedPosition = listView1.getFirstVisiblePosition();
 		   View firstVisibleView = listView1.getChildAt(0);
 		   savedListTop = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
@@ -664,35 +715,11 @@ import com.tabscreens.OrderInfoTabScreen;
 	            unregisterReceiver(orderListUpdateListener);
 	            OrderListUpdateIsRegistered = false;
 	        }
+		   if (notificatedOrderOpenListenerRegistered) {
+	            unregisterReceiver(notificatedOrderOpenListener);
+	            notificatedOrderOpenListenerRegistered = false;
+	        }
 		}	
-		  /** *метод для обновления UI. вызывается в случае получения уведомления от OrderListUpdate*/
-		private void updateUI(Intent intent) {
-	    	try 
-			{	
-	    		DashboardActivityAlt.this.runOnUiThread(new Runnable ()
-	    		{
-	    			
-					public void run() {
-						ServiceIntentMessages b = new ServiceIntentMessages();
-						for (Order d : forPrint)
-						{
-							if (d.getProcess_status().getProccessStatusTitle().equalsIgnoreCase("uploading"))
-							{
-								forPrint.remove(d);
-							}
-						}
-						forPrint = b.getServiceList();
-						 adapter.notifyDataSetChanged();
-					}
-	    		});
-	    		 adapter.notifyDataSetChanged();
-			} 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-			}
-	    	
-	    }
 		 /** *сохранение текущей позиции listview для воспроизведения, если пользователь вернется на данную активность*/
 	    @Override
 	    public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -736,16 +763,15 @@ import com.tabscreens.OrderInfoTabScreen;
 						}
 				else if(((String)data).equalsIgnoreCase("empty") )
 					{
-					Toast.makeText(getApplicationContext(), "Order list is empty", Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_order_list_empty), Toast.LENGTH_LONG).show();
 					if (forPrint.isEmpty())
 						switcher.showNext();  
 					
 					}
 				else if(((String)data).equalsIgnoreCase("error"))
-					Log.i("dashboardActivityAlt", "error");
+				{}
 				else if(((String)data).equalsIgnoreCase("inactivate_success"))
 					{
-						Log.i("dashboardActivityAlt", "order inactivation");
 						adapter.notifyDataSetChanged();
 						
 					}
@@ -754,7 +780,7 @@ import com.tabscreens.OrderInfoTabScreen;
 		/** *метод для обработки результатов неуспешной работы DashboardAsync или если её работа была прекращена*/
 		public void onCancelLoad() {
 			Log.i("dashboardActivityAlt", "onCancelLoad mtd");
-			 Toast.makeText(DashboardActivityAlt.this, "Some problems at server occurs. Please try later ", Toast.LENGTH_LONG).show();
+			 Toast.makeText(DashboardActivityAlt.this, getResources().getString(R.string.error_server_problem), Toast.LENGTH_LONG).show();
 		}
 		/** *метод возвращающий список заказов*/
 	    public ArrayList<Order> getOrderList()
@@ -771,11 +797,9 @@ import com.tabscreens.OrderInfoTabScreen;
 	     {
 	    	 try{
 	             Order temp = (Order) adapter.getItem((id));
-	             Log.i("swiping order", temp.toString());
 	             
 	             View w = adapter.getMapedView(temp);
 	              w.setBackgroundColor(Color.rgb(50, 107, 161));
-	              Log.i("got view tag detect",  ((CustomTextView) w.findViewById(R.id.altOrderId)).getText().toString());
 	              setSwipedId(w);
 	              
 	              
@@ -790,7 +814,7 @@ import com.tabscreens.OrderInfoTabScreen;
 	             ((TextView) w.findViewById(R.id.menu_sep2)).setVisibility(View.GONE);
 	             ((CustomTextView) w.findViewById(R.id.altOrderPrice)).setVisibility(View.GONE);
 
-	             messagesExport = listItem.getCusThread().getMessages();
+	             messagesExport = listItem.getMessages();
 	    	
 	    	 }
 	            catch(Exception e)
@@ -857,63 +881,108 @@ import com.tabscreens.OrderInfoTabScreen;
 	    {
 	    	 this.orderSwipedView = id;
 	    }
+	    private class DownloadNewOrder extends AsyncTask<Integer, Void, Order >
+	    {
+	    	Order added = null;
+	    	int id;
+			@Override
+			protected Order doInBackground(Integer... params) {
+				added = userFunc.getOrder(params[0]);
+				added = faq.updateOrderFields(added);
+				return added;
+					
+			}
+			 protected void onPostExecute(Order added) {
+			        if (added != null)
+			        {
+//			        
+			        	Order a =new Order(Constants.ORDER_NEW_UPLOADING);
+//			        	int row = listView1.getFirstVisiblePosition();
+//			        	adapter.getItem(row).setOrderid(added.getOrderid());
+			        	forPrint.set(forPrint.indexOf(a), added);
+			        	
+			        
+//			        	Log.i("order ", adapter.getItem(row).toString());
+			        	adapter.notifyDataSetInvalidated();
+//			        	 ((TextView)row.findViewById(R.id.altOrderId)).setText(Integer.toString(added.getOrderid()));
+			        	Log.i("order id", Integer.toString(forPrint.get(forPrint.indexOf(added)).getOrderid()));
+			        	Log.i("order id", Integer.toString(forPrint.get(0).getOrderid()));
+			        
+			        }
+			        else 
+			        {
+			        }
+			        adapter.notifyDataSetChanged();
+			    }
+	    }
+	    private class DownloadGCMOrder extends AsyncTask<Integer, Void, Order >
+	    {
+	    	Order added = null;
+			@Override
+			protected Order doInBackground(Integer... params) {
+				added = userFunc.getOrder(params[0]);
+				if (forPrint.contains(added))
+					return added;
+				else 
+					{
+						this.cancel(true);
+						return null;
+					}
+			}
+			 protected void onPostExecute(Order added) {
+			        if (added != null)
+			        {
+			        	faq.updateOrderFields(added);
+			        	forPrint.set(forPrint.indexOf(added), added);
+			        }
+			        else 
+			        {
+			        	
+			        }
+			        adapter.notifyDataSetChanged();
+			    }
+	    }
+	    
+	    
 	    
 	    /** *AsyncTask для посылки нового заказа, тип - Assignment*/
 	    private class SendAssignment extends AsyncTask<Void, Void, JSONObject > {
 		    
 	    	JSONObject response ;
 	    	protected void onPreExecute() {
-	        //	progDailog = ProgressDialog.show(AssignmentPref.this,"Please wait...", "Loading...", true,true);
 	        }
-			
-			
-			
-//			restClient.AddEntity("product[product_profile][title]", new StringBody(title,Charset.forName("UTF-8")));
-//	    	restClient.AddEntity("category", new StringBody(category));
-//	    	restClient.AddEntity("level", new StringBody(level));
-//	    	restClient.AddEntity("deadline", new StringBody(deadline));
-//	    	restClient.AddEntity("product[product_profile][info]", new StringBody(info,Charset.forName("UTF-8")));
-//	    	restClient.AddEntity("product[product_profile][dtl_expl]",new StringBody(explanation));
-//	    	restClient.AddEntity("product[product_profile][special_info]", new StringBody(specInfo,Charset.forName("UTF-8")));
-//	    	restClient.AddEntity("timezone", new StringBody(timezone));
-//	    	restClient.AddEntity("product[product_type]", new StringBody("assignment"));
-//	    	restClient.AddEntity("product[product_profile][shoot_exclusive_video]", new StringBody(exclusive_video));
-//	    	restClient.AddEntity("product[product_profile][shoot_common_video]", new StringBody(common_video));			
-			
 
 	        protected JSONObject doInBackground(Void... args) {
             try {
-            	Log.i("SendAssignment files count", Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
- 					response = launch.sendAssignment(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),
+ 					response = userFunc.sendAssignment(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),
  							 OrderPreferences.getInstance().getOrderPrefItem(1).toString(),
  							OrderPreferences.getInstance().getOrderPrefItem(2).toString(),
  							OrderPreferences.getInstance().getOrderPrefItem(8).toString(),   OrderPreferences.getInstance().getOrderPrefItem(9).toString(),
  							OrderPreferences.getInstance().getOrderPrefItem(12).toString(),
  							"",
  							OrderPreferences.getInstance().getOrderPrefItem(10).toString(),
- 							FileManagerActivity.getFinalAttachFiles(),  OrderPreferences.getInstance().getOrderPrefItem(13).toString(), 
- 							OrderPreferences.getInstance().getOrderPrefItem(14).toString());
+ 							FileManagerActivity.getFinalAttachFiles(),  OrderPreferences.getInstance().getOrderPrefItem(13).toString()
+ 							);
 			} catch (Exception e) {
 				
 				e.printStackTrace();
 			}
 	       		
-	        
 	       	return response;
 	     }
 
-	        protected void onPostExecute(JSONObject  forPrint) {
+	        protected void onPostExecute(JSONObject  json) {
 	 	  	   
 	        	try {
-					
-					if (Integer.parseInt(forPrint.getString(Constants.KEY_STATUS))==1)
+					if (Boolean.parseBoolean(json.getString(Constants.KEY_STATUS)))
 					{
+						int id =Integer.parseInt(json.getString(Constants.ORDER_DATA));
 						FileManagerActivity.getFinalAttachFiles().clear();
-					
+						new DownloadNewOrder().execute(id);
 					}
 					else 
 						FileManagerActivity.getFinalAttachFiles().clear();
-					Toast.makeText(DashboardActivityAlt.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();
+							adapter.notifyDataSetChanged();
 					
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
@@ -921,27 +990,22 @@ import com.tabscreens.OrderInfoTabScreen;
 				} catch (JSONException e) {
 
 					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 	        }
 	   }
-	    /** *AsyncTask для посылки нового заказа, тип - Writing*/
+	    /** *AsyncTask для посылки нового заказа, тип - Essay*/
 	    private class SendEssay extends AsyncTask<Void, Void, JSONObject> {
 	    			JSONObject response = null;
 	    			protected void onPreExecute() {
-//	    				progDailog = ProgressDialog.show(AssignmentPref.this,
-//	    						"Please wait...", "Loading...", true,
-//	    						true);
+
 	    			}
 	    			protected JSONObject doInBackground(Void... args) {
 	    				try {
 	    	
-	    					// ??? Category curCat = (Category) catSpin.getSelectedItem();
-//	    					(String title, String subject, String level, String deadline, String info, String explanation,
-//	    				    		String specInfo, String timezone, List<File> files, 
-//	    				    		String pages_number,String number_of_references ,String essay_type, String essay_creation_style)
-	    					
-	    					Log.i("SendEssay files count", Integer.toString(FileManagerActivity.getFinalAttachFiles().size()));
-	    					response = launch.sendWriting(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),
+	    					response = userFunc.sendWriting(OrderPreferences.getInstance().getOrderPrefItem(7).toString(),
 	    							OrderPreferences.getInstance().getOrderPrefItem(0).toString()
 	    								, OrderPreferences.getInstance().getOrderPrefItem(2).toString(), OrderPreferences.getInstance().getOrderPrefItem(8).toString()
 	    											, OrderPreferences.getInstance().getOrderPrefItem(9).toString(),
@@ -957,27 +1021,25 @@ import com.tabscreens.OrderInfoTabScreen;
 	    				return response;
 	    			}
 	    	
-	    			protected void onPostExecute(JSONObject forPrint) {
+	    			protected void onPostExecute(JSONObject json) {
 	    				
 	    				try {
-							if (forPrint.getString(Constants.KEY_STATUS) != null)
+	    					Log.i("json after order posting", json.toString());
+							if (json.getString(Constants.KEY_STATUS) != null)
 							{
-								if (Integer.parseInt(forPrint.getString(Constants.KEY_STATUS))==1)
+								
+								if (Boolean.parseBoolean(json.getString(Constants.KEY_STATUS)))
 								{
+									int id =Integer.parseInt(json.getString(Constants.ORDER_DATA));
 									FileManagerActivity.getFinalAttachFiles().clear();
-//									Intent i = new Intent(AssignmentPref.this,
-//							       DashboardTabScreen.class);
-//											 	   Bundle mBundle = new Bundle();
-//											 	   //		               mBundle.putString("NewOrder", "wasAdded");
-//											 	   //		               i.putExtras(mBundle);
-//											 	   startActivity(i);
+									new DownloadNewOrder().execute(id);
 								}
-  							else 
-  							{
-  								FileManagerActivity.getFinalAttachFiles().clear();
-  								Toast.makeText(DashboardActivityAlt.this, "Something went wrong. Please try later.", Toast.LENGTH_LONG).show();	
-  								
-  							}
+	  							else 
+	  							{
+	  								FileManagerActivity.getFinalAttachFiles().clear();
+	  								adapter.notifyDataSetChanged();
+	  								
+	  							}
 							
 							}
 						} catch (NumberFormatException e) {
@@ -1000,20 +1062,26 @@ import com.tabscreens.OrderInfoTabScreen;
 		/** *метод для загрузки новых заказов текущего пользователя.*/
 		public void onScroll(AbsListView view, int firstVisibleItem,
 				int visibleItemCount, int totalItemCount) {
-			Log.i("onscroll method", "onscroll");
 	            // Sample calculation to determine if the last 
 	            // item is fully visible.
 	            final int lastItem = firstVisibleItem + visibleItemCount;
 	            if(lastItem == totalItemCount) {
-	            	Log.i("onscroll method", "last item");
 				          	 try {
 								boolean isOnline = faq.isOnline();
 								if (isOnline)
 								{
 										if (!TaskProgressDialogFragment.dialogIsProceeding)
 										{
-											DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
-										    adapter.notifyDataSetChanged();
+											// for hasNext order checking
+											if (SharedPrefs.getInstance().getSharedPrefs().getBoolean(Constants.ORDER_HAS_NEXT, false)==false)
+											{
+											    DashboardAsync.execute(DashboardActivityAlt.this, DashboardActivityAlt.this);
+												adapter.notifyDataSetChanged();
+											}
+											else 
+											{
+												
+											}
 										}
 										else 
 										{
@@ -1021,8 +1089,6 @@ import com.tabscreens.OrderInfoTabScreen;
 								}
 								else
 								{
-								   Toast mToast =  Toast.makeText(getApplicationContext(), "No network connection. Please try later.", Toast.LENGTH_LONG);
-						   	  	   mToast.show();
 								}
 				            }
 				       	 catch(Exception e)
@@ -1032,4 +1098,262 @@ import com.tabscreens.OrderInfoTabScreen;
 	            }
 			
 		}  
+		// genarating perpage items corresponding to user's screen height
+		public void paginationGenerate()
+		{
+			DisplayMetrics displaymetrics = new DisplayMetrics();
+		    getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+		    int height = (int)dpFromPx(displaymetrics.heightPixels);
+		    height = height - (int)dpFromPx(90);
+		    final int count =(int)dpFromPx(height)/(int)dpFromPx(50);
+		    perpage = count;
+		}
+		
+		 /**
+	       *
+	       *
+	       *GCM service methods
+	       *
+	       *
+	       *
+	 
+	 
+	  */
+	 
+	 /**
+		 * Check the device to make sure it has the Google Play Services APK. If it
+		 * doesn't, display a dialog that allows users to download the APK from the
+		 * Google Play Store or enable it in the device's system settings.
+		 */
+		private boolean checkPlayServices() {
+			int resultCode = GooglePlayServicesUtil
+					.isGooglePlayServicesAvailable(this);
+			if (resultCode != ConnectionResult.SUCCESS) {
+				if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+					GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+							PLAY_SERVICES_RESOLUTION_REQUEST).show();
+				} else {
+					Toast.makeText(getApplicationContext(),getResources().getString(R.string.error_device_support), Toast.LENGTH_SHORT).show();
+				}
+				return false;
+			}
+			return true;
+		}
+
+		/**
+		 * Stores the registration ID and the app versionCode in the application's
+		 * {@code SharedPreferences}.
+		 * 
+		 * @param context
+		 *            application's context.
+		 * @param regId
+		 *            registration ID
+		 */
+		private void storeRegistrationId(Context context, String regId) {
+			final SharedPreferences prefs = getGcmPreferences(context);
+			int appVersion = getAppVersion(context);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString(PROPERTY_REG_ID, regId);
+			editor.putInt(PROPERTY_APP_VERSION, appVersion);
+			editor.commit();
+		}
+
+		/**
+		 * Gets the current registration ID for application on GCM service, if there
+		 * is one.
+		 * <p>
+		 * If result is empty, the app needs to register.
+		 * 
+		 * @return registration ID, or empty string if there is no existing
+		 *         registration ID.
+		 */
+		private String getRegistrationId(Context context) {
+			final SharedPreferences prefs = getGcmPreferences(context);
+			String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+			if (registrationId.isEmpty()) {
+				return "";
+			}
+			// Check if app was updated; if so, it must clear the registration ID
+			// since the existing regID is not guaranteed to work with the new
+			// app version.
+			int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION,
+					Integer.MIN_VALUE);
+
+			int currentVersion = getAppVersion(context);
+
+			if (registeredVersion != currentVersion) {
+				return "";
+			}
+			return registrationId;
+		}
+
+		/**
+		 * Registers the application with GCM servers asynchronously.
+		 * <p>
+		 * Stores the registration ID and the app versionCode in the application's
+		 * shared preferences.
+		 */
+
+		private void registerInBackground() {
+			new AsyncTask<Void, Void, String>() {
+				@Override
+				protected String doInBackground(Void... params) {
+					String msg = "";
+					try {
+						if (gcm == null) {
+							gcm = GoogleCloudMessaging.getInstance(context);
+						}
+						regid = gcm.register(SENDER_ID);
+						msg = "Device registered, registration ID=" + regid;
+
+						// You should send the registration ID to your server over
+						// HTTP, so it
+						// can use GCM/HTTP or CCS to send messages to your app.
+						sendRegistrationIdToBackend();
+
+						// For this demo: we don't need to send it because the
+						// device will send
+						// upstream messages to a server that echo back the message
+						// using the
+						// 'from' address in the message.
+
+						// Persist the regID - no need to register again.
+						storeRegistrationId(context, regid);
+					} catch (IOException ex) {
+						msg = "Error :" + ex.getMessage();
+						// If there is an error, don't just keep trying to register.
+						// Require the user to click a button again, or perform
+						// exponential back-off.
+					}
+					return msg;
+				}
+
+				@Override
+				protected void onPostExecute(String msg) {
+				}
+			}.execute(null, null, null);
+		}
+
+//		// Send an upstream message.
+//		public void onClick(final View view) {
+//
+//			if (view == findViewById(R.id.send)) {
+//				new AsyncTask<Void, Void, String>() {
+//					@Override
+//					protected String doInBackground(Void... params) {
+//						String msg = "";
+//						try {
+//							Bundle data = new Bundle();
+//							data.putString("my_message", "Hello World");
+//							data.putString("my_action",
+//									"com.google.android.gcm.demo.app.ECHO_NOW");
+//							String id = Integer.toString(msgId.incrementAndGet());
+//							gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
+//							msg = "Sent message";
+//						} catch (IOException ex) {
+//							msg = "Error :" + ex.getMessage();
+//						}
+//						return msg;
+//					}
+//
+//					@Override
+//					protected void onPostExecute(String msg) {
+//					}
+//				}.execute(null, null, null);
+//			} else if (view == findViewById(R.id.clear)) {
+//				storeRegistrationId(context, "");
+//			} else if (view == findViewById(R.id.send_stored)) {
+//				sendRegistrationIdToBackend();
+//			}
+//			
+//			else if (view == findViewById(R.id.send_id)) {
+//				new SendRegistrationIdTask(getRegistrationId(this)).execute();
+//			}
+//
+//		}
+
+		@Override
+		protected void onDestroy() {
+			super.onDestroy();
+		}
+
+		/**
+		 * @return Application's version code from the {@code PackageManager}.
+		 */
+		private static int getAppVersion(Context context) {
+			try {
+				PackageInfo packageInfo = context.getPackageManager()
+						.getPackageInfo(context.getPackageName(), 0);
+				return packageInfo.versionCode;
+			} catch (NameNotFoundException e) {
+				// should never happen
+				throw new RuntimeException("Could not get package name: " + e);
+			}
+		}
+
+		/**
+		 * @return Application's {@code SharedPreferences}.
+		 */
+		private SharedPreferences getGcmPreferences(Context context) {
+			// This sample app persists the registration ID in shared preferences,
+			// but
+			// how you store the regID in your app is up to you.
+			return getSharedPreferences(DemoActivity.class.getSimpleName(),
+					Context.MODE_PRIVATE);
+		}
+
+		/**
+		 * Sends the registration ID to your server over HTTP, so it can use
+		 * GCM/HTTP or CCS to send messages to your app. Not needed for this demo
+		 * since the device sends upstream messages to a server that echoes back the
+		 * message using the 'from' address in the message.
+		 */
+		private void sendRegistrationIdToBackend() {
+			if (getRegistrationId(this) != "") {
+				Log.i("success", getRegistrationId(this));
+			} else
+				Log.i("success", "fuck it");
+		}
+		
+		
+		  private final class SendRegistrationIdTask extends  AsyncTask<String, Void, JSONObject> {
+				    private String mRegId;
+				
+				    public SendRegistrationIdTask(String regId) {
+				      mRegId = regId;
+				    }
+				    JSONObject json;
+				    @Override
+				    protected JSONObject doInBackground(String... regIds) {
+				      String url = Constants.prodHost + "/users/register_gcm_device";
+				
+				      try {
+				        Log.i("send REg id", mRegId);
+				        List<NameValuePair> params = new ArrayList<NameValuePair>();
+				        params.add(new BasicNameValuePair("registrationId", mRegId));
+				    	 JSONParser parser = new JSONParser();
+				    	 json= parser.getJSONFromUrl(url, params, RequestMethod.POST);
+				      } catch (ClientProtocolException e) {
+				        Log.e(Constants.SENDREGID, e.getMessage(), e);
+				      } catch (IOException e) {
+				        Log.e(Constants.SENDREGID, e.getMessage(), e);
+				      } catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				      return json;
+				    }
+				
+				    @Override
+				    protected void onPostExecute(JSONObject response) {
+				      if (response == null) {
+				        Log.e(Constants.SENDREGID, "HttpResponse is null");
+				        return;
+				      }
+				
+				        return;
+				      }
+				
+				    }
 }

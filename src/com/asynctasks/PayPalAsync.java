@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.library.FrequentlyUsedMethods;
 import com.paypal.android.MEP.PayPal;
 /** * AsyncTask дл€ инициализации PayPal библиотеки. */
@@ -25,7 +27,7 @@ public class PayPalAsync  extends AbstractTaskLoader {
 
 		PayPalAsync loader = new PayPalAsync(fa);
 
-		new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
+		new TaskProgressDialogFragment.Builder(fa, loader,fa.getResources().getString(R.string.dialog_loading))
 				.setCancelable(false)
 				.setTaskLoaderListener(taskLoaderListener)
 				.show();
@@ -61,7 +63,7 @@ public class PayPalAsync  extends AbstractTaskLoader {
 		        TaskProgressDialogFragment.cancel();
 			}
 		} catch (Exception e) {
-			
+			 Crashlytics.logException(e);
 			e.printStackTrace();
 		}
 			return result;

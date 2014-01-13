@@ -6,8 +6,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
  <TableLayout 
-      xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:id="@+id/tableLayout1"
     android:layout_width="fill_parent"
     android:layout_height="0dp"
@@ -24,7 +22,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         style="@style/custom_textview"
-        android:text="@string/profileText"
+        android:text="@string/textview_profile_promt"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
 		 </TableRow>
@@ -46,7 +44,7 @@
         android:imeOptions="actionNext"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
-        android:hint="First name">
+        android:hint="Name">
     </com.customitems.CustomEditText>
          </TableRow>
          	 <TableRow android:layout_height="1px" android:background="#323232">
@@ -62,6 +60,7 @@
           	 android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:title="Country"
+            android:visibility="gone"
           	android:layout_width="fill_parent"
             android:layout_height="64dp"
             android:layout_weight="1"
@@ -75,7 +74,6 @@
   	 </TextView>
 		</TableRow>
 		    <TableRow
-          android:id="@+id/tableRow2"
           style="@style/text_row" 
           android:layout_width="fill_parent"
           android:layout_marginRight="0dp"
@@ -86,10 +84,9 @@
         android:id="@+id/phoneTextView"
         style="@style/custom_edittext"
         android:inputType = "number"
-        android:layout_marginRight="10dp"
          android:singleLine="true"
       	    android:imeOptions="actionNext"
-        android:layout_marginLeft="25dp"
+        android:layout_marginLeft="20dp"
         android:layout_width="fill_parent"
         foo:customFont="Roboto-Regular.ttf"
         android:hint="Phone"/>
@@ -115,6 +112,7 @@
             android:id="@+id/timeZonePref"
             android:title="Time zone"
           	 android:layout_marginLeft="0dp"
+          	    android:visibility="gone"
             android:layout_marginRight="0dp"
           	android:layout_width="fill_parent"
             android:layout_height="64dp"
@@ -191,7 +189,7 @@
      		  android:layout_marginLeft="22dp"
      		  android:layout_marginTop="13dp"
      		android:textColor="#FFFFFF"
-     		android:text="Sign me in when AE starts"
+     		android:text="@string/textview_profile_sign_me"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
 
@@ -231,9 +229,10 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="0dp"
         android:layout_weight="0.57"
-        android:text="Save" />
+      android:text="@string/btn_save" />
 
-    <Button android:text="Cancel"
+    <Button 
+			android:text="@string/btn_cancel"
         android:id="@+id/cancelProfile"
         	style="@style/custom_button"
         	android:layout_weight="0.43"

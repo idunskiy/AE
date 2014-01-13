@@ -9,14 +9,20 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.assignmentexpert.LoginActivity;
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 /** * AsyncTask восстановлени€ парол€ пользовател€ */
 public class RestoreAsync  extends AbstractTaskLoader{
 	private static String KEY_STATUS = "status";
+	
+	
+	private static String KEY_MESSAGE = "message";
+	private static String KEY_ERROR = "error";
 	private Context context;
 	private boolean errorFlag = false;
 	public static String restoreRes =  "";
@@ -36,7 +42,7 @@ public class RestoreAsync  extends AbstractTaskLoader{
 
 		RestoreAsync loader = new RestoreAsync(fa);
 
-	new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
+	new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 			.setCancelable(true)
 			.setTaskLoaderListener(taskLoaderListener)
 			.show();
@@ -54,30 +60,28 @@ public class RestoreAsync  extends AbstractTaskLoader{
 			String res = "";
 	     	JSONObject a = null;
 			try {
-				a = reg.restorePassword(LoginActivity.restorePass, null);
+				a = reg.restorePassword(LoginActivity.restorePass);
 				Log.i("restore email", LoginActivity.restorePass);
 			
 			
 				try {
-					
 					String b = a.get(KEY_STATUS).toString();
-					
-					if(Integer.parseInt(b)==1)
+					if(Boolean.parseBoolean(b))
 						{
-						restoreRes = "A message has been send to"+"\r\n"+ LoginActivity.restorePass+ 
-									"\r\n"+"Follow the link within message to restore password";
-						res = "restoreSuccess";
+							restoreRes = "Restored successfully. A message has been send to"+"\r\n"+ LoginActivity.restorePass	;
+							res = "restoreSuccess";
 						}
 					else 
 					{
-						 restoreRes = "Restoring failed. Please try later";
-						 res = "restoreError";
+							 restoreRes = a.getString(KEY_ERROR);
+							 res = "restoreError";
 					}
 				} catch (JSONException e) 
 				{
 					e.printStackTrace();
 				}
 			} catch (Exception e) {
+				 Crashlytics.logException(e);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				errorFlag = true;

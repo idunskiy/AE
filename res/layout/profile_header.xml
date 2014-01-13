@@ -13,7 +13,7 @@
         android:id="@+id/textViewPlus1"
         android:layout_width="fill_parent"
         style="@style/custom_textview"
-         android:text="@string/profileText"
+         android:text="@string/textview_profile_promt"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
     

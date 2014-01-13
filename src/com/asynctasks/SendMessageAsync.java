@@ -10,9 +10,11 @@ import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.FileManagerActivity;
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.fragments.NewMessageFragment;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
@@ -22,6 +24,15 @@ public class SendMessageAsync extends AbstractTaskLoader{
 	public static String messageErrorMess;
 	private Context context;
 	private boolean errorFlag = false;
+	
+	public static String getMessageBody() {
+		return messageBody;
+	}
+
+	public void setMessageBody(String messageBody) {
+		SendMessageAsync.messageBody = messageBody;
+	}
+	private static String messageBody;
 	protected SendMessageAsync(Context context) {
 		super(context);
 		this.context = context;
@@ -37,7 +48,7 @@ public class SendMessageAsync extends AbstractTaskLoader{
 
 		SendMessageAsync loader = new SendMessageAsync(fa);
 
-	new TaskProgressDialogFragment.Builder(fa, loader, "Loading…")
+	new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 			.setCancelable(true)
 			.setTaskLoaderListener(taskLoaderListener)
 			.show();
@@ -55,6 +66,7 @@ public class SendMessageAsync extends AbstractTaskLoader{
 			UserFunctions userFunc = new UserFunctions();
 			String result = "";
        		try {
+       			Log.i(" message files size", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
        			if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
        	       		{
 					response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
@@ -63,7 +75,7 @@ public class SendMessageAsync extends AbstractTaskLoader{
 						Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
 				 
        		}
-       		else if(DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("writing"))
+       		else if(DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("essay"))
        		{
        			response = userFunc.sendMessage("0", 
            				DashboardActivityAlt.listItem.getDeadline().toString(),
@@ -76,8 +88,9 @@ public class SendMessageAsync extends AbstractTaskLoader{
 				{
 					
 				    String res = response.getString(KEY_STATUS);
-				    if(Integer.parseInt(res) == 1)
+				    if(Boolean.parseBoolean(res) )
 				    {	
+				    	this.setMessageBody(NewMessageFragment.newMessage);
 				    	result = "send_message_success";
 				    	
 				    }
@@ -105,6 +118,7 @@ public class SendMessageAsync extends AbstractTaskLoader{
        		}
        		catch (Exception e) {
 				// TODO Auto-generated catch block
+       		 Crashlytics.logException(e);
 				e.printStackTrace();
 				errorFlag = true;
 				onStopLoading();

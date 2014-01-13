@@ -25,17 +25,14 @@ import com.fragmentactivities.InteractionsFragmentActivity;
 import com.fragmentactivities.OrderInfoFragmentActivity;
 import com.library.Constants;
 import com.library.singletones.TypeFaceSingletone;
-/**
- *  
- * Класс табов информации о заказе и списка сообщений заказа
- *   
- */
 public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListener, OnTabReselectListener
 {
 	 TabHost tabHost;
 	 TabHost.TabSpec spec; 
 	 Intent intent;
 	 Context context;
+	 
+	 private static final String TAG = "OrderInfoTabScreen";
    public void onCreate(Bundle savedInstanceState) 
    {
 	   
@@ -49,15 +46,17 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
        context = this;
       
 	       intent = new Intent().setClass(this, OrderInfoFragmentActivity.class);
-	       spec = tabHost.newTabSpec("tab_1").setIndicator(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),getResources().getDrawable(R.drawable.tab_info)).setContent(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+	       spec = tabHost.newTabSpec("tab_1").setIndicator(Integer.toString(DashboardActivityAlt.listItem.getOrderid()),getResources().getDrawable(R.drawable.tab_info)).setContent(intent);//.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 	       tabHost.addTab(spec);
 	       intent = new Intent().setClass(this, InteractionsFragmentActivity.class);
 	       spec = tabHost.newTabSpec("tab_2").setIndicator(DashboardActivityAlt.listItem.getTitle()).setContent(intent);
 	       tabHost.addTab(spec);
-	       setFontsImages();
-	       spec = tabHost.newTabSpec("tab_3").setIndicator("Close",getResources().getDrawable(R.drawable.tab_close)).setContent(new Intent().setClass(this,ExitActivity.class));
+	     
+	       spec = tabHost.newTabSpec("tab_3").setIndicator(getResources().getString(R.string.tab_close),getResources().getDrawable(R.drawable.tab_close)).setContent(new Intent().setClass(this,ExitActivity.class));
 	       tabHost.addTab(spec);
-      
+	       
+	       
+	       setFontsImages();
        if (this.getIntent().getExtras()!=null)
        {
     	   if (getIntent().getExtras().getString("OrderSwiping").equalsIgnoreCase("lr"))
@@ -70,7 +69,6 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
        {
     	   if (this.getIntent().getAction().equalsIgnoreCase("notification_background") |this.getIntent().getAction().equalsIgnoreCase("notification_foreground") )
     	   {
-    		   Log.i("OrderInfoTabScreen", "notification opened");
     		   getTabHost().setCurrentTab(1);
     		   NotificationManager mNotificationManager = (NotificationManager) getSystemService
     				   (Context.NOTIFICATION_SERVICE);
@@ -86,7 +84,7 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
    
    /**
     *  
-    * Метод для изменения табов.
+    * tabs switching
     *   
     */
    private void changeTabsListener()
@@ -104,11 +102,12 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
 			                }
 			              else if(i==2)
 			              {
-			            	  // 
+
 			            	  if (OrderInfoTabScreen.this.getIntent().getAction()!=null)
 			            	  {
 				            	  if (OrderInfoTabScreen.this.getIntent().getAction().equalsIgnoreCase("notification_background"))
 				            	  {
+				            		  Log.i(TAG, "notification_background");
 				            		  Intent b = new Intent(OrderInfoTabScreen.this, DashboardTabScreen.class);
 				            		  b.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				            		  startActivity(b);
@@ -116,11 +115,15 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
 				            	  }	
 				            	  else if(OrderInfoTabScreen.this.getIntent().getAction().equalsIgnoreCase("notification_foreground"))
 				            	  {
+				            		  Log.i(TAG, "notification_foreground");
 				            		  finish();
 				            	  }
 			            	  }
 			            	  else
-			            	  finish();
+			            	  {
+			            		  Log.i(TAG, "nothing");
+			            		  finish();
+			            	  }
 			              }
 
 	                   }
@@ -128,7 +131,7 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
    }
    /**
     *  
-    * Метод для центрирования текста в центральной вкладке списка сообщений выбранного заказа.
+    * text in tab centering
     *   
     */
    private void textCentering()
@@ -155,7 +158,7 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
    
    /**
     *  
-    * Метод для установки Roboto шрифта и позиционирования иконок в табах
+    * Roboto text style setting
     *   
     */
    private void setFontsImages()
@@ -165,11 +168,10 @@ public class OrderInfoTabScreen extends TabActivity  //implements OnTouchListene
        	{
        	
 	        	  ViewGroup vg = (ViewGroup) tabHost.getTabWidget().getChildTabViewAt(i);
-	        	  TextView tv = (TextView)vg.getChildAt(1);
+    	   		  TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
 	        	  tv.setTextSize(13);
 	              tv.setTypeface(localTypeface1);
-	              tv.setPadding(0, 0, 0, 2);
-	              tv.setTextColor(Color.argb(255, 255, 255, 255));
+	              tv.setTextColor(Color.WHITE);
 	              ImageView itv = (ImageView)vg.getChildAt(0);
 	              itv.setPadding(0, 4, 0, 0);
              

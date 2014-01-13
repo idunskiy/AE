@@ -8,9 +8,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.LoginAsync;
 import com.asynctasks.ProfileUpdateAsync;
+import com.customitems.CustomEditPreference;
 import com.fragments.IClickListener;
 import com.fragments.ProfileFragmentCompl;
 import com.fragments.ProfileFragmentPref;
@@ -52,28 +55,43 @@ public class ProfileFragmentActivity extends FragmentActivity  implements IClick
 		      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		      fragmentTransaction.commit();
 		}
+		// profile updating
 		if (flag==3)
+		{
 			ProfileUpdateAsync.execute(this, this);
+		}
+			
 		
 	}
 	 /** *метод интерфейса ITaskLoaderListener. служит для обработки данных после успешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onLoadFinished(Object data) {
 		if (data instanceof String & ((String)data).equalsIgnoreCase("success"))
 		{
-			Toast.makeText(this, "Your profile was updated successfully. Please relogin to see updatings.", Toast.LENGTH_LONG).show();
-			ProfileFragmentPref.firstNamePref.setSummary(ProfileFragmentCompl.firstName);
-			ProfileFragmentPref.countryPref.setSummary(ProfileFragmentCompl.counrtyEditPref.getSummary());
-			ProfileFragmentPref.phoneTextView.setSummary(ProfileFragmentCompl.phone);
-			ProfileFragmentPref.timezonePref.setSummary(ProfileFragmentCompl.timeZone);
-			//lastnameTextView.setText(lastnameTextView.getText().toString());
-			//loginTextView.setText(loginTextView.getText().toString());
-			//phoneTextView.setText(phoneTextView.getText().toString());
-			//timezoneTextView.setText(LoginActivity.getUser.getUser().getTimeZone());
-			//passTextView.setText(phoneTextView.getText().toString());
-			//disableEdits();
+			Fragment myFragment = (Fragment)getSupportFragmentManager().findFragmentById(R.id.myfragment);
+			if (myFragment instanceof ProfileFragmentCompl)
+			{
+			
+				Bundle bundle = new Bundle();
+				bundle.putString("profile_name",ProfileFragmentCompl.firstName);
+				bundle.putString("profile_phone", ProfileFragmentCompl.phone);
+				bundle.putString("profile_pass", ProfileFragmentCompl.password);
+				LoginAsync.user.setFirst_name(ProfileFragmentCompl.firstName);
+				LoginAsync.user.setPhone(ProfileFragmentCompl.phone);
+				LoginActivity.forFragmentPassword = ProfileFragmentCompl.password;
+				
+				Fragment newFragment = new ProfileFragmentPref();
+		
+			   ((ProfileFragmentPref)newFragment).setArguments(bundle);
+			  FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+		      fragmentTransaction.replace(R.id.myfragment, newFragment);
+		      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		      fragmentTransaction.commit();
+		  	  
+			
+			}
 		}
 	else if(data instanceof String & ((String)data).equalsIgnoreCase("error"))
-		Toast.makeText(this, "Your profile wasn't updated. "+ ProfileUpdateAsync.errorMessage, Toast.LENGTH_LONG).show();
+		Toast.makeText(this, ProfileUpdateAsync.errorMessage, Toast.LENGTH_LONG).show();
 		
 	}
 	/** *метод интерфейса ITaskLoaderListener. служит для обработки данных после неуспешной работы задачи в отдельном потоке, используемой в данной активности.  */

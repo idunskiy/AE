@@ -17,19 +17,14 @@ public class Order implements Parcelable{
 	/** *поле списка файлов.*/
 	@SerializedName("files")
 	List<Files> files;
-	/** *поле срока выполнения заказа*/
-	@SerializedName("customer_deadline_sent")
-	boolean customer_deadline_sent;
 	/** *поле флага, определяющего был ли оплачен заказ или нет. */
 	@SerializedName("payed")
-	boolean payed;
+	int payed;
 	/** *поле флага, определяющего была ли провалена попытка оплатить заказ. */
 	@SerializedName("payment_failed")
-	boolean payment_failed;
-	@SerializedName("not_payed_sent")
-	boolean not_payed_sent;
+	int payment_failed;
 	/** *поле информации по заказу. */
-	@SerializedName("info")
+	@SerializedName("task_info")
 	String info;
 	/** *id заказа */
 	@SerializedName("id")
@@ -38,10 +33,10 @@ public class Order implements Parcelable{
 	@SerializedName("category")
 	Category category;
 	/** *временная зона, где был сделан заказ */
-	@SerializedName("timezone")
+	@SerializedName("gnt")
 	String timezone;
 	/** *название заказа */
-	@SerializedName("title")
+	@SerializedName("order_title")
 	String title;
 	/** *уровень заказа */
 	@SerializedName("level")
@@ -51,7 +46,7 @@ public class Order implements Parcelable{
 	DateTime updated_at;
 	/** *цена заказа */
 	@SerializedName("price")
-	float price;
+	int price;
 	/** *время чекпоинта заказа */
 	@SerializedName("checkpoint_deadline")
 	DateTime checkpoint_deadline;
@@ -70,20 +65,19 @@ public class Order implements Parcelable{
 	@SerializedName("process_status")
 	ProcessStatus process_status;
 	/** *время создания заказа */
-	@SerializedName("created_at")
+	@SerializedName("placement_date")
 	DateTime created_at;
-	/** *обьект, содержащий список сообщений */
-	@SerializedName("owc_thread")
-	CustomerThread cus_thread;
 	/** *флаг детального обьяснения по заказу*/
+	@SerializedName("messages")
+	ArrayList<Messages> messages;
 	@SerializedName("dtl_expl")
 	boolean den;
 	/** *время выполнения заказа*/
 	@SerializedName("deadline")
 	DateTime deadline;
 	/** *флаг активности заказа*/
-	@SerializedName("is_active")
-	boolean is_active;
+	@SerializedName("status")
+	String is_active;
 	/** *продукт заказа*/
 	@SerializedName("product")
 	Product product;
@@ -96,20 +90,18 @@ public class Order implements Parcelable{
 	public Order()
 	{}
 	/** *основной конструктор*/
-	public Order(ArrayList<Files> files, boolean customer_deadline_sent,
-			boolean payed, boolean payment_failed, boolean not_payed_sent,
+	public Order(ArrayList<Files> files, 
+			int payed, int payment_failed,
 			String info, int id, Category category, String timezone,
-			String title, Level level, DateTime updated_at, float price,
+			String title, Level level, DateTime updated_at, int price,
 			DateTime checkpoint_deadline, boolean h_notified, float refund,
 			String special_info, boolean checkpoint_deadline_sent,
 			ProcessStatus process_status, DateTime created_at,
-			CustomerThread cus_thread, boolean den, DateTime deadline , boolean is_active,
+			ArrayList<Messages> messages, boolean den, DateTime deadline , String is_active,
 			Product product, Subject subject) {
 		this.files = files;
-		this.customer_deadline_sent = customer_deadline_sent;
 		this.payed = payed;
 		this.payment_failed = payment_failed;
-		this.not_payed_sent = not_payed_sent;
 		this.info = info;
 		this.id = id;
 		this.category = category;
@@ -125,7 +117,7 @@ public class Order implements Parcelable{
 		this.checkpoint_deadline_sent = checkpoint_deadline_sent;
 		this.process_status = process_status;
 		this.created_at = created_at;
-		this.cus_thread = cus_thread;
+		this.messages = messages;
 		this.den = den;
 		this.deadline = deadline;
 		this.is_active = is_active;
@@ -137,6 +129,9 @@ public class Order implements Parcelable{
 		this();
 		readFromParcel(in);
 	}
+	public Order(int i) {
+		this.id = i;
+	}
 	public List<Files> getOrderFiles() {
 		return this.files;
 	}
@@ -145,17 +140,14 @@ public class Order implements Parcelable{
 		return this.checkpoint_deadline_sent;
 	}
 
-	public boolean getPayed() {
+	public int getPayed() {
 		return this.payed;
 	}
 
-	public boolean getPayment_failed() {
+	public int getPayment_failed() {
 		return this.payment_failed;
 	}
 
-	public boolean getNot_payed_sent() {
-		return this.not_payed_sent;
-	}
 
 	public String getOrderinfo() {
 		return this.info;
@@ -185,7 +177,7 @@ public class Order implements Parcelable{
 		return this.updated_at;
 	}
 
-	public float getPrice() {
+	public int getPrice() {
 		return this.price;
 	}
 
@@ -217,8 +209,8 @@ public class Order implements Parcelable{
 		return this.created_at;
 	}
 
-	public CustomerThread getCusThread() {
-		return this.cus_thread;
+	public ArrayList<Messages> getMessages() {
+		return this.messages;
 	}
 
 	public boolean getden() {
@@ -229,7 +221,7 @@ public class Order implements Parcelable{
 		return this.deadline;
 	}
 	
-	public boolean getIsActive() {
+	public String getIsActive() {
 		return this.is_active;
 	}
 	public Product getProduct() {
@@ -249,17 +241,14 @@ public class Order implements Parcelable{
 		this.checkpoint_deadline_sent = checkpoint_deadline_sent;
 	}
 
-	public void setPayed(boolean payed) {
+	public void setPayed(int payed) {
 		this.payed = payed;
 	}
 
-	public void setPayment_failed(boolean payment_failed) {
+	public void setPayment_failed(int payment_failed) {
 		this.payment_failed = payment_failed;
 	}
 
-	public void setNot_payed_sent(boolean not_payed_sent) {
-		this.not_payed_sent = not_payed_sent;
-	}
 
 	public void getOrderinfo(String info) {
 		this.info = info;
@@ -289,7 +278,7 @@ public class Order implements Parcelable{
 		this.updated_at = updated_at;
 	}
 
-	public void setPrice(float price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 
@@ -321,9 +310,6 @@ public class Order implements Parcelable{
 		this.created_at = created_at;
 	}
 
-	public void setCusThread(CustomerThread cus_thread) {
-		this.cus_thread = cus_thread;
-	}
 
 	public void setden(boolean den) {
 		this.den = den;
@@ -335,7 +321,7 @@ public class Order implements Parcelable{
 		this.deadline = deadline;
 	}
 	
-	public void setIsActive(boolean is_active) {
+	public void setIsActive(String is_active) {
 		this.is_active = is_active;
 	}
 	
@@ -358,7 +344,7 @@ public class Order implements Parcelable{
 	public String toString() {
 		return "id=" + id + " " + "title=" + title
 				+ " " + "price=" + price + " " 
-				+ timezone+level+"price= "+"process status = "+ process_status+"}";
+				+ timezone+level+"price= "+"process status = "+ process_status+"product " + product.getProduct() + "}";
 				//+ product +" "+ product.getProduct().toString()+"" +"process status = "+ process_status+"}";
 		
 	}
@@ -369,14 +355,11 @@ public class Order implements Parcelable{
 	private void readFromParcel(Parcel in) {
 		files = in.readArrayList(Files.class.getClassLoader());
 		checkpoint_deadline_sent = in.readByte() == 1; 
-		customer_deadline_sent = in.readByte() == 1; 
-		payed = in.readByte() == 1; 
-		payment_failed = in.readByte() == 1; 
-		not_payed_sent = in.readByte() == 1; 
+		payed = in.readInt(); 
+		payment_failed= in.readInt();  
 		den = in.readByte() == 1;
 		h_notified = in.readByte() == 1; 
 //		checkpoint_deadline_sent = myBooleanArr[0];
-//		customer_deadline_sent =  myBooleanArr[1];
 //		payed = myBooleanArr[2];
 //		payment_failed = myBooleanArr[3];
 //		not_payed_sent = myBooleanArr[4];
@@ -395,22 +378,18 @@ public class Order implements Parcelable{
 		checkpoint_deadline =  in.readParcelable(DateTime.class.getClassLoader());
 		created_at =  in.readParcelable(DateTime.class.getClassLoader());
 		process_status =  in.readParcelable(ProcessStatus.class.getClassLoader());
-		cus_thread =  in.readParcelable(CustomerThread.class.getClassLoader());
-		price = in.readFloat();
+		price = in.readInt();
 		refund = in.readFloat();
 		
 	}
 	public void writeToParcel(Parcel par, int arg1) {
 		par.writeList(files);
 		par.writeByte((byte) (checkpoint_deadline_sent ? 1 : 0)); 
-		par.writeByte((byte) (customer_deadline_sent ? 1 : 0)); 
-		par.writeByte((byte) (payed ? 1 : 0)); 
-		par.writeByte((byte) (payment_failed ? 1 : 0)); 
-		par.writeByte((byte) (not_payed_sent ? 1 : 0));
+		par.writeInt(payed);
+		par.writeInt(payment_failed); 
 		par.writeByte((byte) (den ? 1 : 0));
 		par.writeByte((byte) (h_notified ? 1 : 0)); 
 //		par.writeBooleanArray(new boolean[] {checkpoint_deadline_sent});
-//		par.writeBooleanArray(new boolean[] {customer_deadline_sent});
 //		par.writeBooleanArray(new boolean[] {payed});
 //		par.writeBooleanArray(new boolean[] {payment_failed});
 //		par.writeBooleanArray(new boolean[] {not_payed_sent});
@@ -427,7 +406,6 @@ public class Order implements Parcelable{
 		par.writeParcelable(created_at, arg1);
 		par.writeParcelable(deadline, arg1);
 		par.writeParcelable(updated_at, arg1);
-		par.writeParcelable(cus_thread, arg1);
 		par.writeParcelable(process_status, arg1);
 		par.writeFloat(price);
 		par.writeFloat(refund);
@@ -444,19 +422,30 @@ public class Order implements Parcelable{
 	            	return new Order[size];
 	            }
 	        };
+	
+	  
 	  @Override
-	  public boolean equals(Object other){
-		  boolean result = false;
-		  if (other instanceof Order)
-		  {
-			  if (((Order) other).getOrderid() == this.getOrderid())
-				 result = true;
-		  }
-		  else
-			  result = false;
-		  
-		  return result;
-	  }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Order))
+			return false;
+		Order other = (Order) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	public void addMessage(Messages message)
+	  {messages.add(message);}
 	
 
 }

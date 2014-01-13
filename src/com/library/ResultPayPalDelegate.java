@@ -5,7 +5,6 @@ import java.io.Serializable;
 import android.app.Activity;
 
 import com.paypal.android.MEP.PayPalResultDelegate;
-/**  *	делегат для возвращения результатa работы библиотеки PayPal*/
 public class ResultPayPalDelegate implements PayPalResultDelegate, Serializable {
 	Activity ctx;
 	String resultTitle;

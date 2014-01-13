@@ -36,26 +36,26 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
  
     // Database Name
     private static final String DATABASE_NAME = "cashdata";
-	 /**	  *	 DAO обьект для доступа к Category  */
+	 /**	  *	 DAO Category  */
     private Dao<Category, Integer> simpleCategoryDao;
-    /**	  *	 DAO обьект для доступа к Level  */
+    /**	  *	 DAO  Level  */
     private Dao<Level, Integer> simpleLevelDao;
-    /**	  *	 DAO обьект для доступа к ProcessStatus  */
+    /**	  *	 DAO  ProcessStatus  */
     private Dao<ProcessStatus, Integer> simpleStatusDao;
-    /**	  *	 DAO обьект для доступа к Subject  */
+    /**	  *	 DAO  Subject  */
     private Dao<Subject, Integer> simpleSubjectDao;
-    /**	  *	 DAO обьект для доступа к EssayType  */
+    /**	  *	 DAO EssayType  */
     private Dao<EssayType, Integer> simpleEssayTypetDao;
-    /**	  *	 DAO обьект для доступа к EssayCreationStyle  */
+    /**	  *	 DAO EssayCreationStyle  */
     private Dao<EssayCreationStyle, Integer> simpleEssayCreationStyleDao;
-    /**	  *	 DAO обьект для доступа к NumberPages  */
+    /**	  *	 DAO  NumberPages  */
     private Dao<NumberPages, Integer> simpleNumberPagesDao;
-    /**	  *	 DAO обьект для доступа к NumberOfReferences  */
+    /**	  *	 DAO  NumberOfReferences  */
     private Dao<NumberOfReferences, Integer> simpleNumberReferencesDao;
-    /**	  *	 DAO обьект для доступа к Order  */
+    /**	  *	 DAO  Order  */
     private Dao<Order, Integer> simpleOrderDao;
     // Login table name
-    /**	  *	 DAO обьект для доступа к Order  */
+
     private static final String TABLE_LOGIN = "login";
     private static final AtomicInteger usageCounter = new AtomicInteger(0);
     /**	  *	 RuntimeExceptionDao обьект, перебрасыващий RuntimeException в случае возникновения какого-либо Exception   */
@@ -98,7 +98,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
          }
 	}
 
-	/**	  *	изменение таблиц  */
+	/**	  *	tables changing */
 	  @Override
 	   public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVer, int newVer)
 	  {
@@ -123,8 +123,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
    
 	   }
 	
-	  /**	  *	метод для создания и возврата обьекта DAO для Category
-	   * 	@return возвращает обьект Dao<Category, Integer>	
+	  /**	  *	 DAO  Category getting
 	   *   */
 
 	  public Dao<Category, Integer> getCategoryDao() throws SQLException 
@@ -134,8 +133,8 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleCategoryDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для ProcessStatus
-	   * 	@return возвращает обьект Dao<ProcessStatus, Integer>	
+	  /**	  * DAO  ProcessStatus getting
+	   * 	
 	   *   */
 	  public Dao<ProcessStatus, Integer> getStatusDao() throws SQLException 
 	    {
@@ -144,8 +143,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleStatusDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для Level
-	   * 	@return возвращает обьект Dao<Level, Integer>	
+	  /**	  *DAO  Level getting	
 	   *   */
 	  public Dao<Level, Integer> getLevelDao() throws SQLException 
 	    {
@@ -154,8 +152,7 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleLevelDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для Subject
-	   * 	@return возвращает обьект Dao<Subject, Integer>	
+	  /**	  *DAO  Subject getting		
 	   *   */
 	  public Dao<Subject, Integer> getSubjectDao() throws SQLException 
 	    {
@@ -164,9 +161,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleSubjectDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для EssayType
-	   * 	@return возвращает обьект Dao<EssayType, Integer>	
-	   *   */
 	  public Dao<EssayType, Integer> getEssayTypeDao() throws SQLException 
 	    {
 			if (simpleEssayTypetDao == null) {
@@ -174,9 +168,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleEssayTypetDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для EssayCreationStyle
-	   * 	@return возвращает обьект Dao<EssayCreationStyle, Integer>	
-	   *   */
 	  public Dao<EssayCreationStyle, Integer> getEssayCreationStyleDao() throws SQLException 
 	    {
 			if (simpleEssayCreationStyleDao == null) {
@@ -184,9 +175,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleEssayCreationStyleDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для NumberPages
-	   * 	@return возвращает обьект Dao<NumberPages, Integer>	
-	   *   */
 	  public Dao<NumberPages, Integer> getNumberPagesDao() throws SQLException 
 	    {
 			if (simpleNumberPagesDao == null) {
@@ -194,9 +182,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleNumberPagesDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для NumberOfReferences
-	   * 	@return возвращает обьект Dao<NumberOfReferences, Integer>	
-	   *   */
 	  public Dao<NumberOfReferences, Integer> getNumberReferencesDao() throws SQLException 
 	    {
 			if (simpleNumberReferencesDao == null) {
@@ -204,9 +189,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			}
 			return simpleNumberReferencesDao;
 		}
-	  /**	  *	метод для создания и возврата обьекта DAO для Order
-	   * 	@return возвращает обьект Dao<Order, Integer>	
-	   *   */
 	  public Dao<Order, Integer> getOrderDao() throws SQLException 
 	    {
 			if (simpleOrderDao == null) {
@@ -217,10 +199,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 	  
 	  
 
-	  
-	  	/**	  *	метод для создания и возврата обьекта DAO для Order
-	   		  * @return возвращает обьект Dao<Order, Integer>	
-	   *   */
 		public RuntimeExceptionDao<Category, Integer> getSimpleCategoryDao() {
 			if (categoryRuntimeDao == null) {
 				categoryRuntimeDao = getRuntimeExceptionDao(Category.class);
@@ -279,9 +257,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 				}
 				return simpleOrderRuntimeDao;
 			}
-			/**	  *	метод, предполагающий одновременное обращение, для создания и возврата обьекта DatabaseHandler
-	   		  * @return возвращает DatabaseHandler
-	   *   */
 	  public static synchronized DatabaseHandler getHelper(Context context) 
 	   {
 			if (helper == null) 
@@ -292,8 +267,6 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
 			return helper;
 		}
 	  
-		/**	  * метод, позволяющий открыть соединение с базой данных
-		 *   */
 	  public void open() throws SQLException {
 		  helper.getReadableDatabase();
 		  helper.getWritableDatabase();
@@ -332,18 +305,12 @@ public class DatabaseHandler extends  OrmLiteSqliteOpenHelper{
         return rowCount;
     }
  
-    /**
-     * Пересоздание базы данных - удаление и создание всех таблиц.
-     * */
     public void resetTables(){
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
         db.delete(TABLE_LOGIN, null, null);
         db.close();
     }
-    /**
-     * Закрытие базы данных. Обнуление всех обьетов DAO. 
-     * */
     @Override
     public void close(){
         super.close();

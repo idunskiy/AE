@@ -20,48 +20,39 @@ import android.widget.TextView;
 import com.assignmentexpert.ExitActivity;
 import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
+import com.crashlytics.android.Crashlytics;
 import com.fragmentactivities.RegisterFragmentActivity;
 import com.library.singletones.TypeFaceSingletone;
 
-/**
- *  
- * Класс табов логина, регистрации
- *   
- */
 
 public class LoginTabScreen extends TabActivity  
 {
 
-	/** Обьект TabHost */
 	 TabHost tabHost;
 	 TabHost.TabSpec spec; 
-	 /** Обьект Intent для  использования активнотей в табах*/
 	 Intent intent;
 	 Context context;
-	 /** Инициализация и добавление используемых активностей в табы */
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.root_menu);
+        Crashlytics.start(this);
+		setContentView(R.layout.root_menu);
         InputMethodManager imm = (InputMethodManager)getSystemService( Context.INPUT_METHOD_SERVICE);
 	    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	    
         tabHost = getTabHost(); 
         context = this;
-        //
         intent = new Intent().setClass(this, LoginActivity.class);
-        // Инициализация TabSpec для каждого таба TabHost. Добавление класса LoginActivity
-        spec = tabHost.newTabSpec("tab_1").setIndicator("Sign in",getResources().getDrawable(R.drawable.tab_login)).setContent(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        spec = tabHost.newTabSpec("tab_1").setIndicator(getResources().getString(R.string.tab_sign_in),getResources().getDrawable(R.drawable.tab_login)).setContent(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         tabHost.addTab(spec);
         intent = new Intent().setClass(this, RegisterFragmentActivity.class);
-     // Инициализация TabSpec для каждого таба TabHost. Добавление класса RegisterFragmentActivity(используется FragmentActivity, так как используются вложенные фрагменты - регистрация проходит в 2 этапа)
-        spec = tabHost.newTabSpec("tab_2").setIndicator("Sign up",getResources().getDrawable(R.drawable.tab_sign_in)).setContent(intent);
+        spec = tabHost.newTabSpec("tab_2").setIndicator(getResources().getString(R.string.tab_sign_up),getResources().getDrawable(R.drawable.tab_sign_in)).setContent(intent);
         tabHost.addTab(spec);
         this.setDefaultTab(0);
         getTabHost().setCurrentTab(0);
-        spec = tabHost.newTabSpec("tab_3").setIndicator("Close",getResources().getDrawable(R.drawable.tab_close)).setContent(new Intent().setClass(this,ExitActivity.class));
+        spec = tabHost.newTabSpec("tab_3").setIndicator(getResources().getString(R.string.tab_close),getResources().getDrawable(R.drawable.tab_close)).setContent(new Intent().setClass(this,ExitActivity.class));
         tabHost.addTab(spec);
         
         setFontsImages();
@@ -71,15 +62,12 @@ public class LoginTabScreen extends TabActivity
         int i = getTabHost().getCurrentTab();
          
          		if (i == 0) {
-                            Log.i("@@@@@@@@@@ Inside onClick tab 0", "onClick tab");
 
                             }
                else if (i ==1) {
-                            Log.i("@@@@@@@@@@ Inside onClick tab 1", "onClick tab");
                  }
                else if(i==2)
                {
-		            	   Log.i("@@@@@@@@@@ Inside onClick tab 1", "finish");
 		            	  finish();
                }
 
@@ -89,11 +77,8 @@ public class LoginTabScreen extends TabActivity
         
        
     }
-    /**
-     *  
-     * Метод для установки Roboto шрифта и позиционирования иконок в табах
-     *   
-     */
+    
+    
     private void setFontsImages()
     {
     	 Typeface localTypeface1 = TypeFaceSingletone.getInstance().getCustomFont(context,  "Roboto-Medium.ttf");
@@ -127,5 +112,10 @@ public class LoginTabScreen extends TabActivity
         }
 
     }
+    public void switchTab(int tab)
+    {
+    	 getTabHost().setCurrentTab(tab);
+    }
+    
     
 }

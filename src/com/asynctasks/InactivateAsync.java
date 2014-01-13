@@ -8,9 +8,11 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
 /** * AsyncTask дл€ деактивации заказа*/
@@ -28,7 +30,7 @@ public class InactivateAsync extends AbstractTaskLoader{
 
 		InactivateAsync loader = new InactivateAsync(fa);
 
-		new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
+		new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 				.setCancelable(true)
 				.setTaskLoaderListener(taskLoaderListener)
 				.show();
@@ -58,7 +60,7 @@ public class InactivateAsync extends AbstractTaskLoader{
 		DashboardActivityAlt.listItem.getProcess_status().setProccessStatusTitle("Inactive");
 		DashboardActivityAlt.listItem.getProcess_status().setProccessStatusId(9);
 		String res = as.getString(KEY_STATUS);
-	        if(Integer.parseInt(res) == 1)
+	        if(Boolean.parseBoolean(res))
 	        {
 	        	result = "inactivate_success";
 	        }
@@ -68,6 +70,7 @@ public class InactivateAsync extends AbstractTaskLoader{
 	        }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			 Crashlytics.logException(e);
 			e.printStackTrace();
 			errorFlag = true;
 			onStopLoading();

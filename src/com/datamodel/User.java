@@ -21,7 +21,7 @@ public class User {
   String timezone;
   /** * время, когда был добавлен клиент*/
   @SerializedName("created_at")
-  DateTime created_at;
+  int created_at;
  
    public int getUserId() 
    {
@@ -45,7 +45,7 @@ public class User {
 	{
 		 return this.timezone;
    }
-	public DateTime getDate() 
+	public int getDate() 
 	{
 		 return this.created_at;
     }
@@ -69,7 +69,7 @@ public class User {
 	{
 		 this.timezone = timeZone;
 	}
-	public void setUserDate(DateTime date)
+	public void setUserDate(int date)
 	{
 		 this.created_at = date;
 	}
@@ -78,7 +78,7 @@ public class User {
 	{		
 		return "id=" + id + " " + "first name=" + first_name
 				
-				+ "timezone = "+ timezone +"}";
+				+ "timezone = "+ timezone +"}"  + "created_at" + created_at+ "}";
 	}
   
 }

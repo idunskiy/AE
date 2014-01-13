@@ -6,9 +6,12 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.fragments.ProfileFragmentCompl;
 import com.library.FrequentlyUsedMethods;
 import com.library.UserFunctions;
@@ -16,7 +19,7 @@ import com.library.UserFunctions;
 public class ProfileUpdateAsync extends AbstractTaskLoader {
 	Context context;
 	private static String KEY_STATUS = "status";
-	private static String KEY_MESSAGE = "message";
+	private static String KEY_MESSAGE = "error";
 	public static String errorMessage;
 	private boolean errorFlag = false;
 	FrequentlyUsedMethods faq = new FrequentlyUsedMethods(context);
@@ -30,7 +33,7 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
 
 		ProfileUpdateAsync loader = new ProfileUpdateAsync(fa);
 
-		new TaskProgressDialogFragment.Builder(fa, loader, "Loading…")
+		new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 				.setCancelable(true)
 				.setTaskLoaderListener(taskLoaderListener)
 				.show();
@@ -62,7 +65,7 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
 				
 				String b = a.get(KEY_STATUS).toString();
 				
-				if(Integer.parseInt(b)==1)
+				if(Boolean.parseBoolean(b))
 					{
 						res = "success";
 					}
@@ -79,6 +82,7 @@ public class ProfileUpdateAsync extends AbstractTaskLoader {
      
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			 Crashlytics.logException(e);
 			e.printStackTrace();
 			errorFlag = true;
 			onStopLoading();

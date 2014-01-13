@@ -1,5 +1,9 @@
 package com.fragments;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,20 +16,30 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.arrayadapters.CountryAdapter;
 import com.assignmentexpert.R;
 import com.customitems.CustomTextView;
+import com.datamodel.CountryInfo;
 import com.fragmentactivities.RegisterFragmentActivity;
+import com.library.FrequentlyUsedMethods;
+import com.library.UserFunctions;
 import com.library.singletones.SharedPrefs;
 /** * фрагмент для регистрации нового пользователя*/
+/** * фрагмент для регистрации нового пользователя*/
 public class RegisterFragment extends Fragment implements IClickListener{
+	private static final String TAG = "RegisterFragment";
 	/** * кнопка для обработки введенных пользователем данных*/
 	 Button btnProceed;
 	 /** * EditText для ввода имени пользователя*/
@@ -49,8 +63,11 @@ public class RegisterFragment extends Fragment implements IClickListener{
 	    public static String userPass;
 	    /** *статическое поле подтверждения ввода пароля для использования в FragmentActivity для отправки на сервер*/
 	    public static String userConf;
+	    
 	    /** *статическое поле строки каптчи для использования в FragmentActivity для отправки на сервер*/
 	    public static String userCaptcha;
+	    
+	    public static String userPhone;
 	    
 	    /** *ImageView для отображения каптчи*/
 	    public static ImageView captcha;
@@ -62,6 +79,16 @@ public class RegisterFragment extends Fragment implements IClickListener{
 	    String password;
 	    String confpassword;
 	    String captchaString;
+	    
+	    String phone;
+	    String codePhone;
+	    
+	    UserFunctions userFunc = new UserFunctions();
+	    
+	    FrequentlyUsedMethods faq;
+	    
+		private Spinner registerCodePhone;
+		private EditText registerPhone;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -72,25 +99,21 @@ public class RegisterFragment extends Fragment implements IClickListener{
         inputPassword = (EditText) view.findViewById(R.id.registerPassword);
         confPassword = (EditText) view.findViewById(R.id.registerPasswordconf);
         captchaEdit = (EditText) view.findViewById(R.id.captcha);
+        
+        registerCodePhone= (Spinner) view.findViewById(R.id.registerCodePhone);
+        registerPhone= (EditText) view.findViewById(R.id.registerPhone);
+        
         btnProceed = (Button) view.findViewById(R.id.btnProceed);
         btnTermsService = (CustomTextView)view.findViewById(R.id.btnTermsService);
         btnPrivatePolicy = (CustomTextView)view.findViewById(R.id.btnPrivatePolicy);
         captcha  = (ImageView) view.findViewById(R.id.captchaView);
-       
-        
+        faq = new FrequentlyUsedMethods(getActivity());
         
         
         inputPassword.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				//inputPassword.setFocusable(true);
 				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				if (inputPassword.getText().toString().equals("At least 5 charachters"))
-					inputPassword.getText().clear();
-				if(inputPassword.getText().toString().equalsIgnoreCase("Should be equal"))
-				{
-					inputPassword.getText().clear();
-					confPassword.getText().clear();
-				}
 				inputPassword.setTextColor(Color.BLACK);
 				return false;
 			}
@@ -105,6 +128,23 @@ public class RegisterFragment extends Fragment implements IClickListener{
 			}
     		
     	});
+        
+        inputPassword.setOnFocusChangeListener(new OnFocusChangeListener() {          
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                	if (inputPassword.getText().toString().length()==0)
+                		inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+        });
+        
+        confPassword.setOnFocusChangeListener(new OnFocusChangeListener() {          
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                	if (confPassword.getText().toString().length()==0)
+                		confPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+        });
+        
     	inputEmail.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				
@@ -151,6 +191,20 @@ public class RegisterFragment extends Fragment implements IClickListener{
     	    }
     	});
     	
+//    	fillCountryAdapter();
+    	registerCodePhone.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) {
+				 Log.i("un choosed item", registerCodePhone.getSelectedItem().toString());
+				
+			}
+
+        });
+    	
         btnProceed.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                name = inputFullName.getText().toString();
@@ -158,88 +212,62 @@ public class RegisterFragment extends Fragment implements IClickListener{
                password = inputPassword.getText().toString();
                confpassword = confPassword.getText().toString();
                captchaString = captchaEdit.getText().toString();
-//                if (inputEmail.length()<2)
-//                {
-//                            	
-//                	inputEmail.setText(" ");
-//                	inputEmail.setTextColor(Color.RED);
-//                	inputEmail.setText("Must be valid");
-//                	
-//                	errorFlag = true;
-//               	}
-//               
-//                
-//                
-//                if (inputFullName.length()<2)
-//                	{
-//                	
-//                	inputFullName.setText(" ");
-//                	inputFullName.setTextColor(Color.RED);
-//                	inputFullName.setText("At least 2 charachters");
-//                	
-//
-//                	errorFlag = true;
-//                 	}
-//                
-//                if (inputPassword.length()<5)
-//            	{
-//            	inputPassword.setText("");
-//            	inputPassword.setTextColor(Color.RED);
-//            	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-//            	inputPassword.setText("At least 5 charachters");
-//            	
-//            	errorFlag = true;
-//             	}
-//                if (!confpassword.equals(password))
-//                {	 
-//                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-//           	 		confPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-//                	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-//                	inputPassword.setText("");
-//                	inputPassword.setTextColor(Color.RED);
-//                	confPassword.setText("");
-//                	confPassword.setTextColor(Color.RED);
-//                	inputPassword.setText("Should be equal");
-//                	confPassword.setText("Should be equal");
-//                	
-//                	errorFlag = true;
-//                }
-//                if (captchaEdit.length()!=4)
-//                {
-//                	captchaEdit.setText(" ");
-//                	captchaEdit.setTextColor(Color.RED);
-//                	captchaEdit.setText("Incorrect");
-//                	errorFlag = true;
-//                }
-//
-//                if (!EmailValidate(email))
-//                {
-//                	inputEmail.setText(" ");
-//                	inputEmail.setTextColor(Color.RED);
-//                	inputEmail.setText("You have to enter correct email");
-//                	errorFlag = true;
-//                	
-//                }
-//                if (errorFlag == false)
-//                {	
-//                	btnProceed.getBackground().setAlpha(255);
-//			    		 userName = name;
-//			    		 userEmail  = email;
-//			    		 userPass = password;
-//			    		 userConf = confpassword;
-//			    		 userCaptcha = captcha;
-//			    		 Intent frequentMessages = new Intent(getParent(), RegisterActivityCompl.class);
-//				         MainTabGroup parentActivity = (MainTabGroup)getParent();
-//				         parentActivity.startChildActivity("FrequentMessageActivity", frequentMessages);
-//                }
                
-               	 userName = name;
-	    		 userEmail  = email;
-	    		 userPass = password;
-	    		 userConf = confpassword;
-	    		 userCaptcha = captchaString;
-               setSharedPreferences();
-               listener.changeFragment(4);
+               boolean errorFlag = false;
+                if (!faq.EmailValidate(email))
+                {
+                            	
+                	inputEmail.setText("");
+                	Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_register_wrong_email), Toast.LENGTH_SHORT).show();
+                	errorFlag = true;
+               	}
+                if (inputFullName.length()==0)
+                	{
+                	
+                	inputFullName.setText(" ");
+                	Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_register_firstname_length), Toast.LENGTH_SHORT).show();
+                	errorFlag = true;
+                 	}
+                if (inputPassword.length()<5)
+            	{
+	            	inputPassword.setText("");
+	            	Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_register_password_length), Toast.LENGTH_SHORT).show();
+	            	errorFlag = true;
+             	}
+                if (!confpassword.equals(password))
+                {	 
+                	inputPassword.setText("");
+                	confPassword.setText("");
+                	Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_register_passwords_equal), Toast.LENGTH_SHORT).show();
+                	errorFlag = true;
+                }
+                if (captchaEdit.length()!=4)
+                {
+                	captchaEdit.setText("");
+                	Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_register_captcha), Toast.LENGTH_SHORT).show();
+                	errorFlag = true;
+                }
+                if (errorFlag == false)
+                {	
+                	btnProceed.getBackground().setAlpha(255);
+                 	 userName = name;
+    	    		 userEmail  = email;
+    	    		 userPass = password;
+    	    		 userConf = confpassword;
+    	    		 userCaptcha =   captchaString ; 
+    	    		 
+    	    		 userPhone = ((CountryInfo)registerCodePhone.getSelectedItem()).getCountryCode() + registerPhone.getText().toString();
+    	    		 
+    	    		 clearFields();
+    	    		 
+    	    		 // mehod for saving register data if nested fragments using
+//    	    		 	setSharedPreferences();
+    	    		 // registration proceeding
+                   listener.changeFragment(5);
+                }
+               
+             
+               
             
             }
             
@@ -275,7 +303,6 @@ public class RegisterFragment extends Fragment implements IClickListener{
 	/** * метод для получения данных c помощью sharedPreferences*/
 	private void getSharedPreferences()
 	{
-		Log.i("registerFragment","getSharedPreferences mtdh");
          
 		String registerName =   SharedPrefs.getInstance().getSharedPrefs().getString("registerName", null);
 		String registerEmail =    SharedPrefs.getInstance().getSharedPrefs().getString("registerEmail", null);
@@ -331,4 +358,46 @@ public class RegisterFragment extends Fragment implements IClickListener{
 	     getSharedPreferences();
 	     
 	  }
+	
+	// method for clearing all the edittexts after registration
+	private void clearFields()
+	{
+		 inputFullName.getText().clear();
+		 inputEmail.getText().clear();
+		 inputPassword.getText().clear();
+		 confPassword.getText().clear();
+		 captchaEdit.getText().clear();
+		 
+	}
+	private String wrapPhoneCode()
+	{
+		Pattern pattern = Pattern.compile("(^[0-9]{0,3})");
+		Matcher matcher = pattern.matcher(registerCodePhone.getSelectedItem().toString());
+		if (matcher.find()) {
+			return matcher.group(1);
+		}
+		else return null;
+	}
+	
+	public void fillCountryAdapter()
+	{
+		Log.i(TAG + "fillCountryAdapter","");
+		ArrayList<CountryInfo> countriesList  = new ArrayList<CountryInfo>();
+    	countriesList.add(new CountryInfo("afghanistan", "AF ", "93", R.drawable.ad));
+		
+    	countriesList.add(new CountryInfo("albania", "AL", "355", R.drawable.ae));
+		
+    	countriesList.add(new CountryInfo("algeria", "DZ ", "213", R.drawable.af));
+    	countriesList.add(new CountryInfo("canada", "CA ", "1342", R.drawable.ca));
+    	
+    	
+    	Log.i(TAG + "list size",Integer.toString(countriesList.size()) );
+    	CountryAdapter countriesArrayAdapter = new CountryAdapter(getActivity(),
+    	         android.R.layout.simple_list_item_1,countriesList);
+    	countriesArrayAdapter.setDropDownViewResource(R.layout.country_item);
+    	Log.i(TAG + "adapter size",Integer.toString(countriesArrayAdapter.getCount()) );
+    	
+    	registerCodePhone.setAdapter(countriesArrayAdapter);
+	}
+	
 }

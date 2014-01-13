@@ -13,16 +13,14 @@ public class Files implements Parcelable{
 	@SerializedName("id")
 	int id;
 	/** * extension файла*/
-	@SerializedName("extension")
+	@SerializedName("ext")
 	String extension;
 	/** * полный путь файла*/
-	@SerializedName("full_path")
+	@SerializedName("href")
 	String full_path;
 	
-	@SerializedName("md5_checksum")
+	@SerializedName("md5")
 	String md5_checksum;
-	@SerializedName("mime_path")
-	String mime_path;
 	/** * размер файла*/
 	@SerializedName("size")
 	int size;
@@ -32,13 +30,16 @@ public class Files implements Parcelable{
 	File file;
 	public Files()
 	{}
+	public Files(int id) {
+		super();
+		this.id = id;
+	}
 	/** * основной конструктор.*/
-	public Files (int id, String title , String name, String full_path , String mime_path, String extension , int size, File file, String md5_checksum )
+	public Files (int id, String title , String name, String full_path , String extension , int size, File file, String md5_checksum )
     {
         this.id = id;
         this.name = name;
         this.full_path = full_path;
-        this.mime_path = mime_path;
         this.extension = extension;
         this.size = size;
         this.md5_checksum = md5_checksum;
@@ -65,10 +66,6 @@ public class Files implements Parcelable{
 		 return this.full_path;
     }
 	
-	public String getFileMimePath() 
-	{
-		 return this.mime_path;
-    }
 	
 	public String getFileExtension() 
 	{
@@ -108,10 +105,6 @@ public class Files implements Parcelable{
 		 this.full_path = full_path;
 	}
 	
-	public void setFileMimePath(String mime_path)
-	{
-		 this.mime_path = mime_path;
-	}
 	
 	public void setFileExtension(String extension)
 	{
@@ -135,7 +128,7 @@ public class Files implements Parcelable{
 	@Override
 	public String toString()
 	{		
-	return "{ "+"id="+id+ " " + "name"+ name + " "+ "full_path" + full_path + " " + "mime path" + mime_path + " " + "extension" + extension +" "+ "size " + size + "}";	
+	return "{ "+"id="+id+ " " + "name"+ name + " "+ "full_path" + full_path + " "  + " " + "extension" + extension +" "+ "size " + size + "}";	
 	}
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -148,7 +141,6 @@ public class Files implements Parcelable{
 		dest.writeString(extension);
 		dest.writeString(full_path);
 		dest.writeString(md5_checksum);
-		dest.writeString(mime_path);
 		dest.writeString(name);
 		
 	}
@@ -156,11 +148,30 @@ public class Files implements Parcelable{
 		id = in.readInt();
 		name = in.readString();
 		full_path = in.readString();
-		mime_path = in.readString();
 		extension = in.readString();
 		size = in.readInt();
 		md5_checksum = in.readString();
 		
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Files))
+			return false;
+		Files other = (Files) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 	public static final Parcelable.Creator<Files> CREATOR =
 	    	new Parcelable.Creator<Files>() {

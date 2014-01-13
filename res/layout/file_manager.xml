@@ -34,7 +34,7 @@
                   android:layout_marginLeft="5dip"
                   android:layout_marginTop="5dip"
                   android:layout_weight=".50"
-                  android:text="Attach files"
+                  android:text="@string/btn_attach_files"
                   />
 
               <Button
@@ -45,7 +45,7 @@
                   android:layout_marginRight="5dip"
                   android:layout_marginTop="5dip"
                   android:layout_weight=".50"
-                  android:text="Back"
+                  android:text="@string/btn_back"
                    />
          </LinearLayout>
 </RelativeLayout>

@@ -7,8 +7,6 @@
     android:focusableInTouchMode="true"
     android:focusable="true">
   <TableLayout 
-      xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:id="@+id/tableLayout1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"

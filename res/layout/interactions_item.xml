@@ -4,6 +4,8 @@
           xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
 	    android:id="@+id/interactionsLayout"
 	    android:layout_width="fill_parent"
+	     android:scrollbars="vertical"
+	     
 	    android:layout_height="fill_parent">
 <RelativeLayout
 	    android:id="@+id/interactions_item_parent"
@@ -68,25 +70,12 @@
 	    android:id="@+id/messagesInteractions"
 	    android:layout_width="wrap_content"
 	    android:layout_height="fill_parent"
-	    android:layout_below="@+id/panelCursor"
 	    android:background="#000000"
-	    android:orientation="horizontal" 
-	    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert">
+	    android:scrollbars = "vertical"
+	    android:orientation="vertical" 
+	    >
 	            
-	             <com.customitems.CustomTextView
-	            android:id="@+id/interactionId"
-	            android:text="Interaction"
-	            android:layout_marginLeft="10dp"
-	            android:layout_width="150dp"
-	            android:layout_below="@+id/interactionAbove"
-                android:gravity="left"
-	            android:layout_height="wrap_content"
-	            android:padding="10dip"
-	            android:textSize="17sp"
-	             foo:customFont="Roboto-Bold.ttf"
-	            android:textColor="#FFFFFF"
-	            android:textStyle="bold" />
-	            <com.customitems.CustomTextView
+	       <com.customitems.CustomTextView
 	            android:id="@+id/interactionDate"
 	            android:text="Date"
 	            android:layout_marginLeft="10dp"
@@ -94,19 +83,20 @@
 	              android:textSize="14sp"
 	            android:layout_height="wrap_content"
 	             foo:customFont="Roboto-Regular.ttf"
-	            android:layout_toRightOf="@+id/interactionId" 
-	            android:layout_below="@+id/interactionAbove"
-	            android:gravity="center_vertical|center_horizontal"
+	            android:gravity="right"
 	            android:padding="10dip"
 	            android:textColor="#42aeff"
 	            android:textStyle="bold" />
-	            <com.customitems.CustomTextView
+	       <TextView
 	            android:id="@+id/interactionMessage"
-	            android:text="Message"
+	           android:layout_below="@+id/interactionDate"
 	            android:layout_marginLeft="10dp"
 	            android:layout_width="fill_parent"
 	            android:layout_height="wrap_content"
-	            android:layout_below="@+id/interactionId"
+	          	android:maxLines="8"
+	          	  android:lines="8"
+	          	android:singleLine="false"
+				android:scrollbars = "vertical"
 	            android:gravity="left"
 	            android:padding="10dip"
 	            android:textColor="#FFFFFF"

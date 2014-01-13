@@ -12,7 +12,7 @@ public class ProductAssignment extends ProductType{
 	String info;
 	/** * флаг детальной информации по заказу */
 	@SerializedName("dtl_expl")
-	boolean dtl_expl;
+	int dtl_expl;
 	/** *поле специальной информации по заказу*/
 	@SerializedName("special_info")
 	String special_info;
@@ -24,7 +24,7 @@ public class ProductAssignment extends ProductType{
 	boolean shoot_common_video;
 	public ProductAssignment()
 	{}
-	public ProductAssignment(String title, String info, boolean dtl_expl, String special_info,
+	public ProductAssignment(String title, String info, int dtl_expl, String special_info,
 			boolean shoot_common_video, boolean shoot_exclusive_video)
 	{
 		
@@ -43,7 +43,7 @@ public class ProductAssignment extends ProductType{
 	{
 		 return this.info;
     }
-	public boolean getAssignDtl_expl() 
+	public int getAssignDtl_expl() 
 	{
 		 return this.dtl_expl;
     }
@@ -71,7 +71,7 @@ public class ProductAssignment extends ProductType{
 		this.info = info;
 		
 	}
-	public void setAssignTitle(boolean dtl_expl)
+	public void setAssignTitle(int dtl_expl)
 	{
 		this.dtl_expl = dtl_expl;
 		

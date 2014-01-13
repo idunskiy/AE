@@ -10,6 +10,8 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -19,13 +21,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
@@ -40,7 +39,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
@@ -49,11 +47,11 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Base64;
 import android.util.Log;
 
 import com.assignmentexpert.LoginActivity;
-import com.library.singletones.CookieStorage;
+import com.library.singletones.SharedPrefs;
+import com.tabscreens.LoginTabScreen;
 /**  *класс, реализующий REST архитектуру*/
 public class RestClient {
 	private ArrayList <NameValuePair> params;
@@ -104,6 +102,7 @@ public class RestClient {
     public RestClient(Context context)
     {
     	this.context = context;
+    	
     }
     /**  	метод, добавления параметра обьекта BasicNameValuePair*/
     public void AddParam(String name, String value)
@@ -125,17 +124,23 @@ public class RestClient {
     public InputStream Execute(RequestMethod method) throws Exception
     {   
     	HttpResponse httpResponse;
-    	DefaultHttpClient client = getNewHttpClient();
+    	DefaultHttpClient client = new DefaultHttpClient();  //getNewHttpClient();
     	InputStream instream = null;
-    	RestClient.this.AddHeader(CoreProtocolPNames.USER_AGENT, "Android-AEApp,ID=2435743");
-    	RestClient.this.AddHeader(ClientPNames.COOKIE_POLICY,  CookiePolicy.RFC_2109);
+    	
     	RestClient.this.AddHeader("User-Agent",  "Android-AEApp,ID=IoaNN");
-    	RestClient.this.AddHeader("Accept",  "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-    	RestClient.this.AddHeader("Authorization",  "Basic " + Base64.encodeToString("1a:1a".getBytes(), Base64.NO_WRAP));
-    	RestClient.this.AddHeader("Content-Transfer-Encoding",  "8bit");
-    	if (CookieStorage.getInstance().getArrayList().isEmpty())
-         	CookieStorage.getInstance().getArrayList().add("PHPSESSID=lc89a2uu0rj6t2p219gc2cq4i2");
-    	RestClient.this.AddHeader("Cookie",  CookieStorage.getInstance().getArrayList().get(0).toString()); 
+    	RestClient.this.AddHeader("Authorization",  "Basic MWE6MmI=");
+
+    	
+    	RestClient.this.AddHeader("Accept", "*/*");
+    	if (SharedPrefs.getInstance().getSharedPrefs().getString(Constants.STRING_ACCESS_TOKEN, "") !=null)
+		{
+			Log.i("received token", SharedPrefs.getInstance().getSharedPrefs().getString(Constants.STRING_ACCESS_TOKEN, ""));
+				RestClient.this.AddHeader("Access-Token", SharedPrefs.getInstance().getSharedPrefs().getString(Constants.STRING_ACCESS_TOKEN, ""));
+		}
+//    	RestClient.this.AddHeader("Content-Transfer-Encoding",  "8bit");
+//    	if (CookieStorage.getInstance().getArrayList().isEmpty())
+//         	CookieStorage.getInstance().getArrayList().add("PHPSESSID=lc89a2uu0rj6t2p219gc2cq4i2");
+//    	RestClient.this.AddHeader("Cookie",  CookieStorage.getInstance().getArrayList().get(0).toString()); 
         switch(method) {
             case GET:
             {
@@ -170,6 +175,14 @@ public class RestClient {
                 {
                     request.addHeader(h.getName(), h.getValue());
                 }
+                
+                
+                Log.i("get url", url);
+                if (orderUrlValidate(url))
+                	{
+                	Log.i(" rest get", "im going to ");
+                		request.addHeader("X-Decorate", "1");
+                	}
 
                 break;
             }
@@ -177,7 +190,6 @@ public class RestClient {
             case POST:
             {
                 request = new HttpPost(url);
-                
                 //add headers
                 for(NameValuePair h : headers)
                 {
@@ -185,20 +197,10 @@ public class RestClient {
                 }
 
                 if(!params.isEmpty()){
-                    try {
-						((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+                	
+                    ((HttpPost)request).setEntity(new UrlEncodedFormEntity(params));
                 }
-//                if(entity.getContentLength()!=0)
-//                {
-//                	((HttpPost)request).setEntity(entity);
-//                	
-//                }
-
-                //executeRequest(request, url);
+                
                 break;
             }
             case POST_UPLOAD:
@@ -209,7 +211,14 @@ public class RestClient {
                 {
                     request.addHeader(h.getName(), h.getValue());
                 }
-              
+                
+                this.AddHeader("Content-Type",  "multipart/form-data");
+                
+                
+//                for (String params  : entity)
+//                {
+//                	
+//                }
 				Log.i("POST_UPLOAD",entity.toString());
                
                 if(entity.getContentLength()!=0)
@@ -224,7 +233,6 @@ public class RestClient {
             case PUT:
             {
                 request = new HttpPut(url);
-                Log.i("put request url", url);
                 for(NameValuePair h : headers)
                 {
                     request.addHeader(h.getName(), h.getValue());
@@ -235,8 +243,6 @@ public class RestClient {
                 if(entity.getContentLength()!=0)
                 {
                 	
-                	Log.i("rest client entity check",
-                				"is not null and is going to launch put method");
                 	((HttpPut)request).setEntity(entity);
                 	
                 }
@@ -264,12 +270,13 @@ public class RestClient {
         }
         
         try {
+        	
             httpResponse = client.execute(request);
-            if (httpResponse.getLastHeader("Set-Cookie")!=null)
-            {
-            	CookieStorage.getInstance().getArrayList().remove(0);
-            	CookieStorage.getInstance().getArrayList().add(httpResponse.getLastHeader("Set-Cookie").getValue());
-            }
+//            if (httpResponse.getLastHeader("Set-Cookie")!=null)
+//            {
+//            	CookieStorage.getInstance().getArrayList().remove(0);
+//            	CookieStorage.getInstance().getArrayList().add(httpResponse.getLastHeader("Set-Cookie").getValue());
+//            }
             responseCode = httpResponse.getStatusLine().getStatusCode();
             message = httpResponse.getStatusLine().getReasonPhrase();
             Header[] headers = httpResponse.getAllHeaders();
@@ -281,14 +288,13 @@ public class RestClient {
             if (responseCode == 401)
             {
             	
-                Intent i = new Intent(LoginActivity.getInstance(), LoginActivity.class);
+                Intent i = new Intent(LoginActivity.getInstance(), LoginTabScreen.class);
                 restClientErrorMess = "Some problem at server occurs. Please try later";
-				i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				i.putExtra("restError", "Authorization failed");
+				
 				LoginActivity.getInstance().startActivity(i);
             	
             }
-            
+            Log.i("response Code", Integer.toString(responseCode));
             HttpEntity entity = httpResponse.getEntity();
             if (entity != null) {
 
@@ -296,7 +302,8 @@ public class RestClient {
             }
             
 
-        } catch (ClientProtocolException e)  {
+       } 
+        catch (ClientProtocolException e)  {
         	Log.i("restClient exc", "ClientProtocolException");
         	RestError(true);
             client.getConnectionManager().shutdown();
@@ -390,6 +397,16 @@ public class RestClient {
     	
     	return restError;
     }
-    
+    public boolean orderUrlValidate(String email)
+	{
+    	Log.i("url to validate", email);
+    	String strPattern = "(.*)(orders/)(.*)";
+    	Log.i("parse str", strPattern);
+		Pattern pattern = Pattern.compile(strPattern);
+		Matcher matcher = pattern.matcher(email);
+		boolean matchFound = matcher.matches();
+		Log.i("orderUrlValidate res", Boolean.toString(matchFound));
+		return matchFound;
+	}
     
 }

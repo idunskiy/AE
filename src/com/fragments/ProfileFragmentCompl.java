@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,11 +13,14 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,6 +35,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
+import com.asynctasks.LoginAsync;
 import com.customitems.CustomEditPreference;
 import com.customitems.CustomEditText;
 import com.library.FrequentlyUsedMethods;
@@ -73,6 +79,8 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 	public static String phone;
 	/** * экземпл€р интерфейса  IClickListener*/
 	public IClickListener listener;
+	
+	FrequentlyUsedMethods faq;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -90,20 +98,47 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 		passTextView = (CustomEditText)view.findViewById(R.id.passTextView);
 		phoneTextView= (CustomEditText)view.findViewById(R.id.phoneTextView);
 		confPassTextView = (CustomEditText)view.findViewById(R.id.confPassTextView);
-
+		faq = new FrequentlyUsedMethods(getActivity());
 		
 		try{
 			
-			firstnameTextView.setText(LoginActivity.getUser.getUser().getUserFirstName());
-			phoneTextView.setText(LoginActivity.getUser.getPhone());
-			passTextView.setText(LoginActivity.forFragmentPassword);
-			confPassTextView.setText(LoginActivity.forFragmentPassword);
+//			if(firstnameTextView.getText().toString().matches("")& 
+//					phoneTextView.getText().toString().matches("")& passTextView.getText().toString().matches(""))
+//			{
+				intitializeFields();
+//			}
+//			else 
+//			{
+//				firstnameTextView.setText(firstName);
+//				phoneTextView.setText(phone);
+//				passTextView.setText(password);
+//				confPassTextView.setText(password);
+//			}
+			
 			
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+		
+		 
+		confPassTextView.setOnFocusChangeListener(new OnFocusChangeListener() {          
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                	if (confPassTextView.getText().toString().length()==0)
+                		confPassTextView.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+        });
+		 
+		passTextView.setOnFocusChangeListener(new OnFocusChangeListener() {          
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                	if (passTextView.getText().toString().length()==0)
+                		passTextView.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+        });
+		
 		signMeCheck = (CheckBox) view.findViewById(R.id.signMeCheck);
 	     if ( SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false) ==true)
 	    	  signMeCheck.setChecked(true);
@@ -139,7 +174,7 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
        public void onClick(View view) {
     	   Dialog dialog = new Dialog(getActivity(), R.style.FullHeightDialog);
        	TextView myMsg = new TextView(getActivity());
-       	myMsg.setText("We recommend you to leave a cell number so we could update you via SMS. We wonТt call you or disclose this number.");
+       	myMsg.setText(getResources().getString(R.string.toast_profile_phone_promt));
        	myMsg.setTextColor(Color.WHITE);
        	myMsg.setGravity(Gravity.CENTER_HORIZONTAL);
        	dialog.setContentView(myMsg);
@@ -149,7 +184,6 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 		});
 		 cancelProfile.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
-	        	   Log.i("Profile Compl","cancel button");
 	        	   listener.changeFragment(2);
 	           }
 	       });
@@ -168,34 +202,46 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 	            	{
 	            		errorFlag = true;
 	            		firstnameTextView.getText().clear();
-	            		Toast.makeText(getActivity(), "Put first name", Toast.LENGTH_LONG).show();
+	            		Toast.makeText(getActivity(),getActivity().getResources().getString(R.string.toast_profile_name), Toast.LENGTH_LONG).show();
 	            	}
 	            	if (!password.equals(confPass))
 	            	{
 	            		errorFlag = true;
 	            		confPassTextView.getText().clear();
 	            		passTextView.getText().clear();
-	            		Toast.makeText(getActivity(), "Passwords do not match", Toast.LENGTH_LONG).show();
+	            		Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_profile_passwords_match), Toast.LENGTH_LONG).show();
 	            	}
 	            	if (password.length()<4)
 	            	{
 	            		errorFlag = true;
 	            		confPassTextView.getText().clear();
 	            		passTextView.getText().clear();
-	            		Toast.makeText(getActivity(), "Password should be longer", Toast.LENGTH_LONG).show();
+	            		Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_profile_passwords_length), Toast.LENGTH_LONG).show();
+	            	}
+	            	if (!numberValidate(phone))
+	            	{
+	            		errorFlag = true;
+	            		Toast.makeText(getActivity(),getActivity().getResources().getString(R.string.toast_profile_phone_validation), Toast.LENGTH_LONG).show();
+	            	}
+	            	if (phone.length()<10)
+	            	{
+	            		errorFlag = true;
+	            		Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_profile_phone_length), Toast.LENGTH_LONG).show();
 	            	}
 	            	if (!errorFlag)
 	            	{
 	            		   listener.changeFragment(3);
-	            	
 	            	}
 	           }
 	       });
       adapter = new ArrayAdapter<String>(
   			getActivity(),  R.layout.dialog_list_item, R.id.tv);
-      addTimeZones();
+      faq.addTimeZones(timeZonePref, adapter);
+      
       timeZonePref.setOnClickListener(new View.OnClickListener() {
      	   
+    	  
+    	  
           public void onClick(View view) {
           			
           	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -262,45 +308,6 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
       });
 	    return view;
 	  }
-	/** * метод добавлени€ временных зон в список*/
-	public void addTimeZones()
-		{
-			final String[] TZ = TimeZone.getAvailableIDs();
-			final ArrayList<String> TZ1 = new ArrayList<String>();
-			for (int i = 0; i < TZ.length; i++) {
-				if (!(TZ1.contains(TimeZone.getTimeZone(TZ[i]).getID()))) {
-					if (new FrequentlyUsedMethods(getActivity()).timezoneValidate(TZ[i]))
-						TZ1.add(TZ[i]);
-				}
-			}
-			for (int i = 0; i < TZ1.size(); i++) {
-				
-				
-				adapter.add(TZ1.get(i));
-			}
-			CharSequence[] entries = new CharSequence[adapter.getCount()];
-		    CharSequence[] entryValues = new CharSequence[adapter.getCount()];
-		    int i = 0;
-		    for (String dev : TZ1)
-		    {
-		    	entries[i] = dev;
-	            entryValues[i] = dev;
-	            if (TimeZone.getTimeZone(TZ1.get(i)).getID()
-						.equals(TimeZone.getDefault().getID())) {
-	            	timeZonePref.setSummary((TimeZone.getDefault().getID()));
-				}
-	            i++;
-		    }
-		    Locale locale = new Locale("en", "IN");
-		    String curr = TimeZone.getTimeZone(TimeZone.getDefault().getID()).getDisplayName(false,TimeZone.SHORT, locale);
-		    String currTimeZone = "";
-		    for (int q = 0; q<TZ1.size();q++)
-		    {
-		    	if (TimeZone.getTimeZone(TZ1.get(q)).getDisplayName(false,TimeZone.SHORT, locale).equals(curr))
-		    	currTimeZone = TZ1.get(q);
-		    }
-		    timeZonePref.setSummary(currTimeZone );
-		}
 	 @Override
 	    public void onAttach(Activity activity) {
 	        super.onAttach(activity);
@@ -583,7 +590,22 @@ public class ProfileFragmentCompl extends Fragment implements ITaskLoaderListene
 		// TODO Auto-generated method stub
 		
 	}
-
+	public boolean numberValidate(String email)
+    {
+		
+		Log.i("phone to validate", email);
+    	Pattern pattern = (Patterns.PHONE);
+		Matcher matcher = pattern.matcher(email);
+			boolean matchFound = matcher.matches();
+    	return matchFound;
+    }
+	private void intitializeFields()
+	{
+		firstnameTextView.setText(LoginAsync.user.getFirst_name());
+		phoneTextView.setText(LoginAsync.user.getPhone());
+		passTextView.setText(LoginActivity.forFragmentPassword);
+		confPassTextView.setText(LoginActivity.forFragmentPassword);
+	}
 	
 	
 }

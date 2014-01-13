@@ -31,7 +31,7 @@ public class OrderInfoFragmentActivity extends FragmentActivity implements ITask
 		      fragmentTransaction.add(R.id.myfragment, newFragment);
 		      fragmentTransaction.commit();
 	        }
-	 	   else if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("writing"))
+	 	   else if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("essay"))
 	 	   {
 
 	 		  Fragment newFragment = new OrderInfoFragmentEW();

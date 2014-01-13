@@ -34,11 +34,11 @@ public class JSONParser {
 	     *  @return обьект  InputStream*/
 	    public InputStream  requestExecution(String url, List<NameValuePair> params, RequestMethod method)
 	    {
-	    	InputStream is = null;
-	    	  RestClient client = new RestClient(url);
+	    		InputStream is = null;
+	    		RestClient client = new RestClient(url);
+	    	 
 	    	  for (NameValuePair param: params)
 	    	  {	
-	    		  Log.i("params",param.getName()+param.getValue());
 	    		  client.AddParam(param.getName(), param.getValue());  
 	    	  }
 	    	  try {
@@ -196,6 +196,7 @@ public class JSONParser {
 		        return jObj;
 
 	    }
+	    
 	    
 	    
 

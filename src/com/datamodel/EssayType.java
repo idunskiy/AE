@@ -8,9 +8,9 @@ import com.j256.ormlite.table.DatabaseTable;
 /** * класс, описывающий тип essay. Используется сериализация и внесение в базу данных*/
 @DatabaseTable(tableName = "EssayType")
 public class EssayType {
-	private static final String ESSAY_TYPE_ID = "essay_type_id";
-	private static final String ESSAY_TYPE_DESC = "essay_type_desc";
-	private static final String ESSAY_TYPE_TITLE = "essay_type_title";
+	public static final String ESSAY_TYPE_ID = "essay_type_id";
+	public static final String ESSAY_TYPE_DESC = "essay_type_desc";
+	public static final String ESSAY_TYPE_TITLE = "essay_type_title";
 	/** * id типа essay.*/
 	@SerializedName("id")
 	@DatabaseField(columnName = ESSAY_TYPE_ID,id = true)

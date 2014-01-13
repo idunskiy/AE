@@ -1,5 +1,6 @@
 package com.customitems;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.assignmentexpert.R;
 /** *кастомизированный RelativeLayout - элемент с названием и подписью. Используется во всем приложении для отображении элементов в окнах регистрации, профиля, заказа, и.т.д.  */
+@SuppressLint("Override")
 public class CustomEditPreference extends RelativeLayout{
 	private CustomTextView title;
 	private CustomTextView summary;
@@ -43,6 +45,7 @@ public class CustomEditPreference extends RelativeLayout{
 	         summary = (CustomTextView) this.findViewById(android.R.id.summary);
 	         icon  = (ImageView) this.findViewById(R.id.icon);
 	         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CustomEditPreference);
+	         this.setClickable(true);
 		        int i= a.getInt(R.styleable.CustomEditPreference_iconDisable,0);
 		        String v= a.getString(R.styleable.CustomEditPreference_android_title);
 		        int alpha= a.getInt(R.styleable.CustomEditPreference_alpha, 0);
@@ -79,7 +82,7 @@ public class CustomEditPreference extends RelativeLayout{
 	    {
 	    	icon.setVisibility(View.GONE);
 	    }
-	    public int getAlpha(){
+	    public float getAlpha(){
 	        return alpha;
 	    }
 	     

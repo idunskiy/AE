@@ -22,6 +22,7 @@ import com.assignmentexpert.FileManagerActivity;
 import com.assignmentexpert.R;
 import com.fragmentactivities.ProfileFragmentActivity;
 import com.library.Constants;
+import com.library.FrequentlyUsedMethods;
 import com.library.singletones.SharedPrefs;
 /**
  *  
@@ -37,12 +38,16 @@ public class DashboardTabScreen extends TabActivity
 	 */
 	TabChangeListener tabChangeListener;
 	private Boolean MyListenerIsRegistered = false;
+	FrequentlyUsedMethods faq;
+	private static final String TAG="dashboardTag";
 	public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.dashboard_menu);
         tabChangeListener = new TabChangeListener();
+        Log.i(TAG,"DashboardTabScreen oncreate");
+        faq  = new FrequentlyUsedMethods(this);
         final TabHost tabHost = getTabHost();  // The activity TabHost
         TabHost.TabSpec spec;  // Resusable TabSpec for each tab
         Intent intent;  // Reusable Intent for each tab
@@ -50,22 +55,23 @@ public class DashboardTabScreen extends TabActivity
         intent = new Intent().setClass(this, AssignmentPref.class);
 
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("tab_1").setIndicator("New Order",getResources().getDrawable(R.drawable.tab_order)).setContent(intent);
+        spec = tabHost.newTabSpec("tab_1").setIndicator(getResources().getString(R.string.tab_new_order),getResources().getDrawable(R.drawable.tab_order)).setContent(intent);
         tabHost.addTab(spec);
         
         intent = new Intent().setClass(this, DashboardActivityAlt.class);
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("tab_2").setIndicator("Orders",getResources().getDrawable(R.drawable.tab_history)).setContent(intent);
+        spec = tabHost.newTabSpec("tab_2").setIndicator(getResources().getString(R.string.tab_orders),getResources().getDrawable(R.drawable.tab_history)).setContent(intent);
         tabHost.addTab(spec);
         
+        // gcm testing 
         intent = new Intent().setClass(this, ProfileFragmentActivity.class);
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("tab_3").setIndicator("Profile",getResources().getDrawable(R.drawable.tab_profile)).setContent(intent);
+        spec = tabHost.newTabSpec("tab_3").setIndicator(getResources().getString(R.string.tab_profile),getResources().getDrawable(R.drawable.tab_profile)).setContent(intent);
         tabHost.addTab(spec);
         
 
         intent = new Intent().setClass(this, LoginTabScreen.class);
-        spec = tabHost.newTabSpec("tab_4").setIndicator("Log out",getResources().getDrawable(R.drawable.tab_logout)).setContent(new Intent().setClass(this,ExitActivity.class));
+        spec = tabHost.newTabSpec("tab_4").setIndicator(getResources().getString(R.string.tab_log_out),getResources().getDrawable(R.drawable.tab_logout)).setContent(new Intent().setClass(this,ExitActivity.class));
         tabHost.addTab(spec);
         for (int i=0;i< tabHost.getTabWidget().getChildCount();i++)
     	{
@@ -79,24 +85,25 @@ public class DashboardTabScreen extends TabActivity
             public void onTabChanged(String tabId) {
             	//String current = tabHost.getCurrentTabTag();
             	 int i = getTabHost().getCurrentTab();
-            	 Log.i("choosed dashboard", Integer.toString(i));
             	if (i==3)
             	{
-            		Log.i("dashboardTab screen", "it was clicked");
             		
             		AlertDialog.Builder alt_bld = new AlertDialog.Builder(DashboardTabScreen.this);
-                    alt_bld.setMessage("Are you sure you want to log out?")
+                    alt_bld.setMessage(getResources().getString(R.string.dialog_log_out_message))
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getResources().getString(R.string.btn_yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         // Action for 'Yes' Button
                         	SharedPrefs.getInstance().writeBoolean("isChecked", false);
+                        	
+                        	faq.logOut();
+                        	
                         	finish();
                   		  Intent intent = new Intent(DashboardTabScreen.this, LoginTabScreen.class);
                   		  startActivity(intent);
                   		  }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.btn_no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         //  Action for 'NO' Button
 
@@ -106,7 +113,7 @@ public class DashboardTabScreen extends TabActivity
                     });
                     AlertDialog alert = alt_bld.create();
                     // Title for AlertDialog
-                    alert.setTitle("Log out");
+                    alert.setTitle(getResources().getString(R.string.dialog_log_out_title));
                     // Icon for AlertDialog
                     alert.show();
             		  
@@ -114,9 +121,10 @@ public class DashboardTabScreen extends TabActivity
             }
             });
         
-        getTabHost().setCurrentTab(1);
+       
         if (getIntent().getExtras()!=null)
         {
+        	Log.i("DashboardTabScreen", "dashboard get extras are not null");
      	   if (getIntent().getExtras().getString("DashboardTabScreen").equalsIgnoreCase("FilesOrder"))
      	   {
      		  getTabHost().setCurrentTab(0);
@@ -128,7 +136,8 @@ public class DashboardTabScreen extends TabActivity
      	   }
      	   
         }
-       
+      
+        getTabHost().setCurrentTab(1);
     }
 	/**
 	 *  
@@ -173,10 +182,20 @@ public class DashboardTabScreen extends TabActivity
     public void onResume()
     {
     	super.onResume();
+    	Log.i(TAG,"DashboardTabScreen onResume");
     	  if (!MyListenerIsRegistered) {
 	            registerReceiver(tabChangeListener, new IntentFilter(Constants.TAB_CHANGE_ORDER));
 	            MyListenerIsRegistered = true;
 	        }
+    	  
+    	  if (getIntent().getExtras()!=null){
+		     if (getIntent().getExtras().getInt(Constants.ORDER_NOTIFICATED_UPDATE)!=0)
+		   	   {
+		    	 Log.i(TAG, Integer.toString(getIntent().getExtras().getInt(Constants.ORDER_NOTIFICATED_UPDATE)));
+		    		sendBroadcast(new Intent(Constants.ORDER_NOTIFICATED_UPDATE).putExtras(getIntent().getExtras()));
+		    		  getIntent().removeExtra(Constants.ORDER_NOTIFICATED_UPDATE);
+		   	   }
+    	  }
     }
     /**
 	 *  
@@ -191,5 +210,11 @@ public class DashboardTabScreen extends TabActivity
             unregisterReceiver(tabChangeListener);
             MyListenerIsRegistered = false;
         }
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // getIntent() should always return the most recent
+        setIntent(intent);
     }
 }

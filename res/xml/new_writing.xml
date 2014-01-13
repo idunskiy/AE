@@ -4,22 +4,22 @@
       android:key="new_writing">
      
   			<com.customitems.IconPreference
-	                        android:title="Type of essay"
+	                        android:title="@string/preference_essay_type"
 	                        android:summary="Not selected"
 	                        android:key="typePref"
 	                         />
         	<com.customitems.IconPreference
-	                        android:title="Number of pages"
+	                        android:title="@string/preference_number_pages"
 	                        android:summary="Not selected"
 	                        android:key="nmbPages"
 	                         />
         	 <com.customitems.IconPreference
-	                        android:title="Creation style"
+	                        android:title="@string/preference_cr_style"
 	                        android:summary="Not selected"
 	                        android:key="crStyle"
 	                         />
             <com.customitems.IconPreference
-	                        android:title="Number of references"
+	                        android:title="@string/preference_number_refs"
 	                        android:summary="Not selected"
 	                        android:key="nmbRefs"
 	                         />

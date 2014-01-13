@@ -1,26 +1,161 @@
 <resources>
-
+    
+    
     <string name="app_name">Assignment\nExpert</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_assignment">AssignmentActivity</string>
-	<string name="Password">Password</string>
-	<string name="subject">Subjects</string>
-	<string name="level">Levels</string>
-	<string name="category">Categories</string>
-	<string name="timezone">Choose your timezone</string>
-	<string name="essayType">Type of essay (select)</string>
-	<string name="citationStyle">Citation style (select)</string>
-	<string name="referencesNumber">Number of references</string>
-	<string name="open_helper_classname">DatabaseHandler</string>
-	<string name="preOrder">Choose order type</string>
-	<string name="numberReferences">Number of references</string>
-	<string name="numberPages">Number of pages</string>
-	<string name="profileText">Here you can edit your personal  \ninformation and see balance</string>
 	<string name  = "app_id">501352106580475</string>
-	<string name="get_started">To get started, log in using Facebook</string>
-	<string name="no_orders">Currently no orders</string>
+	
+	
+	
+	<!-- tabs strings -->
+	
+	<string name="tab_sign_in">Sign in</string>
+	<string name="tab_sign_up">Sign up</string>
+	<string name="tab_close">Close</string>
+
+	<string name="tab_new_order">New Order</string>
+	<string name="tab_orders">Orders</string>
+	<string name="tab_profile">Profile</string>	
+	<string name="tab_log_out">Log out</string>
+	
+	<!-- buttons strings -->
+	<string name="btn_sign_in">Sign in</string>
+	
+	<string name="btn_sign_up">Sign up</string>
+	
+	<string name="btn_add_files">Add Files</string>
+	<string name="btn_add_photo">Add Photo</string>	
+	<string name="btn_submit_order">Submit order</string>
+	
+	<string name="btn_edit_profile">Edit profile</string>
+	<string name="btn_save">Save</string>
+	<string name="btn_cancel">Cancel</string>
+	
+	<string name="btn_attach_files">Attach files</string>
+	<string name="btn_back">Back</string>
+	
+	<string name="btn_yes">Yes</string>
+	<string name="btn_no">No</string>
+	
+	<!-- dialog strings -->
+	<string name="dialog_log_out_title">Log out</string>
+	<string name="dialog_log_out_message">Are you sure you want to log out?</string>
+	
+	<string name="dialog_inactivate_title">Order inactivation</string>
+	
+	<string name="dialog_inactivate_message">Are you sure you want to inactive the order?</string>
+	
+	<string name="dialog_loading">Loading &#8230;</string>
+	
+	<string name="dialog_proceeding">Please wait</string>
+	
+	<string name="dialog_open">Open</string>
+	<string name="dialog_inactivate">Inactivate</string>
+	<string name="dialog_cancel">Cancel</string>
+	<!-- textviews strings -->
+	<string name="textview_login_prompt">Enter your credentials to sign in</string>
+	<string name="textview_login_forgot_pass">Forgot Password?</string>
+	
+	<string name="textview_register_promt">Fill the form to sign up</string>
+	<string name="textview_register_footer1">By signing in I accept</string>
+	<string name="textview_register_footer2">Terms of Service</string>
+	<string name="textview_register_footer3">and</string>
+	<string name="textview_register_footer4">Privacy Policy</string>
+		
+	<string name="textview_dashboard_promt">Tap to open | Swipe to see details</string>
+	
+	<string name="textview_assignment_promt">Fill in the form to submit your assignment </string>
+	<string name="textview_assignment_footer">If you have done well SUBMIT button should be active </string>
+	
+	<string name="textview_profile_promt">Here you can edit your personal  \ninformation and see balance</string>
+	
+	<string name="textview_no_orders">Currently no orders</string>
+	
+	<string name="textview_profile_login">Login (email)</string>
+	<string name="textview_profile_name">Name</string>
+	<string name="textview_profile_phone">Phone</string>
+	<string name="textview_profile_password">Password</string>
+	<string name="textview_profile_sign_me">Sign me in when AE starts</string>
+	
+	<string name="textview_assignment">Assignment</string>
+	<string name="textview_essay">Essay</string>
+	
+	<!-- preferences strings -->
+    <string name="preference_product">Product</string>
+    <string name="preference_subject">Subject</string>
+    <string name="preference_category">Category</string>
+    <string name="preference_level">Level</string>
+     <string name="preference_timezone">Time zone</string>
+     
+      <string name="preference_not_selected">Not selected</string>
+     
+     <string name="preference_dtl_exp">Detailed explanation required"</string>
+     <string name="preference_excl_video">Shoot exclusive video</string>
+     <string name="preference_comm_video">Shoot common video</string>
+    
+      <string name="preference_essay_type">Type of essay"</string>
+     <string name="preference_number_pages">Number of pages</string>
+     <string name="preference_cr_style">Creation style</string>
+      <string name="preference_number_refs"> Number of references</string>
+   
+    
+    <!-- hints strings -->
+    
+    
+    <!-- toasts  strings -->
+    <string name="toast_order_info">Specify suitable title to identify your order in the future.</string>
+    <string name="toast_order_task">Specify suitable task to identify your order in the future.</string>
+    <string name="toast_subject_choose">Choose the subject before</string>
+    <string name="toast_deadline_choose">You have to choose deadline</string>
+     <string name="toast_product_choose">You have to choose deadline</string>
+     <string name="toast_category_choose">You have to choose category</string>
+     <string name="toast_level_choose">You should to choose level</string>
+       
+     <string name="toast_number_pages_choose">You should to choose number of pages</string>
+     <string name="toast_essay_type_choose">You should to choose type of essay</string>
+     <string name="toast_number_refs_choose">You should to choose number of references</string>
+     <string name="toast_cr_style_choose">You should to choose creation style</string>
+      <string name="toast_task_choose">You should to write information about the task</string>
+      
+        
+    <string name="toast_deadline_time_current">Choose the time not less than the current, please</string>
+    <string name="toast_deadline_date_current">Choose the date not less than the current, please</string>
+        
+    <string name="toast_order_list_empty">Order list is empty</string>
+     <string name="toast_register_success">Congratulations! Registration confirmation message was send to</string>
+       
+     <string name="toast_message_length">Your message should be longer than 7 symbols</string>
+     
+
+     <string name="toast_profile_name">Put first name</string>
+     <string name="toast_profile_passwords_match">Passwords do not match</string>
+     <string name="toast_profile_passwords_length">Password should be longer</string>
+     <string name="toast_profile_phone_validation">Please enter correct phone number</string>
+     <string name="toast_profile_phone_length"> There should at least 10 symbols in phone number</string>
+       
+       
+    <string name="toast_profile_phone_promt">We recommend you to leave a cell number so we could update you via SMS. We won’t call you or disclose this number.</string>
+    
+    <string name="toast_order_title_length">Title must not be empty.</string>
+     
+     <string name="toast_login_wrong_email"> Wrong E-mail.</string>
+     
+     <string name="toast_register_wrong_email"> Wrong E-mail.</string>
+     
+      <string name="toast_register_passwords_equal"> Passwords should be equal</string>
+       <string name="toast_register_password_length"> At least 5 characters in the password</string>
+       <string name="toast_register_firstname_length"> Please enter your firstname</string>
+      <string name="toast_register_captcha"> Passwords should be equal</string>
+   
+   
+    <!-- errors  strings -->
+    <string name="error_server_problem">Something went wrong. Please try later.</string>
+    <string name="error_connection_lost">Connection is lost. Would you to try again or quit?</string>
+    <string name="error_swiping">You should to swipe the item properly</string>
+     <string name="error_device_support">This device is not supported.</string>
+     <string name="error_interrupted">Interrupted.</string>
+     <string name="error_email_format">Format of email is wrong.</string>
+   
+ 
 </resources>
 
-<!--  <string name="profileText"><![CDATA[Here you can edit personal <br />information and see balance 2]]></string>
--->
+

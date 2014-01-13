@@ -3,6 +3,7 @@ package com.customitems;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ public class CustomTextView  extends TextView {
     }
 
     private void setCustomFont(Context ctx, AttributeSet attrs) {
+    	this.setMovementMethod(new ScrollingMovementMethod());
         TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.CustomTextView);
         String customFont = a.getString(R.styleable.CustomTextView_customFont);
         setCustomFont(ctx, customFont);

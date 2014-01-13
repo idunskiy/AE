@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:background="#FFFFFF"
+    android:layout_height="wrap_content">
+    <EditText
+        android:id="@+id/username"
+        android:inputType="textEmailAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="Email Address" />
+    
+    <TextView 
+        android:id="@+id/line_vertical"
+        
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#323232"/>
+
+    <LinearLayout 
+        android:id="@+id/restoreBtnPanel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line_vertical"
+        android:weightSum="1.0">
+        <Button 
+             android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"/>
+        <Button  android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        />
+        
+    </LinearLayout>
+    
+</LinearLayout >

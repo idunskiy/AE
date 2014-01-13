@@ -24,6 +24,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.assignmentexpert.R;
 import com.customitems.CustomEditPreference;
@@ -54,7 +55,7 @@ public class RegisterFragmentCompl extends Fragment implements IClickListener{
 	    btnProceed = (Button)view.findViewById(R.id.btnProceed);
 	    btnProceed.setOnClickListener(new View.OnClickListener() {
 	        public void onClick(View v) {
-	        	listener.changeFragment(5);
+//	        	listener.changeFragment(5);
 	        	
 	        }
 	    });

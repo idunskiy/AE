@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.R;
@@ -19,6 +20,7 @@ import com.datamodel.ProductAssignment;
 import com.datamodel.Subject;
 import com.j256.ormlite.dao.Dao;
 import com.library.DatabaseHandler;
+import com.library.FrequentlyUsedMethods;
 /** * фрагмент для отображения информации по заказу (Assignment)*/
 public class OrderInfoFragmentAA extends Fragment{
 	/** * CustomTextView для отображения продукта заказа*/
@@ -47,11 +49,15 @@ public class OrderInfoFragmentAA extends Fragment{
 	/** * коллекция для списка уровней заказов*/
 	List<Level> levelList;
 
+	
+	FrequentlyUsedMethods faq;
+	private LinearLayout fileListLayout;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
 	    View view = inflater.inflate(R.layout.order_info_aa,
 	        container, false);
+	    faq = new FrequentlyUsedMethods(getActivity());
 	    productTextView = (CustomTextView)view.findViewById(R.id.productTextView);
 	    priceTextView =   (CustomTextView)view.findViewById(R.id.priceTextView);
 	    timezoneTextView = (CustomTextView)view.findViewById(R.id.timezoneTextView);
@@ -63,7 +69,11 @@ public class OrderInfoFragmentAA extends Fragment{
 	    taskTextView =  (CustomTextView)view.findViewById(R.id.taskTextView);
 	    requireTextView =  (CustomTextView)view.findViewById(R.id.requireTextView);
 	    
+	    fileListLayout = (LinearLayout)view.findViewById(R.id.infoMessageListLayout);
+	    Log.i("orderInfoAA", "onCreate methd");
 	    fillFields();
+	    faq.addOrderFiles(getActivity(), fileListLayout);
+	    
 	    return view;
 	  }
 	/** * метод заполнения значениями полей информации*/
@@ -103,12 +113,12 @@ public class OrderInfoFragmentAA extends Fragment{
 				
 				
 			
-					
+				 Log.i("orderInfoAA fillFields",DashboardActivityAlt.listItem.toString());
 		    if (DashboardActivityAlt.listItem.getPrice()==0)
 		    priceTextView.setText("N/A");
 		    	else
 		    priceTextView.setText(Float.toString(DashboardActivityAlt.listItem.getPrice())+"$");
-		    timezoneTextView.setText(DashboardActivityAlt.listItem.getTimezone());
+		    timezoneTextView.setText("GMT " + DashboardActivityAlt.listItem.getTimezone());
 		    subjTextView.setText(DashboardActivityAlt.listItem.getCategory().getCategorySubject().getSubjectTitle());
 		    postedTextView.setText(DashboardActivityAlt.listItem.getCreated_at().toString());
 		    
@@ -119,8 +129,10 @@ public class OrderInfoFragmentAA extends Fragment{
 		    else
 		       levelTextView.setText("N/A");
 		    deadlineTextView.setText(DashboardActivityAlt.listItem.getDeadline().toString());
+		    
 		    taskTextView.setText(((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignInfo());
-		    if (((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignDtl_expl())
+		    
+		    if (((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignDtl_expl() == 1)
 		    	requireTextView.setText("Detailed explanation"+"\r\n" );
 		    if(((ProductAssignment)DashboardActivityAlt.listItem.getProduct().getProduct()).getAssignExcVideo())
 		    	requireTextView.append("Exclusive video"+"\r\n" );

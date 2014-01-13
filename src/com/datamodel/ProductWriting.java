@@ -13,7 +13,7 @@ public class ProductWriting extends ProductType{
 		@SerializedName("pages_number")
 		String pages_number;
 		/** * количество ссылочных материалов по заказу */
-		@SerializedName("number_of_references")
+		@SerializedName("pages_of_references")
 		String number_of_references;
 		/** * флаг детальной информации по заказу */
 		@SerializedName("dtl_expl")
@@ -22,16 +22,16 @@ public class ProductWriting extends ProductType{
 		@SerializedName("info")
 		String info;
 		/** * тип essay*/
-		@SerializedName("essay_type")
-		EssayType essayType;
+		@SerializedName("essay_type_id")
+		int essayType;
 		/** * стиль essay*/
-		@SerializedName("essay_creation_style")
-		EssayCreationStyle essayStyle;
+		@SerializedName("essay_creation_style_id")
+		int essayStyle;
 		
 		public ProductWriting()
 		{}
 		public ProductWriting(String title, String info, boolean dtl_expl, 
-				String pages_number , EssayType essayType, EssayCreationStyle essayStyle,
+				String pages_number , int essayType, int essayStyle,
 				int id,String number_of_references)
 		{
 			this.title = title;
@@ -71,11 +71,11 @@ public class ProductWriting extends ProductType{
 		{
 			 return this.id;
 	    }
-		public EssayType getEssayType() 
+		public int getEssayTypeId() 
 		{
 			 return this.essayType;
 	    }
-		public EssayCreationStyle getEssayStyle() 
+		public int getEssayStyleId() 
 		{
 			 return this.essayStyle;
 	    }
@@ -103,11 +103,11 @@ public class ProductWriting extends ProductType{
 		{
 			  this.id = id;
 	    }
-		public void setEssayType(EssayType essayType) 
+		public void setEssayTypeId(int essayType) 
 		{
 			 this.essayType = essayType;
 	    }
-		public void getEssayStyle(EssayCreationStyle essayStyle) 
+		public void setEssayStyleId(int essayStyle) 
 		{
 			 this.essayStyle = essayStyle;
 	    }

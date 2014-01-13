@@ -17,7 +17,7 @@
 		    style="@style/custom_button"
 		    android:layout_width="fill_parent"
 		    android:layout_below="@android:id/list"
-		    android:text="Submit Order"
+		    android:text="@string/btn_submit_order"
 		  	android:textColor="#000000"
 		    />
           <!--android:onClick="butSubmit_Click"  -->
@@ -26,7 +26,7 @@
             style="@style/custom_textview"
             android:layout_width="fill_parent"
             android:layout_below="@+id/btnSubmitOrder"
-            android:text="If you've done well - SUBMIT button should be active"
+            android:text="@string/textview_assignment_footer"
             android:textStyle="bold" />
            
 </RelativeLayout>

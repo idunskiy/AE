@@ -8,9 +8,11 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.library.FrequentlyUsedMethods;
 /** * AsyncTask дл€ посылки заказа.  */
 public class SendOrderAsync extends AbstractTaskLoader{
@@ -31,7 +33,7 @@ public class SendOrderAsync extends AbstractTaskLoader{
 
 		SendOrderAsync loader = new SendOrderAsync(fa);
 
-	new TaskProgressDialogFragment.Builder(fa, loader, "LoadingЕ")
+	new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 			.setCancelable(true)
 			.setTaskLoaderListener(taskLoaderListener)
 			.show();
@@ -64,6 +66,7 @@ public class SendOrderAsync extends AbstractTaskLoader{
 	       		}
 	       		}
        		catch (Exception e) {
+       		 Crashlytics.logException(e);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				errorFlag  = true;

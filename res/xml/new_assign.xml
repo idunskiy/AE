@@ -5,21 +5,18 @@
       android:key="new_assign">
   		<com.customitems.CustomCheckBoxPref
                 android:name="Detail information"
-                android:title="Detailed explanation required"
+                android:title="@string/preference_dtl_exp"
                 android:key="dtlInfo" 
 				android:textSize = "11sp"
 				 android:layout_marginLeft = "15dp"               />
-  		
-  	
         <com.customitems.CustomCheckBoxPref
-            
                 android:name="Exclusive video"
-                android:title="Shoot exclusive video"
+                android:title="@string/preference_excl_video"
                 android:key="ExcVideo"
                 android:textSize = "11sp" />
          <com.customitems.CustomCheckBoxPref
                 android:name="Common video"
-                android:title="Shoot common video"
+                android:title="@string/preference_comm_video"
                 android:key="commVideo" 
                 android:textSize = "11sp"/>
 </PreferenceScreen>

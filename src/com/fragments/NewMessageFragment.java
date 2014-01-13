@@ -14,7 +14,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.Selection;
@@ -34,6 +36,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -74,7 +77,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	/** * TextView дл€ отображени€ цены заказа*/
 	private TextView priceLabel;
 	/** * RelativeLayout дл€ отображени€ списка файлов*/
-	private RelativeLayout newMessagePanel;
+	private LinearLayout newMessagePanel;
 	/** * кнопка Cancel*/
 	private View btnCancelNewMessage;
 	/** * экземпл€р класса часто используемых функций*/
@@ -90,6 +93,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	/** * обьект ScrollView, который €вл€етс€ главным View и используетс€ дл€ определени€ наличи€ клавиатуры*/
 	private ScrollView scrollView;
 	private CheckBox fileCheckHead;
+	private Button btnAddPhoto;
 	/** * RelativeLayout панели отображени€ информации по текущему заказу. »спользуетс€ дл€ setup'a PayPal кнопки. */
 	public static RelativeLayout panelInteractions;
 	private static final int request = 1;
@@ -99,6 +103,9 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	public static String resultInfo;
 	/** * строка дополнительной информации PayPal транзакции */
 	public static String resultExtra;
+	
+	public static Uri mOriginalUri;
+
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -107,6 +114,9 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	     btnPay  = (Button) view.findViewById(R.id.btnPay);
 	     scrollView =(ScrollView)view.findViewById(R.id.scrollNewMessage);
 	     btnAddFilesMessage = (Button) view.findViewById(R.id.btnAddFilesMessage);
+	     
+//	     btnAddPhoto= (Button) view.findViewById(R.id.btnAddPhoto);
+	     
 	     btnSendMessage =(Button) view.findViewById(R.id.btnSendMessage);
 	     editMessage =(EditText) view.findViewById(R.id.editMessage);
 	     messageFileList = view.findViewById(R.id.messageFileList);
@@ -128,7 +138,12 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		 faq = new FrequentlyUsedMethods(getActivity());
 		 prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		 prefEditor = prefs.edit();
-	     newMessagePanel = (RelativeLayout)view.findViewById(R.id.newMessagePanel);
+	     newMessagePanel = (LinearLayout)view.findViewById(R.id.newMessagePanel);
+//	     if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
+//	     {
+//	    	 addFiles();
+//	     }
+	     
 	     btnCancelNewMessage.setOnClickListener(new View.OnClickListener() {
 	           public void onClick(View view) {
 	        	 listener.changeFragment(9);
@@ -188,7 +203,7 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	           public void onClick(View view) {
 	        	   if (editMessage.getText().toString().length()<7)
 	        	   {
-	        		   Toast.makeText(getActivity(), "Your message should be longer than 7 symbols", Toast.LENGTH_LONG).show();
+	        		   Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.toast_message_length), Toast.LENGTH_LONG).show();
 	        	   }
 	        	   else
 	        	   {
@@ -208,38 +223,39 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	    btnFilesRemove.setOnClickListener(new View.OnClickListener() {
         	 
             public void onClick(View view) {
-         for(int i=0;i<checks.size();i++){
-        	 
-          if(checks.get(i)==1){
-        	   adapter.remove(adapter.getItem(i));
-                checks.remove(i);
-                textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
-                long wholeSize = 0;
-                for (File file: FileManagerActivity.getFinalMessageFiles())
-                {
-                	wholeSize += file.length();
-                }
-                fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
-                
-                 i--;
-              }
-          
-          		btnAddFilesMessage.setText("Add files");
-              fileListExist  = false;
-            }
-         if( FileManagerActivity.getFinalMessageFiles().isEmpty())
-      	  {
-   	  		newMessagePanel.removeView(messageFileList);
-   	  		fileCheckHead.setChecked(false);
-      	  }
+            	if( FileManagerActivity.getFinalMessageFiles().isEmpty())
+            	  {
+         	  		newMessagePanel.removeView(messageFileList);
+         	  		fileCheckHead.setChecked(false);
+            	  }
+            	else 
+            	{
+            		Log.i("checks size", Integer.toString(checks.size()));
+            		Log.i("files size", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
+            		Log.i("adapter size", Integer.toString(adapter.getCount()));
+			         for(int i=0;i<checks.size();i++){
+			          if(checks.get(i)==1){
+			        	   adapter.remove(adapter.getItem(i));
+			                checks.remove(i);
+			                textHead.setText(Integer.toString(FileManagerActivity.getFinalMessageFiles().size())+ " files attached");
+			                long wholeSize = 0;
+			                for (File file: FileManagerActivity.getFinalMessageFiles())
+			                {
+			                	wholeSize += file.length();
+			                }
+			                fileSizeHead.setText(Long.toString(wholeSize/1024)+ " KB");
+			                
+			                 i--;
+			              }
+			          
+			          		btnAddFilesMessage.setText("Add files");
+			              fileListExist  = false;
+			            }
+            	}
 
           }
        });
-	     updateLayout();
-	     if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
-	     {
-	    	 addFiles();
-	     }
+	     
 	     scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 	            public void onGlobalLayout() {
 	                int heightDiff = scrollView.getRootView().getHeight() - scrollView.getHeight();
@@ -259,8 +275,10 @@ public class NewMessageFragment extends Fragment implements IClickListener{
     					boolean isChecked) {
     				if (isChecked)
     				{
-    					for (Integer i : checks)
-    					{
+    					Log.i(" check id's", Integer.toString(checks.size()));
+    					Log.i(" file id's", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
+    					for (Integer i : checks) {
+    						Log.i(" check id's", Integer.toString(i));
     						checks.set(checks.indexOf(i), 1);
     					}
     					for (int i = 0;i<(fileslist).getCount();i++)
@@ -291,6 +309,22 @@ public class NewMessageFragment extends Fragment implements IClickListener{
     			}
         		
         	});
+//	    	btnAddPhoto.setOnClickListener(new OnClickListener() {
+//
+//				
+//				public void onClick(View v) {
+//					Intent cameraIntent = new Intent(
+//							MediaStore.ACTION_IMAGE_CAPTURE);
+//					mOriginalUri = Uri.fromFile(new File(Environment
+//							.getExternalStorageDirectory(), "original"
+//							+ String.valueOf(System.currentTimeMillis()) + ".jpg"));
+//					cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
+//							mOriginalUri);
+//					cameraIntent.putExtra("return-data", true);
+//					startActivityForResult(cameraIntent, 3);
+//				}
+//			});
+	    	updateLayout();
 	    return view;
 	  }
 	/** * инициализаци€ экземпл€ра IClickListener*/
@@ -443,16 +477,16 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	{this.trigger = trigger;}
 	public void addFiles()
     {
-		Log.i("NewMessAct","in addFiles method");
 		try{
+			for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
+	 		{ 
+	 			checks.add(0);
+	 	    } 
 			ViewGroup row = (ViewGroup) newMessagePanel;
-			Log.i("asdasda",Integer.toString(row.getChildCount()));
 			for (int itemPos = 0; itemPos < row.getChildCount(); itemPos++) {
 			    View view = row.getChildAt(itemPos);
-			    Log.i("newMessAct", Integer.toString(view.getId()));
 			    if (view.getId()==2131427432)
 			    	{
-			    		Log.i("NewMess","fileListAct exist");
 			    	   fileListExist = true;
 			    	}
 			    
@@ -460,10 +494,8 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 			
 		if (!fileListExist)
 			 {
-				Log.i("NewMessAct", "it might be added");
 				newMessagePanel.addView(messageFileList);
 			 }
-		Log.i("file exist flag",Boolean.toString(fileListExist));
 		messageFileList.setVisibility(View.VISIBLE);
 		
 		textHead.setTextSize(17);
@@ -551,7 +583,9 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 				return view;
 			}
 		};
+		
 		fileslist.setAdapter(adapter);
+		Log.i("NewMessAct",Integer.toString(adapter.getCount()));
 		}
 		catch(Exception e)
 		{
@@ -573,7 +607,6 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 	    	
 			resultTitle = "SUCCESS";
 			resultInfo = "You have successfully completed this payment.";
-			Toast.makeText(getActivity(), "Your payment was proceeded successfully", Toast.LENGTH_SHORT).show();
 			Intent i = new Intent(getActivity(),
 	                DashboardActivityAlt.class);
 	 	  	   startActivity(i);
@@ -582,35 +615,22 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 			resultTitle = "CANCELED";
 			resultInfo = "The transaction has been cancelled.";
 			resultExtra = "";
-			Toast.makeText(getActivity(), "The transaction has been cancelled.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error_interrupted), Toast.LENGTH_SHORT).show();
 			break;
 		case PayPalActivity.RESULT_FAILURE:
 			resultTitle = "FAILURE";
 			resultInfo = data.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
 			resultExtra = "Error ID: " + data.getStringExtra(PayPalActivity.EXTRA_ERROR_ID);
-			Toast.makeText(getActivity(), "Failure! "+ resultInfo, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(),resultInfo, Toast.LENGTH_SHORT).show();
 		case 4:
 			//addFiles();
 			Log.i("messages files length", Integer.toString(FileManagerActivity.getFinalMessageFiles().size()));
 			break;
-		case Constants.addFilesResult:
-			Log.i("newFragment Act", "I've received the result");
-			 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
-		 		{ 
-		 			checks.add(b,0);
-		 	    } 
-			addFiles();
-			
-			
 	    	}
 	    
 	    }
 	 public void addMessageFiles()
 	 {
-		 for(int b=0;b<FileManagerActivity.getFinalMessageFiles().size();b++)
-	 		{ 
-	 			checks.add(b,0);
-	 	    } 
 		addFiles();
 	 }
 	 	private int getEditTextY()
@@ -636,10 +656,11 @@ public class NewMessageFragment extends Fragment implements IClickListener{
 		    	btnSendMessage.getBackground().setAlpha(120);
 //		    if (!FileManagerActivity.getFinalMessageFiles().isEmpty())
 //		     {
-//		    	
-//		    	
 //		    	 addFiles();
 //		     }
+		    else   {
+		    	
+			}
 		}
 
 }

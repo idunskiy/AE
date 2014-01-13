@@ -55,8 +55,7 @@ import com.google.gson.Gson;
 import com.j256.ormlite.dao.Dao;
 import com.library.singletones.CookieStorage;
 import com.tabscreens.OrderInfoTabScreen;
-/**  *класс служит для общения с сервером на предмет новых обновлений о заказе или получения сообщения. Нужно, чтоб все операции выполнялись
- * в отдельном потоке, поэтому и IntentService.*/
+/**  * IntentService for background order and messages updating*/
 public class ServiceIntentMessages  extends IntentService{
 	public static final String KEY_DATA = "data";
 	public static final String KEY_MESSAGE = "message";
@@ -92,7 +91,6 @@ public class ServiceIntentMessages  extends IntentService{
 	JSONObject data;
 	private DatabaseHandler db;
 	DashboardActivityAlt dashboardAct = new DashboardActivityAlt();
-    /**  *контруктор класса */
 	public ServiceIntentMessages() {
 		super("ServiceIntentMessages");
 	}
@@ -104,17 +102,14 @@ public class ServiceIntentMessages  extends IntentService{
 	    Log.d(LOG_TAG, "onCreate");
 	  }
 	  
-	 /**  *контруктор класса */
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		
 		 Calendar calendar = Calendar.getInstance();
 	         java.util.Date now = calendar.getTime();
 	         java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
-	         // url Comet сервера, который слушается сервисом на наличие обновлений
 	         String url = Constants.finalRplHost+"/?identifier=nspid_"+md5(LoginActivity.passUserId)+
 	        		  ",nspc&ncrnd="+Long.toString(currentTimestamp.getTime());
-	         //запрос к серверу для проверки на наличие обновлений
 	        HttpGet rplPost = new HttpGet(url);
 		    rplPost.setHeader("Cookie", CookieStorage.getInstance().getArrayList().get(0).toString());
 			 HttpResponse httpResponse;
@@ -267,23 +262,23 @@ public class ServiceIntentMessages  extends IntentService{
 	     								if (a.equals(orderMess))
 	     									{
 	     									
-	     									if (a.getCusThread().getMessages().isEmpty())
+	     									if (a.getMessages().isEmpty())
 	     									{
-	     										a.getCusThread().addMessage(message);
+	     										a.addMessage(message);
 	     									}
 	     									
 	     									else
 	     									{
-	     										if(message.getMessageId()>a.getCusThread().getMessages().get(a.getCusThread().getMessages().size()-1).getMessageId() &
-	     											 (!message.getMessageBody().equals(a.getCusThread().getMessages().get(a.getCusThread().getMessages().size()-1).getMessageBody())))
+	     										if(message.getMessageId()>a.getMessages().get(a.getMessages().size()-1).getMessageId() &
+	     											 (!message.getMessageBody().equals(a.getMessages().get(a.getMessages().size()-1).getMessageBody())))
 	     									   {
-	     										  a.getCusThread().addMessage(message);
+	     										  a.addMessage(message);
 	     									   }
 	     									}
 	     									//нотификация пользователя о получении нового сообщения
 	     									someMethod("Your order  "+ a.getTitle() + "  was changed. Message was added");
 	     									a.setCategory(orderMess.getCategory());
-	     									a.setPrice(orderMess.getPrice());
+	     								//	a.setPrice(orderMess.getPrice());
 	     									a.setProcess_status(orderMess.getProcess_status());
 	     									a.setLevel(orderMess.getLevel());
 	     									a.setSubject(orderMess.getSubject());

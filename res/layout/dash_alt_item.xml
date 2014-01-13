@@ -2,14 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="65dp"
     android:orientation="horizontal"
     android:padding="5dip" 
      android:id="@+id/dash_alt_item_layout"
     android:background="#000000">
-    <RelativeLayout
+    <LinearLayout
+          android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:id="@+id/thumbnail"
-        android:layout_width="80dp"
+        >
+    <RelativeLayout
+        
+        android:layout_width="75dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center|center"
@@ -33,79 +39,69 @@
          android:gravity="center|center"
         android:layout_height="wrap_content"
         android:textColor="#838B8B"
-        android:text="discuss"
+        android:text="discussion"
         android:textSize="14sp"
         android:textStyle="bold" 
         foo:customFont="Roboto-Regular.ttf"/>
     </RelativeLayout>
-    
+    <!-- 
  <RelativeLayout
      android:layout_toLeftOf="@+id/thumbnail"
         android:id="@+id/thumbnail2"
         android:layout_alignRight="@+id/thumbnail"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"> -->
     <TextView
 			    android:layout_width="1dp"
 			    android:id="@+id/menu_sep1"
 			    android:layout_height="50dp"
 			    android:background="#565656"	
 			/>
-	</RelativeLayout>
-	
+	<!-- </RelativeLayout> -->
+	</LinearLayout>
     <com.customitems.CustomTextView
         android:id="@+id/altOrderTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="@+id/profileSwitcher"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="45dp"
-        android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail2"
-        android:text="Just gona stand there and ..."
+        android:layout_height="fill_parent"
+        android:layout_marginTop="1dp"
+        android:ellipsize="end"
+        android:padding="6dp"
+        android:gravity="center|center"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Just gona stand there and fuck this shit..."
         android:textColor="#FFFFFF"
+        android:layout_toLeftOf="@+id/thumbnail2"
         android:textSize="17sp"
         android:textStyle="bold"
         foo:customFont="Roboto-Medium.ttf" />
+    <LinearLayout
+          android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:id="@+id/thumbnail2"
+        >
      <TextView
 			    android:layout_width="1dp"
-			     android:layout_toLeftOf="@+id/thumbnail"
 			    android:id="@+id/menu_sep2"
-			    android:layout_alignRight="@+id/altOrderTitle"
-			    android:layout_marginRight="8dp"
 			    android:layout_height="50dp"
 			   android:background="#565656"
 			/>
-   <!--   <com.customitems.CustomTextView
-		        android:id="@+id/altOrderPrice"
-		        android:layout_width="wrap_content"
-		        android:layout_marginTop="12dp"
-		        android:layout_height="wrap_content"
-		        android:layout_marginRight="5dp"
-		        android:layout_marginLeft="8dp"
-		          android:layout_alignParentRight="true"
-		        android:text="$"
-		        android:textColor="#4da400"
-		        android:textSize="18sp"
-		        android:textStyle="bold"
-		        foo:customFont="Roboto-Medium.ttf" /> -->
- <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+ <ViewSwitcher
     android:id="@+id/profileSwitcher"
-    android:layout_width="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:layout_centerVertical="true"
-    android:layout_alignParentRight="true"
-    android:layout_height="wrap_content">
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center">
 		    <com.customitems.CustomTextView
 		        android:id="@+id/altOrderPrice"
 		        android:layout_width="wrap_content"
-		        android:layout_marginTop="12dp"
 		        android:layout_height="wrap_content"
-		        android:layout_marginLeft="12dp"
+		         android:layout_gravity="center"
 		        android:text="$"
 		        android:gravity="center_horizontal|center_vertical"
 		        android:textColor="#4da400"
-		        android:textSize="18sp"
+		        android:textSize="16sp"
 		        android:textStyle="bold"
 		        foo:customFont="Roboto-Medium.ttf" />
 		     <ProgressBar
@@ -114,4 +110,5 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true" />
 		     </ViewSwitcher>
+		     </LinearLayout>
 </RelativeLayout>

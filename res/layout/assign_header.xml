@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout 
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent"
+     android:orientation="vertical">
+<com.customitems.CustomTextView
+        android:id="@+id/textlabel"
+        android:layout_alignParentTop="true"
+        style="@style/custom_textview"
+        android:layout_gravity="center"
+        android:text="@string/textview_assignment_promt"
+        android:layout_width="fill_parent"
+        android:gravity="center"
+        foo:customFont="Roboto-Medium.ttf"/>
+		<TextView 
+		    android:id="@+id/text_separator"
+		    android:layout_span="1" android:layout_height="1px" 
+		    android:layout_below="@+id/textlabel"
+		    android:background="#323232"
+			             android:layout_width="fill_parent" android:text="">
+			  	 </TextView>
+<ListView 
+    android:id="@android:id/list" 
+     android:layout_below="@+id/text_separator"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+/>
+</RelativeLayout>

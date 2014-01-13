@@ -1,10 +1,15 @@
 package com.fragmentactivities;
 
+import java.io.File;
 import java.math.BigDecimal;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,16 +28,15 @@ import com.assignmentexpert.FileManagerActivity;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctasks.PayPalAsync;
-import com.asynctasks.PaymentProceeding;
 import com.asynctasks.SendMessageAsync;
+import com.datamodel.Messages;
 import com.fragments.IClickListener;
 import com.fragments.InteractionFragment;
 import com.fragments.NewMessageFragment;
-import com.fragments.OrderInfoFragmentAA;
-import com.fragments.OrderInfoFragmentEW;
 import com.library.Constants;
 import com.library.FrequentlyUsedMethods;
 import com.library.ResultPayPalDelegate;
+import com.library.UserFunctions;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalActivity;
@@ -103,8 +107,25 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 			      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			      fragmentTransaction.commit();
 			}
+			
+			// new message sending
 			if (flag ==10)
-				SendMessageAsync.execute(this, this);
+			{
+				 Fragment newFragment = new InteractionFragment();
+				  FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+			      fragmentTransaction.replace(R.id.myfragment, newFragment);
+			      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+			      fragmentTransaction.commit();
+//			      FileManagerActivity.getFinalMessageFiles().clear();
+			      Messages message = new Messages();
+			      message.setMessageBody(NewMessageFragment.newMessage);
+			      message.setMessageDate(DashboardActivityAlt.listItem.getDeadline());
+			      
+			      DashboardActivityAlt.messagesExport.add(message);
+					
+			      new SendMessage().execute();
+//	              SendMessageAsync.execute(this, this);
+			}
 			
 		}
 		
@@ -137,31 +158,24 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 			    	
 			    	 launchSimplePayment.updateButton();
 			    PayPalPayment newPayment = new PayPalPayment();
-			    DashboardActivityAlt.listItem.setPrice(5);
 		      	Log.i("item current price" , Float.toString(DashboardActivityAlt.listItem.getPrice()));
 		      	newPayment.setSubtotal(new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice())));
 		      	newPayment.setCurrencyType("USD");
-		      	newPayment.setRecipient("ivand_1356619309_biz@aeteam.org");
-		      	newPayment.setMerchantName("BrainRouter LTD");
-		      	newPayment.setIpnUrl(Constants.testHost+"/app_dev.php/payment/notifier/");
+		      	newPayment.setRecipient("paygbpalbiz@gmail.com");
+		      	newPayment.setMerchantName("FreelanceSystems LTD");
 		      	newPayment.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
 		      	PayPalInvoiceData invoice = new PayPalInvoiceData();
 		        	invoice.setTax(new BigDecimal("0"));
 		      	  invoice.setShipping(new BigDecimal("0"));
-		      	 PayPalInvoiceItem  item =new PayPalInvoiceItem();
-		      	 item.setName("something");
-		      	 item.setID(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
-		      	 item.setQuantity(1);
-		      	 invoice.getInvoiceItems().add(item);
 		      	 newPayment.setInvoiceData(invoice);
-		      	
+		      	newPayment.setCustomID(Integer.toString(DashboardActivityAlt.listItem.getOrderid()));
 		      	Intent paypalIntent = PayPal.getInstance().checkout(newPayment, InteractionsFragmentActivity.this ,new ResultPayPalDelegate());
 			    InteractionsFragmentActivity.this.startActivityForResult(paypalIntent, request);
 			    }
 		   };
 
 		   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			   Log.i("newFragment ActRes", Integer.toString(resultCode));
+			   FragmentManager fragmentManager = getSupportFragmentManager();
 //		    	if(requestCode != request)
 //		    		return;
 				/**
@@ -173,25 +187,20 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 		    	switch(resultCode)
 		    	{
 		  case Activity.RESULT_OK:
-			  	Log.i("interactions frag res", "result_ok");
-			  	PaymentProceeding.execute(this, this);
 			  	faq.updateOrderFields(DashboardActivityAlt.listItem);
 				resultTitle = "SUCCESS";
 				resultInfo = "You have successfully completed this payment.";
-				Toast.makeText(InteractionsFragmentActivity.this, "Your payment was proceeded successfully", Toast.LENGTH_SHORT).show();
 				 Intent i = new Intent(getApplicationContext(),
 	 	                    DashboardTabScreen.class);
 	 	     	  	  startActivity(i);
 				break;
 			case Activity.RESULT_CANCELED:
-				Log.i("interactions frag res", "result_cancelled");
 //				Log.i("getAct FAQ", faq.getActivity().getClass().toString());
 				faq.setActivity(this);
 				resultTitle = "CANCELED";
 				resultInfo = "The transaction has been cancelled.";
 				resultExtra = "";
-				
-				Toast.makeText(InteractionsFragmentActivity.this, "The transaction has been cancelled.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(InteractionsFragmentActivity.this, getResources().getString(R.string.error_interrupted), Toast.LENGTH_SHORT).show();
 				
 				//InteractionFragment.updatePayPalBtn();
 				break;
@@ -199,25 +208,43 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 				resultTitle = "FAILURE";
 				resultInfo = data.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
 				resultExtra = "Error ID: " + data.getStringExtra(PayPalActivity.EXTRA_ERROR_ID);
-				Toast.makeText(InteractionsFragmentActivity.this, "Failure! "+ resultInfo, Toast.LENGTH_SHORT).show();
+				Toast.makeText(InteractionsFragmentActivity.this, resultInfo, Toast.LENGTH_SHORT).show();
 				
 			case Constants.addFilesResult:
-				FragmentManager fragmentManager = getSupportFragmentManager();
+				
 				Fragment currentFragment = fragmentManager.findFragmentById(R.id.myfragment);
 				Log.i("interactions act", currentFragment.getClass().toString());
 				if (currentFragment instanceof NewMessageFragment)
 				{
 					((NewMessageFragment)currentFragment).addMessageFiles();
 				}
-		    	}
+				
+				// files through camera adding
+			case 3:
+			{
+				
+				Fragment currentFragment2 = fragmentManager.findFragmentById(R.id.myfragment);
+				if (resultCode != RESULT_OK)
+					return;
+				File imgFile = new File(NewMessageFragment.mOriginalUri.getPath());
+				if (imgFile.exists()) {
+
+					FileManagerActivity.getFinalMessageFiles().add(imgFile);
+					((NewMessageFragment)currentFragment2).addMessageFiles();
+					// adapter.notifyDataSetChanged();
+
+				}
+			}
+			break;
+			}
+			
+				
+		   }
 		    
-		    }
 		   /** *метод интерфейса ITaskLoaderListener. служит для обработки данных после успешной работы задачи в отдельном потоке, используемой в данной активности.  */   
 	public void onLoadFinished(Object data) {
 		if (data instanceof Integer)
 			 {
-//				faq.setActivity(this);
-//				faq.setContext(this);
 			FragmentManager fragmentManager = getSupportFragmentManager();
 			Fragment currentFragment = fragmentManager.findFragmentById(R.id.myfragment);
 			Log.i("interactions act", currentFragment.getClass().toString());
@@ -232,7 +259,8 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 			 }
 		else if(data instanceof String )
 		{
-			Log.i("interactionsFragmentAct onLoadFinished", (String)data);
+			
+			// successful message receiving 
 			if (((String) data).equalsIgnoreCase("send_message_success"))
 			{
 			  Fragment newFragment = new InteractionFragment();
@@ -241,6 +269,11 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 		      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		      fragmentTransaction.commit();
 		      FileManagerActivity.getFinalMessageFiles().clear();
+		      Messages message = new Messages();
+		      message.setMessageBody(SendMessageAsync.getMessageBody());
+		      message.setMessageDate(DashboardActivityAlt.listItem.getDeadline());
+		      DashboardActivityAlt.messagesExport.add(message);
+		      
 			}
 			if (((String) data).equalsIgnoreCase("inactivate_success"))
 			{
@@ -251,13 +284,13 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 			}
 			if(((String) data).equalsIgnoreCase("send_message_error"))
 			{
-				Fragment newFragment = new InteractionFragment();
+				  Fragment newFragment = new InteractionFragment();
 				  FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 			      fragmentTransaction.replace(R.id.myfragment, newFragment);
 			      fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 			      fragmentTransaction.commit();
 			      FileManagerActivity.getFinalMessageFiles().clear();
-			      Toast.makeText(this, "Something went wrong. Please try later. ", Toast.LENGTH_SHORT).show();
+			      Toast.makeText(this, getResources().getString(R.string.error_server_problem), Toast.LENGTH_SHORT).show();
 			}
 		}
 		
@@ -277,6 +310,74 @@ public class InteractionsFragmentActivity extends FragmentActivity implements IT
 		}
 		
 	}
+	
+	  private class SendMessage extends AsyncTask<Void, Void, JSONObject > {
+		    
+	    	JSONObject response ;
+			private UserFunctions userFunc = new UserFunctions();
+	    	protected void onPreExecute() {
+	        }
+
+	        protected JSONObject doInBackground(Void... args) {
+          try {
+	         		
+        	  Log.i(" message files size", Integer.toString( FileManagerActivity.getFinalMessageFiles().size()));
+        	       if (DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("assignment"))
+	         	       		{
+	  					response = userFunc.sendMessage(Integer.toString(DashboardActivityAlt.listItem.getCategory().getCategoryId()), 
+	  						DashboardActivityAlt.listItem.getDeadline().toString(),
+	  						Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageFragment.newMessage, 
+	  						Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
+	  				 
+	         		}
+	         		else if(DashboardActivityAlt.listItem.getProduct().getProductType().equalsIgnoreCase("essay"))
+	         		{
+	         			response = userFunc.sendMessage("0", 
+	             				DashboardActivityAlt.listItem.getDeadline().toString(),
+	             				Float.toString(DashboardActivityAlt.listItem.getPrice()), NewMessageFragment.newMessage, 
+	             				Integer.toString(DashboardActivityAlt.listItem.getOrderid()), FileManagerActivity.getFinalMessageFiles());
+	         		
+	         		}
+         		
+  				}
+			 catch (Exception e) {
+				
+				e.printStackTrace();
+			}
+	       		
+	       	return response;
+	     }
+
+	        protected void onPostExecute(JSONObject  json) {
+	 	  	   
+	        	try {
+	  				if ((response.getString(Constants.KEY_STATUS) != null))
+	  				{
+	  					
+	  				    String res = response.getString(Constants.KEY_STATUS);
+	  				    if(Boolean.parseBoolean(res) )
+	  				    {	
+	  				    		
+	  				    }
+	  				    else 
+	  				    {
+	  				    	Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.error_server_problem), Toast.LENGTH_SHORT).show();
+	  				    }
+	      
+	  				}	
+	        	}
+				 catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	   }
 	
 
 }

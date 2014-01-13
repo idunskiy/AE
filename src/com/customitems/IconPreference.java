@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.assignmentexpert.R;
-/** *кастомизированный ListPreference. Предоставляет возможность отображать элемент ListPreference со строго определенным дизайном, отступами и шрифтом, независимо от версии Android.  */
+/** *custom ListPreference.  */
 public class IconPreference extends ListPreference {
 
     private Drawable mIcon;

@@ -1,10 +1,9 @@
 package com.fragments;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,27 +12,28 @@ import android.widget.CheckBox;
 
 import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
+import com.asynctasks.LoginAsync;
 import com.customitems.CustomEditPreference;
 import com.library.singletones.SharedPrefs;
 /** * фрагмент для отображения информации профиля пользователя*/
 public class ProfileFragmentPref  extends Fragment implements IClickListener {
 	/** * CustomEditPreference для отображения email'a пользователя*/
-	public static CustomEditPreference loginTextView;
+	  CustomEditPreference loginTextView;
 	/** * CustomEditPreference для отображения телефона пользователя*/
-	public static CustomEditPreference phoneTextView;
+	  CustomEditPreference phoneTextView;
 	View buttonFooter;
 	/** * кнопка для изменения профиля пользователя*/
 	private Button profileEdit;
 	/** * CustomEditPreference для отображения временной зоны пользователя*/
-	public static CustomEditPreference timezonePref;
+	  CustomEditPreference timezonePref;
 	/** * CustomEditPreference для отображения страны пользователя*/
-	public static CustomEditPreference countryPref;
+	  CustomEditPreference countryPref;
 	/** * CustomEditPreference для пароля пользователя*/
-	public static CustomEditPreference passwordPref;
+	  CustomEditPreference passwordPref;
 	/** * CheckBox для входа в приложение без прохождения этапа login'a*/
 	private CheckBox signMeCheck;
 	/** * CustomEditPreference для имени пользователя*/
-	public static CustomEditPreference firstNamePref;
+	  CustomEditPreference firstNamePref;
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
@@ -55,6 +55,17 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
 	    signMeCheck = (CheckBox)view.findViewById(R.id.signMeCheck);
 		 if ( SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false) ==true)
 	    	  signMeCheck.setChecked(true);
+		 if (getArguments()!=null)
+		 {
+		  String profile_name = getArguments().getString("profile_name");    
+		  String profile_phone = getArguments().getString("profile_phone");      
+		  String profile_pass = getArguments().getString("profile_pass");  
+		  if (profile_name!=null & profile_phone!=null& profile_pass!=null)
+			  setFields(profile_name,profile_phone,profile_pass);
+		 }
+		  else
+			  initializeFields();
+		 
 	    return view;
 	  }
 	/** * экземпляр интерфейса  IClickListener*/
@@ -63,7 +74,7 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        setFields();
+       
     }
     @Override
     public void onAttach(Activity activity) {
@@ -77,13 +88,12 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
         }
     }
     /** *метод установки значений в соответствующие поля*/
-	public void setFields()
+	public void initializeFields()
 	{
-		firstNamePref.setSummary(LoginActivity.getUser.getUser().getUserFirstName());
-		loginTextView.setSummary(LoginActivity.getUser.getUser().getUserEmail());
-		phoneTextView.setSummary(LoginActivity.getUser.getPhone());
-		timezonePref.setSummary(LoginActivity.getUser.getUser().getTimeZone());
-		countryPref.setSummary(Locale.getDefault().getDisplayCountry());
+		
+		firstNamePref.setSummary(LoginAsync.user.getFirst_name());
+		loginTextView.setSummary(LoginAsync.user.getEmail());
+		phoneTextView.setSummary(LoginAsync.user.getPhone());
 		String s = "";
 		for (int i=0;i<LoginActivity.currentPass.length();i++)
 		{
@@ -91,6 +101,20 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
 		}
 		passwordPref.setSummary(s);
 	}
+	public void setFields(String name, String phone, String pass)
+	{
+		
+		firstNamePref.setSummary(name);
+		phoneTextView.setSummary(phone);
+
+		String s = "";
+		for (int i=0;i<pass.length();i++)
+		{
+			s += "*";
+		}
+		passwordPref.setSummary(s);
+	}
+	
 //	
 //	private void disableEdits()
 //	{
@@ -114,6 +138,8 @@ public class ProfileFragmentPref  extends Fragment implements IClickListener {
 //	    public void onBackPressed() {
 //	        // Do Here what ever you want do on back press;
 //	    }
+	
+	
 	public void changeFragment(int flag) {
 		
 	}

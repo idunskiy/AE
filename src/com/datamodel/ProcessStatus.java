@@ -38,6 +38,9 @@ public class ProcessStatus implements Parcelable{
 	public ProcessStatus(Parcel in) {
 		readFromParcel(in);
 	}
+	public ProcessStatus(String string) {
+		this.title = string;
+	}
 	public int getProccessStatusId() 
 	{
 		

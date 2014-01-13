@@ -1,4 +1,5 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert">
 
     <style name="AppTheme" parent="android:Theme.Light" />
 
@@ -17,8 +18,12 @@
     <style name="custom_edittext">
         <item name="android:layout_height">46dp</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="android:maxWidth">50dp</item>
         <item name="android:padding">8dp</item>
          <item name="android:paddingLeft">8dp</item>
+
+         <item name="customFont">Roboto-Medium.ttf</item>  
+         
          <item name="android:paddingRight">8dp</item>
          <item name="android:paddingTop">8dp</item>
         <item name="android:layout_marginLeft">21dp</item>
@@ -26,7 +31,7 @@
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginBottom">7dp</item>
         <item name="android:textColorHint">#9d9d9d</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
     
     <style name="custom_textview">
@@ -37,6 +42,7 @@
         <item name="android:layout_marginRight">25dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">7dp</item>
+        
         <item name="android:textColor">#a5a5a5</item>
         <item name="android:textSize">13sp</item>
     </style>

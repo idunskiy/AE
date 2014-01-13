@@ -378,12 +378,14 @@
 		    android:layout_below="@+id/taskTextView"
 		    android:background="#000000"
 		     >	   
+		     
 	        <LinearLayout
 	        android:id="@+id/infoMessageListLayout"
 		    android:layout_width="wrap_content"
 		    android:layout_height="75dp"
 		    android:orientation="horizontal">
 		    </LinearLayout>
+		    
 		    </HorizontalScrollView>
 	     </RelativeLayout>
 	    </ScrollView>

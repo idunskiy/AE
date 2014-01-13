@@ -3,11 +3,14 @@
     android:versionCode="1"
     android:installLocation="preferExternal"
     android:versionName="1.0" >
-    <supports-screens     
-        android:resizeable="true" />
-    <uses-sdk    android:minSdkVersion="9"
-        android:targetSdkVersion="10" 
-        android:maxSdkVersion="17"/>
+    <supports-screens android:resizeable="true"
+                  android:smallScreens="true"
+                  android:normalScreens="true"
+                  android:largeScreens="true"
+                  android:anyDensity="true"/>
+    <uses-sdk    android:minSdkVersion="17"
+        android:targetSdkVersion="19" 
+        android:maxSdkVersion="19"/>
   	<uses-permission android:name="android.permission.INTERNET" />
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
   	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
@@ -16,6 +19,17 @@
 	<uses-permission android:name="android.permission.GET_TASKS"> </uses-permission>
  	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
  	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+ 	<!-- permissions for google messaging  -->	
+ 	
+ 	
+ 	 <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission android:name="com.assignmentexpert.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.assignmentexpert.permission.C2D_MESSAGE" />
+ 	
     <application
        android:name="com.library.ApplicationMemory"
         android:icon="@drawable/launcher"
@@ -72,27 +86,6 @@
     		</intent-filter>
         </activity>
         <activity
-            android:name="com.assignmentexpert.InteractionsActivity"
-            android:label="InteractionsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
-        <activity
-            android:name=".OrderInfoActivityAA"
-            android:label="OrderInfoActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
-        <activity
-            android:name=".OrderInfoActivityEW"
-            android:label="OrderInfoActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" >
-        </activity>
-        <activity
-            android:name="com.assignmentexpert.InteractionsActivityViewPager"
-            android:label="InteractionsActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation" >
-        </activity>
-        <activity
             android:name="com.assignmentexpert.NewMessageActivity"
             android:label="NewMessageActivity"
             android:windowSoftInputMode="stateAlwaysHidden" 
@@ -108,7 +101,8 @@
              
         </activity>
      
-        <service android:name="com.library.ServiceIntentMessages">
+        <service android:name="com.library.ServiceIntentMessages"
+            android:enabled="false">
         </service>
         <service android:name="com.library.DownloadService"/>
          <service android:name="com.library.ServiceMessages">
@@ -128,19 +122,36 @@
        		 android:name="com.tabscreens.LoginTabScreen"
   		    android:windowSoftInputMode="stateAlwaysHidden"         
   		    android:noHistory="true"  
+  		    android:launchMode= "singleInstance"
   		     android:configChanges="keyboardHidden|orientation">
+            <!--  comment for GCM testing  -->
         	    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"
                      />
              </intent-filter>
              
+            
+             
       </activity>
+      <activity
+       		 android:name="com.gcmservice.DemoActivity">
+            <!--  
+       		  <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER"
+                     />
+             </intent-filter>
+             -->
+             
+       		 </activity>
               <activity
        		 android:name="com.tabscreens.DashboardTabScreen"
         	 android:label="Assignment"
+        	 android:launchMode= "singleInstance"
         	  android:windowSoftInputMode="stateAlwaysHidden" 
-            android:configChanges="keyboardHidden|orientation">
+            android:configChanges="keyboardHidden|orientation"
+           >
         	 <intent-filter>
         		<action android:name="tab_change_listener_order" />
     		</intent-filter>
@@ -166,9 +177,11 @@
                 <activity        	
             	 android:name="com.tabscreens.OrderInfoTabScreen"
                android:windowSoftInputMode="stateHidden"
-            android:configChanges="keyboardHidden|orientation"/>
+               android:launchMode= "singleInstance"
+            android:configChanges="keyboardHidden|orientation"
+            />
        
-       <activity        	
+       	<activity        	
             	 android:name=".ProfileCompl"
                  android:windowSoftInputMode="stateHidden" 
            	     android:configChanges="keyboardHidden|orientation"/>
@@ -182,8 +195,9 @@
            	     android:configChanges="keyboardHidden|orientation"/>
          <activity        	
             	 android:name="com.fragmentactivities.InteractionsFragmentActivity"
-                 android:windowSoftInputMode="stateHidden" 
-           	     android:configChanges="keyboardHidden|orientation"/>
+                 android:windowSoftInputMode="adjustPan"
+           	     android:configChanges="keyboardHidden|orientation"
+           	     />
            <activity        	
             	 android:name="com.fragmentactivities.OrderInfoFragmentActivity"
                  android:windowSoftInputMode="stateHidden" 
@@ -197,10 +211,27 @@
            android:theme="@android:style/Theme.Translucent.NoTitleBar"
            android:label="@string/app_name" />
 
-              
+               <meta-data android:name="com.crashlytics.ApiKey" android:value="fcd3ac13af06f0ec06f8cc2fa25e4c4119e89f93"/>
+             
               
            <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
        
+           
+             <receiver
+            android:name="com.gcmservice.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <!-- Receives the actual messages. -->
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!-- Receives the registration id. -->
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                  <category android:name="com.assignmentexpert" />
+            </intent-filter>
+        </receiver>
+            <service android:name="com.gcmservice.GcmIntentService"/>
+            
+            
+             
     </application>
-
+ 	
 </manifest>

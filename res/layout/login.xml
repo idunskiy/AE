@@ -25,7 +25,7 @@
         android:id="@+id/textViewPlus1"
         android:layout_width="fill_parent"
         style="@style/custom_textview"
-        android:text="Enter your credentials to sign in"
+        android:text="@string/textview_login_prompt"
         foo:customFont="Roboto-Medium.ttf">
     </com.customitems.CustomTextView>
 		 </TableRow>
@@ -42,15 +42,15 @@
            android:focusable="true"
          android:layout_gravity="center_vertical"
        >
-   	<com.customitems.CustomEditText
+   	<AutoCompleteTextView
         android:id="@+id/loginEmail"
         style="@style/custom_edittext"
+        android:inputType="textEmailAddress"
         android:focusable="true"
         android:singleLine="true"
         android:imeOptions="actionNext"
-        foo:customFont="Roboto-Regular.ttf"
         android:hint="Email">
-    </com.customitems.CustomEditText>
+    </AutoCompleteTextView>
          </TableRow>
          	 <TableRow android:layout_height="1px" android:background="#323232">
 			   	<TextView android:layout_span="1" android:layout_height="1px" 
@@ -85,20 +85,16 @@
             
             android:id="@+id/btnProceed"
             style="@style/custom_button"
-            android:layout_centerHorizontal="true"
-            android:text="Sign in"
+            android:text="@string/btn_sign_in"
              />
 	    </TableRow>
 	
  	<TableRow
-        android:id="@+id/tableRow3"
         style="@style/button_row"
         >
         
         </TableRow>
 		<TableRow
-		     
-        android:id="@+id/tableRow1"
         style="@style/text_row"
         >
    	<com.customitems.CustomTextView
@@ -107,7 +103,7 @@
         android:id="@+id/btnRestore"
         style="@style/custom_textview"
         android:layout_marginTop="17dp"
-        android:text="Forgot Password?"
+        android:text="@string/textview_login_forgot_pass"
         android:layout_width="fill_parent"
         android:gravity="center"
         android:textColor="#42aeff"

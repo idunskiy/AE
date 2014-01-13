@@ -65,7 +65,6 @@ public class ContentRepository {
 	        for (Category contact : categories) {
 	        	 HelperFactory.GetHelper().getCategoryDao().createIfNotExists(contact);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка статусов заказа в базу данных
@@ -75,13 +74,10 @@ public class ContentRepository {
 	    {
 	       	OrmLiteSqliteOpenHelper dbHelper=DatabaseHandler.getInstance(_context);
 	    	dbHelper.getDao(ProcessStatus.class);
-	       	Log.i(" ", statuses.toString());
-	    	Log.i("dao",HelperFactory.GetHelper().getStatusDao().toString());
 	        for (ProcessStatus status : statuses) {
 	        	
 	            HelperFactory.GetHelper().getStatusDao().create(status);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка Subjects в базу данных
@@ -95,7 +91,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getSubjectDao().create(status);
 	        }
-	        dbHelper.close();
 	    }
 	    
 	    /**
@@ -112,7 +107,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getLevelDao().create(level);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка EssayType в базу данных
@@ -128,7 +122,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getEssayTypeDao().create(essayType);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка EssayCreationStyle в базу данных
@@ -143,7 +136,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getEssayCreationStyleDao().create(essayType);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка NumberPages в базу данных
@@ -159,7 +151,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getNumberPagesDao().create(essayType);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения списка NumberOfReferences в базу данных
@@ -175,7 +166,6 @@ public class ContentRepository {
 	        	
 	            HelperFactory.GetHelper().getNumberReferencesDao().create(essayType);
 	        }
-	        dbHelper.close();
 	    }
 	    /**
 	     *	 метод сохранения заказа в базу данных

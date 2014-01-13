@@ -43,9 +43,8 @@ public class Subject implements Parcelable{
 	}
 	
 	@Override
-	public String toString()
-	{		
-	return title;	
+	public String toString() {
+		return "Subject [id=" + id + ", title=" + title + "]";
 	}
 	public int describeContents() {
 		// TODO Auto-generated method stub

@@ -7,11 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -32,17 +27,20 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,11 +51,7 @@ import com.asynctasks.LoginAsync;
 import com.asynctasks.RestoreAsync;
 import com.customitems.CustomTextView;
 import com.datamodel.Customer;
-import com.datamodel.Order;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.library.DatabaseHandler;
+import com.library.Constants;
 import com.library.FrequentlyUsedMethods;
 import com.library.singletones.SharedPrefs;
 import com.tabscreens.DashboardTabScreen;
@@ -69,9 +63,9 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
     /** *TextView рестора пароля */
     TextView btnRestore;
     /** *EditText логина пользователя */
-    EditText inputEmail;
+    public static AutoCompleteTextView inputEmail;
     /** *EditText пароля пользователя */
-    EditText inputPassword;
+    public static EditText inputPassword;
     TextView loginErrorMsg;
    Dialog restoreDialog;
     
@@ -84,7 +78,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
     static boolean newUser = false;
     private static Context instance;
     public static String passUserId = null;
-    public static Context _context;
+    public static Context context;
 	
     /** * поле для диалога */
     private static final int DLG_EXAMPLE1 = 0;
@@ -96,7 +90,9 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
     /** *поле для запоминания значения емеила для восстановления пароля */
 	public static String restorePass ="";
 	public static String currentPass ="";
-	final FrequentlyUsedMethods faq = new FrequentlyUsedMethods(LoginActivity.this);
+	FrequentlyUsedMethods faq;
+	
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -105,66 +101,71 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         new CustomTextView(this);
          // Importing all assets like buttons, text fields
-        inputEmail = (EditText) findViewById(R.id.loginEmail);
+        inputEmail = (AutoCompleteTextView ) findViewById(R.id.loginEmail);
         inputPassword = (EditText) findViewById(R.id.loginPassword);
+        
+        
         inputEmail.setSelection(0);
         btnProceed= (Button) findViewById(R.id.btnProceed);
-//     
-        loginErrorMsg = (TextView) findViewById(R.id.login_error);
         btnRestore = (TextView) findViewById(R.id.btnRestore);
 
         getWindow().setFormat(PixelFormat.RGBA_8888);
         sharedPreferences = getSharedPreferences("user", MODE_PRIVATE );
-        _context = this;
+        context = this;
         editor = sharedPreferences.edit();
-        
+        faq = new FrequentlyUsedMethods(this);
         printHashKey();
 
         File directory = new File(Environment.getExternalStorageDirectory()+ "/download/AssignmentExpert");
-        Log.i("downloads directory", directory.getPath());
         if (!directory.exists())
         	directory.mkdirs();
        
     	Bundle bundle = getIntent().getExtras();
         if (bundle != null)
         { 
+          
         	if (getIntent().getExtras().getBoolean("relogin") == true)
             	reLogin();
           if(getIntent().getExtras().getString("restError") != null)
-        	  Toast.makeText(this, getIntent().getExtras().getString("restError"), Toast.LENGTH_LONG).show();
-        	  
+          {}
         }
         
-    	inputPassword.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
-				.showSoftInput(inputPassword, 0); 
+        inputPassword.setOnTouchListener(new OnTouchListener() {
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				//inputPassword.setFocusable(true);
 				inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				//if (inputEmail.getText().toString().equals("Login (E-mail)") |inputEmail.getText().toString().equalsIgnoreCase("Wrong E-mail"))
-				inputPassword.setText("");
-				inputPassword.setHint("Password");
-				
-				inputPassword.setTextColor(Color.BLACK);
-				
+				return false;
 			}
     		
     	});
+        
+        inputPassword.setOnFocusChangeListener(new OnFocusChangeListener() {          
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus)
+                	if (inputPassword.getText().toString().length()==0)
+                		inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+            }
+        });
+        
     	inputEmail.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)) 
 				.showSoftInput(inputEmail, 0); 
-				if (inputEmail.getText().toString().equalsIgnoreCase("wrong e-mail"))
-					inputEmail.getText().clear();
 				inputEmail.setHint("E-mail");
 				inputEmail.setTextColor(Color.BLACK);
 				
 			}
     		
     	});
-    	inputEmail.setText("shurko@ukr.net");
-    	inputPassword.setText("11111");
-    	SharedPrefs.getInstance().Initialize(getApplicationContext());
+    	
+    	
+    	 // for test values
+//    	 
+    	inputEmail.setText("test@mail.com");
+    	inputPassword.setText("dnipro");
+    	
+    	
+    	
     	if (SharedPrefs.getInstance().getSharedPrefs()!=null)
 	    {
     		if (SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false)==true)
@@ -175,56 +176,34 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	   		 	LoginAsync.execute(this, this);
 	        }
     	}
-        Log.i("isChecked in LoginAct", Boolean.toString(SharedPrefs.getInstance().getSharedPrefs().getBoolean("isChecked", false)));
         btnProceed.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				 boolean errorFlag = false;
 				 String email = inputEmail.getText().toString();
 			     String password= inputPassword.getText().toString();
-			     if(email.equals("Login"))
-        		 {
-        			 inputEmail.getText().clear();
-        			 errorFlag = true;
-        		 }
-			     if(password.equals("Password"))
-        		 {
-			    	 inputPassword.setText(" ");
-			    	 inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-			    	 inputPassword.setTextColor(Color.RED);
-			    	 inputPassword.setText("Should be not empty");
-        			 errorFlag = true;
-        		 }
-			     if(inputPassword.length()<5)
-        		 {
-			    	 inputPassword.setText(" ");
-			    	 inputPassword.setTextColor(Color.RED);
-			    	 inputPassword.setInputType(InputType.TYPE_CLASS_TEXT);
-			    	 inputPassword.setText("Wrong password");
-        			 errorFlag = true;
-        		 }
-			     
-			     if(!EmailValidate(email))
+			     if(!faq.EmailValidate(email))
 			     {
-			    	    inputEmail.setText(" ");
-	                	inputEmail.setTextColor(Color.RED);
-	                	inputEmail.setText("Wrong E-mail");
+			    	    inputEmail.setText("");
+			    	    
+//			    	    faq.createToast( getResources().getString(R.string.toast_login_wrong_email), LoginActivity.this);
+			    	    Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_login_wrong_email),Toast.LENGTH_LONG).show();
 	                	errorFlag = true;
 			     }
 			     
 			     if(errorFlag == false)
 				  {	
-			    	 if (!sharedPreferences.getString("username", "").equals(email))
-			    	 {
-			    	   newUser = true;
-			    	   editor.remove("username");
-			    	   editor.commit();
-			    	   Log.i("new User action","LoginActivity");
-			    	 }
-			    	 else 
-			    	 {
-			    			 newUser = false;
-			    			 Log.i("old User action","LoginActivity");
-			    	 }
+//			    	 if (!sharedPreferences.getString("username", "").equals(email))
+//			    	 {
+//			    	   newUser = true;
+//			    	   editor.remove("username");
+//			    	   editor.commit();
+//			    	   Log.i("new User action","LoginActivity");
+//			    	 }
+//			    	 else 
+//			    	 {
+//			    			 newUser = false;
+//			    			 Log.i("old User action","LoginActivity");
+//			    	 }
 			    	 boolean isOnline = faq.isOnline();
 			    	 if (isOnline)
 			    		 
@@ -232,9 +211,9 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 			    		 forFragmentLogin = email;
 			    		 forFragmentPassword = password;
 			    		 LoginAsync.execute(LoginActivity.this,LoginActivity.this);
-				    	 editor.putString("username", email);
-				    	 editor.putString("password", password);
-				    	 editor.commit();
+//				    	 editor.putString("username", email);
+//				    	 editor.putString("password", password);
+//				    	 editor.commit();
 			    	 }
 				  }
 			}
@@ -278,51 +257,41 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
     	inputEmail.setText(sharedPreferences.getString("username", ""));
     	inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     	inputPassword.setText(sharedPreferences.getString("password", ""));
-    	Toast toast = Toast.makeText(_context, "Sorry but we have some problems at our server." +  "\r\n" +
-     "You should to re-login", Toast.LENGTH_LONG);
-    	toast.show();
     	
     }
     /** *метод записи полученных данных от сервера в файл. используется для дебага */
-//    public static void appendLog(String text)
-//    {       
-//       File logFile = new File("sdcard/log.txt");
-//       if (!logFile.exists())
-//       {
-//          try
-//          {
-//             logFile.createNewFile();
-//          } 
-//          catch (IOException e)
-//          {
-//             // TODO Auto-generated catch block
-//             e.printStackTrace();
-//          }
-//       }
-//       try
-//       {
-//          BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true)); 
-//          buf.append(text);
-//          buf.newLine();
-//          buf.close();
-//          
-//       }
-//       catch (IOException e)
-//       {
-//          // TODO Auto-generated catch block
-//          e.printStackTrace();
-//       }
-//    }
+    public static void appendLog(String text)
+    {       
+       File logFile = new File("sdcard/log.txt");
+       if (!logFile.exists())
+       {
+          try
+          {
+             logFile.createNewFile();
+          } 
+          catch (IOException e)
+          {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+          }
+       }
+       try
+       {
+          BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true)); 
+          buf.append(text);
+          buf.newLine();
+          buf.close();
+          
+       }
+       catch (IOException e)
+       {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+       }
+    }
 
     /** *метод, проверяющий, что введенная строка  соответствует формату email'a*/
-	 boolean EmailValidate(String email)
-	    {
-	        
-	    	Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
-				Matcher matcher = pattern.matcher(email);
-				boolean matchFound = matcher.matches();
-	    	return matchFound;
-	    }
+	
 
 	  @Override
 	    public void onBackPressed() {
@@ -334,7 +303,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	  public static Context getInstance(){
 		    if (instance == null)
 		    {
-		        instance = LoginActivity._context;
+		        instance = LoginActivity.context;
 		    }
 		    return instance;
 		}
@@ -343,10 +312,16 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	public void onLoadFinished(Object data) {
 		if (data instanceof String)
 		{
+			
+			// successful login 
 			if (((String)data).equalsIgnoreCase("success"))
 			{
 				Log.i("LoginAsync in LoginActivity result", "success");
 				currentPass = inputPassword.getText().toString();
+				
+				
+				 SharedPrefs.getInstance().getSharedPrefs().edit().putString(Constants.ENTERED_PASS, forFragmentPassword).commit();
+	    		 SharedPrefs.getInstance().getSharedPrefs().edit().putString(Constants.ENTERED_EMAIL, forFragmentLogin).commit();
 				Intent i = new Intent(getApplicationContext(),
 		                DashboardTabScreen.class);
 					//i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -376,7 +351,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	/** *метод, обработки результатов неуспешной работы LoginAsync или прекращения его работы*/
 	public void onCancelLoad() {
 		Log.i("LoginaAct", "onCancelled");
-		 Toast.makeText(LoginActivity.this, "Interrupted.", Toast.LENGTH_LONG).show();
+		 Toast.makeText(LoginActivity.this,getResources().getString(R.string.error_interrupted), Toast.LENGTH_LONG).show();
 	}
 	@Override
 	    protected Dialog onCreateDialog(int id) {
@@ -396,6 +371,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	            case DLG_EXAMPLE1:
 	                // Clear the input box.
 	                final EditText text = (EditText) dialog.findViewById(1);
+	                text.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 	                text.setText("");
 	                restoreDialog = (AlertDialog) dialog;
 	                ((AlertDialog) dialog).getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
@@ -421,7 +397,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	                {            
 	                    public void onClick(View v)
 	                    {
-	                    	if (EmailValidate(text.getText().toString()))
+	                    	if (faq.EmailValidate(text.getText().toString()))
 	       			    	 {
 	       			    		 boolean isOnline = faq.isOnline();
 	       			    		 if (isOnline) 
@@ -434,7 +410,7 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	       			    	 }
 	       			    	 else 
 	       			    	 {
-	       			    		 Toast.makeText(LoginActivity.this, "Format of email is wrong.", Toast.LENGTH_SHORT).show();
+	       			    		 Toast.makeText(LoginActivity.this, getResources().getString(R.string.error_email_format), Toast.LENGTH_SHORT).show();
 	       			    	 }
 	                    }
 	                });
@@ -494,21 +470,6 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 	        });
 	        return builder.create();
 	    }
-	  private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-		    if (state.isOpened()) {
-		    } else if (state.isClosed()) {
-		    }
-		}
-	  private Session.StatusCallback callback = new Session.StatusCallback() {
-		    public void call(Session session, SessionState state, Exception exception) {
-		        onSessionStateChange(session, state, exception);
-		    }
-		};
-		@Override
-		 public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		     super.onActivityResult(requestCode, resultCode, data);
-		     Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
-		 }
 		 public void printHashKey() {
 
 		        try {
@@ -517,8 +478,6 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 		            for (Signature signature : info.signatures) {
 		                MessageDigest md = MessageDigest.getInstance("SHA");
 		                md.update(signature.toByteArray());
-		                Log.d("TEMPTAGHASH KEY:",
-		                        Base64.encodeToString(md.digest(), Base64.DEFAULT));
 		            }
 		        } catch (NameNotFoundException e) {
 
@@ -527,6 +486,36 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
 		        }
 
 		    }
+		 private String[] getLoggedIn()
+		 {
+			 String[] res = null;
+			 int size = SharedPrefs.getInstance().getSharedPrefs().getInt(Constants.LOGGED_IN_SIZE, 0);
+			 Log.i("logged in size", Integer.toString(size));
+			 if (size != 0)
+			 {
+				 res= new String[size];
+				 for (int i=0;i<size;i++)
+				 {
+					 Log.i("count loop", Integer.toString(i));
+					 res[i] = SharedPrefs.getInstance().getSharedPrefs().getString(Constants.LOGGED_IN + Integer.toString(i), "");
+					 Log.i("logged in users",  res[i].toString());
+				 }
+			 }
+			
+			 return  res;
+		 }
+		 @Override
+		 protected void onResume() {
+		     super.onResume();
+		     if ( getLoggedIn()!=null){
+		    		
+		    	 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+		                 android.R.layout.simple_dropdown_item_1line, getLoggedIn());
+		    	
+		    	 inputEmail.setAdapter(adapter);
+		    	}
+		     // Normal case behavior follows
+		 }
 		
 	
 }

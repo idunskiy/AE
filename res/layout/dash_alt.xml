@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
     android:id="@+id/dashboardSwitcher"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 <RelativeLayout 
-      xmlns:foo="http://schemas.android.com/apk/res/com.assignmentexpert"
+      
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:tag="dash_alt"
@@ -71,7 +72,7 @@
   <com.customitems.CustomTextView
         android:id="@+id/textlabel"
         style="@style/custom_textview"
-        android:text="Tap to open | Swipe to see details"
+        android:text="@string/textview_dashboard_promt"
         android:layout_width="fill_parent"
         android:gravity="center"
         foo:customFont="Roboto-Medium.ttf"/>
@@ -89,7 +90,7 @@
     android:layout_height="fill_parent">
      <TextView 
         android:textSize="20sp"
-        android:text="@string/no_orders"
+        android:text="@string/textview_no_orders"
         android:layout_width="fill_parent"
         android:gravity="center|center"
         android:layout_height="fill_parent"

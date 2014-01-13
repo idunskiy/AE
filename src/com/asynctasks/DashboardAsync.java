@@ -10,17 +10,21 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.assignmentexpert.DashboardActivityAlt;
+import com.assignmentexpert.R;
 import com.asynctaskbase.AbstractTaskLoader;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctaskbase.TaskProgressDialogFragment;
+import com.crashlytics.android.Crashlytics;
 import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.library.Constants;
 import com.library.DataParsing;
 import com.library.DatabaseHandler;
 import com.library.UserFunctions;
+import com.library.singletones.SharedPrefs;
 /** * AsyncTask для загрузки списка заказов*/
 public class DashboardAsync extends AbstractTaskLoader{
 	Context context;
@@ -39,7 +43,7 @@ public class DashboardAsync extends AbstractTaskLoader{
 
 			DashboardAsync loader = new DashboardAsync(fa);
 
-			new TaskProgressDialogFragment.Builder(fa, loader, "Loading orders…")
+			new TaskProgressDialogFragment.Builder(fa, loader, fa.getResources().getString(R.string.dialog_loading))
 					.setCancelable(false)
 					.setTaskLoaderListener(taskLoaderListener)
 					.show();
@@ -75,9 +79,9 @@ public class DashboardAsync extends AbstractTaskLoader{
 		Log.i("per_page in async", Integer.toString(DashboardActivityAlt.perpage));
 		k = n.getOrders(Integer.toString(DashboardActivityAlt.page),Integer.toString(DashboardActivityAlt.perpage));
 		orders = u.wrapOrders(k);
-    		if (orders.isEmpty())
+    		if (orders == null)
     		{
-    			Log.i("empty orders","orders are empty");
+    			SharedPrefs.getInstance().getSharedPrefs().edit().putBoolean(Constants.NO_MORE_ORDERS, true).commit();
     			DashboardActivityAlt.stopDownload = true;
     			result = "empty";
     			res = true;
@@ -93,7 +97,7 @@ public class DashboardAsync extends AbstractTaskLoader{
 		         results = rawResults.getResults();
 		         String[] resultArray = results.get(0); 
 		         result = resultArray[0];
-		         if (!r.getIsActive())
+		         if (!r.getIsActive().equalsIgnoreCase("active"))
 		         {
 		        	    r.getProcess_status().setProccessStatusId(9);
 		        	 	r.getProcess_status().setProccessStatusTitle("Inactive");
@@ -105,10 +109,11 @@ public class DashboardAsync extends AbstractTaskLoader{
 	         }
 	    	result = "success";
 		    DashboardActivityAlt.page+=1;
+		    orders = null;
     		}
 		}
 	    catch (Exception e1) {
-	    	   Log.i("DashboardAsync", "catch  loadInBackground");
+	   	 Crashlytics.logException(e1);
 			e1.printStackTrace();
 			result = "error";
 			onStopLoading();

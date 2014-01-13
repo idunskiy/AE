@@ -106,7 +106,10 @@ public class Messages implements Parcelable
 	
 	public ArrayList<Files> getFiles() 
 	{
+		if (this.files !=null)
 		 return this.files;
+		else 
+			return null;
     }
 	public Threads getThread() 
 	{

@@ -4,32 +4,32 @@
       android:key="orderScreen">
   		
                 	 <com.customitems.IconPreference
-                        android:title="Product"
-                        android:summary="Not selected"
+                        android:title="@string/preference_product"
+                        android:summary="@string/preference_not_selected"
                         android:key="productPref"
                         foo:icon = "@drawable/list_pointer"
                         android:widgetLayout=  "@null"
                         android:entries="@array/productsArray"
                         android:entryValues="@array/productsArray"/>
 	                <com.customitems.IconPreference
-	                        android:title="Subject"
-	                        android:summary="Not selected"
+	                        android:title="@string/preference_subject"
+	                        android:summary="@string/preference_not_selected"
 	                        foo:icon = "@drawable/list_pointer"
 	                        android:widgetLayout=  "@null"
 	                        android:key="subjectPref"
 	                         />
 	                 <com.customitems.IconPreference
-	                        android:title="Category"
+	                        android:title="@string/preference_category"
 	                        foo:icon = "@drawable/list_pointer"
 	                        android:enabled= "false"
 	                        android:widgetLayout=  "@null"
-	                        android:summary="Not selected"
+	                        android:summary="@string/preference_not_selected"
 	                        android:key="categoryPref"
                          />
                     <com.customitems.IconPreference
-                        android:title="Level"
+                        android:title="@string/preference_level"
                         foo:icon = "@drawable/list_pointer"
-                        android:summary="Not selected"
+                        android:summary="@string/preference_not_selected"
                         android:widgetLayout=  "@null"
                         android:key="levelPref"
                          />
@@ -41,13 +41,14 @@
                          android:entries="@array/empty_array"
                         android:entryValues="@array/empty_array"
 				        />
-     				-->
+     				
                     
                         <com.customitems.IconPreference
-                        android:title="Time zone"
-                        android:summary="Not selected"
+                        android:title="@string/preference_timezone"
+                        android:summary="@string/preference_not_selected"
                         foo:icon = "@drawable/list_pointer"
                         android:widgetLayout=  "@null"
                         android:key="timezonePref"
                          />
+                         -->
 </PreferenceScreen>

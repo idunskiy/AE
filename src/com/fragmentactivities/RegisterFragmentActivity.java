@@ -1,9 +1,11 @@
 package com.fragmentactivities;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -12,8 +14,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.assignmentexpert.LoginActivity;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctasks.CaptchaAsync;
@@ -22,6 +26,7 @@ import com.fragments.IClickListener;
 import com.fragments.RegisterFragment;
 import com.fragments.RegisterFragmentCompl;
 import com.library.singletones.SharedPrefs;
+import com.tabscreens.LoginTabScreen;
 /** * FragmentActivity регистрации. Оперерует фрагментами RegisterFragment, RegisterFragmentCompl
  * @see RegisterFragment
  * @see RegisterFragmentCompl  */
@@ -65,16 +70,57 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 	}
 	 /** *метод интерфейса ITaskLoaderListener. служит для обработки данных после успешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onLoadFinished(Object data) {
+		 Fragment currentFragment; 
 			 if (data instanceof Bitmap & data != null)
 	    	 {
-				 
+				 currentFragment =fragmentManager.findFragmentById(R.id.myfragment); 
+				if (currentFragment instanceof RegisterFragment)
+				{
 	    		 RegisterFragment.setImageBitmap((Bitmap)data);//.setImageBitmap((Bitmap)data);
-	    		 captchaForSave = (Bitmap)data;
-	    		 setRegisterCaptha();
+	    		 ((RegisterFragment)currentFragment).fillCountryAdapter();
+				}
+	    		 
+//	    		 captchaForSave = (Bitmap)data;
+//	    		 setRegisterCaptha();
 	    	 }
 			 if (data instanceof String)
 			 {
-				 Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
+				 if (((String) data).equalsIgnoreCase("error"))
+				 {
+					 Toast.makeText(getApplicationContext(), RegisterAsync.RegisterAsyncError, Toast.LENGTH_SHORT ).show();
+					 RegisterFragment.setImageBitmap(RegisterAsync.reCatcha);
+					 
+				 }
+				 else if (((String) data).equalsIgnoreCase("success"))
+				 {
+					 
+					 Toast.makeText(this, getResources().getString(R.string.toast_register_success)+"\r\n"+ RegisterFragment.userEmail
+								, Toast.LENGTH_LONG).show();
+
+					 
+					 new Timer().schedule(new TimerTask() {
+						    @Override
+						    public void run() {
+						        //This code is run all 60seconds
+						        //If you want to operate UI modifications, you must run ui stuff on UiThread.
+						        RegisterFragmentActivity.this.runOnUiThread(new Runnable() {
+						            public void run() {
+						            	
+						            	 ((LoginTabScreen)getParent()).switchTab(0);
+						            	 LoginActivity.inputEmail.setText(RegisterFragment.userEmail);
+						            	 LoginActivity.inputPassword.getText().clear();
+						            }
+						        });
+						    }
+						}, 1000);
+					
+				 }
+				 
+			 }
+			 // if error occurs
+			 if (data==null)
+			 {
+				 Toast.makeText(getApplicationContext(),getResources().getString(R.string.error_server_problem), Toast.LENGTH_SHORT).show();
 			 }
 			
 		
@@ -82,7 +128,6 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 	}
 	/** *метод интерфейса ITaskLoaderListener. служит для обработки данных после неуспешной работы задачи в отдельном потоке, используемой в данной активности.  */
 	public void onCancelLoad() {
-		// TODO Auto-generated method stub
 		
 	}
 //	@Override
@@ -139,7 +184,7 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 		 Fragment registerFragment2 = new RegisterFragment();
     	 fragmentTransaction.replace(R.id.myfragment, registerFragment2).commit();
     	 Log.i("RegisterFragmentActivity", " returnTo1Step");
-    	 getRegisterCaptcha();
+//    	 getRegisterCaptcha();
 	}
 	/** *метод установки каптчи	 */
 	private void setRegisterCaptha()
@@ -154,19 +199,19 @@ public class RegisterFragmentActivity extends FragmentActivity implements IClick
 		
 	}
 	/** *метод получения сохраненной каптчи в SharedPreferences	 */
-	private void getRegisterCaptcha()
-	{
-		String previouslyEncodedImage =  SharedPrefs.getInstance().getSharedPrefs().getString("captcha_decode", "");
-		if( !previouslyEncodedImage.equalsIgnoreCase("") ){
-			Log.i("RegisterFragmentActivity","getRegisterCaptcha");
-		    byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
-		    Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-		    RegisterFragment.setImageBitmap(bitmap);
-		    Log.i("RegisterFragmentActivity , getRegisterCaptcha", Integer.toString(bitmap.getDensity()));
-		    //RegisterFragment.captcha.setImageBitmap(bitmap);
-		  
-		}
-	}
+//	private void getRegisterCaptcha()
+//	{
+//		String previouslyEncodedImage =  SharedPrefs.getInstance().getSharedPrefs().getString("captcha_decode", "");
+//		if( !previouslyEncodedImage.equalsIgnoreCase("") ){
+//			Log.i("RegisterFragmentActivity","getRegisterCaptcha");
+//		    byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
+//		    Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+//		    RegisterFragment.setImageBitmap(bitmap);
+//		    Log.i("RegisterFragmentActivity , getRegisterCaptcha", Integer.toString(bitmap.getDensity()));
+//		    //RegisterFragment.captcha.setImageBitmap(bitmap);
+//		  
+//		}
+//	}
 	@Override
 	public void onBackPressed() {
     	

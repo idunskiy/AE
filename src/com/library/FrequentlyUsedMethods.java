@@ -1,41 +1,59 @@
 package com.library;
 
-import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.preference.ListPreference;
 import android.support.v4.app.FragmentActivity;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.assignmentexpert.DashboardActivityAlt;
 import com.assignmentexpert.R;
 import com.asynctaskbase.ITaskLoaderListener;
 import com.asynctasks.InactivateAsync;
+import com.customitems.CustomEditPreference;
+import com.datamodel.Files;
 import com.datamodel.Level;
 import com.datamodel.Order;
 import com.datamodel.ProcessStatus;
 import com.j256.ormlite.dao.Dao;
+import com.library.singletones.SharedPrefs;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalInvoiceData;
@@ -138,15 +156,15 @@ public class FrequentlyUsedMethods {
   	public void inactivateOrder()
   	{
   		AlertDialog.Builder alt_bld = new AlertDialog.Builder(getContext());
-          alt_bld.setMessage("Are you sure you want to inactive the order?")
+          alt_bld.setMessage(getContext().getResources().getString(R.string.dialog_inactivate_message))
           .setCancelable(false)
-          .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+          .setPositiveButton(getContext().getResources().getString(R.string.btn_yes), new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
               // Action for 'Yes' Button
               	InactivateAsync.execute((FragmentActivity)getContext(), (ITaskLoaderListener)getContext());
               }
           })
-          .setNegativeButton("No", new DialogInterface.OnClickListener() {
+          .setNegativeButton(getContext().getResources().getString(R.string.btn_no), new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
               //  Action for 'NO' Button
 
@@ -155,7 +173,7 @@ public class FrequentlyUsedMethods {
           });
           AlertDialog alert = alt_bld.create();
           // Title for AlertDialog
-          alert.setTitle("Order inactivation");
+          alert.setTitle(getContext().getResources().getString(R.string.dialog_inactivate_title));
           // Icon for AlertDialog
           alert.show();
   	}
@@ -168,9 +186,9 @@ public class FrequentlyUsedMethods {
 		      	//if (new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice()))!= null) 
 		      	newPayment.setSubtotal(new BigDecimal(Float.toString(DashboardActivityAlt.listItem.getPrice())));
 		      	newPayment.setCurrencyType("USD");
-		      	newPayment.setRecipient("ivand_1356619309_biz@aeteam.org");
-		      	newPayment.setMerchantName("BrainRouter LTD");
-		      	newPayment.setIpnUrl(Constants.testHost+"/app_dev.php/payment/notifier/");
+		      	newPayment.setRecipient("paygbpaltest@gmail.com");
+		      	newPayment.setMerchantName("FreelanceSystems LTD");
+		      	newPayment.setIpnUrl(Constants.prodHost+"/paypal/notifier");
 		      	newPayment.setPaymentType(PayPal.PAYMENT_TYPE_SERVICE);
 		      	PayPalInvoiceData invoice = new PayPalInvoiceData();
 		        	invoice.setTax(new BigDecimal("0"));
@@ -188,34 +206,41 @@ public class FrequentlyUsedMethods {
 	 /**	 *	 OnClickListener для открытия файла  	 */
    public OnClickListener fileInfoListenter = new OnClickListener() {
 	    public void onClick(View v) {
-	    	  File choosed = findFile(((TextView)v).getText().toString());
-              Intent intent = new Intent();
-  			intent.setAction(android.content.Intent.ACTION_VIEW);
-  			intent.setDataAndType(Uri.fromFile(choosed), "text/plain");
-  			getContext().startActivity(intent);
+	    	 
+//	    	  File choosed = findFile(((TextView)v).getText().toString());
+	    	Files file = findFile(((TextView)v).getTag().toString());
+	    	new DownloadFileAsync(getContext()).execute(file);
+//              Intent intent = new Intent();
+//  			intent.setAction(android.content.Intent.ACTION_VIEW);
+//  			intent.setDataAndType(Uri.fromFile(choosed), "text/plain");
+//  			getContext().startActivity(intent);
      	
    }};
+   
+   
 	 /**	 *	 метод для поиска файла на карте памяти по имени файла  	 */
-   public File findFile(String name)
+	public Files findFile(String name)
    {
-	   File directory = new File("/mnt/sdcard/download/AssignmentExpert");
-	   File choosedFile = null;
-	   File[] files = directory.listFiles();
-	   try
-	   {
-	   for (int i = 0; i < files.length; ++i) {
-	      if (files[i].getName().equals(name))
-	    	  choosedFile = files[i];
-	   }
-	   }
-	   catch(NullPointerException e)
-	   {
-		   someMethod("current file can't be find");
-		   e.printStackTrace();
-		   
-		   
-	   }
-	   return choosedFile;
+		 return DashboardActivityAlt.listItem.getOrderFiles().get(DashboardActivityAlt.listItem.getOrderFiles().indexOf(new Files(Integer.parseInt(name))));
+		 
+//	   File directory = new File("/mnt/sdcard/download/AssignmentExpert");
+//	   File choosedFile = null;
+//	   File[] files = directory.listFiles();
+//	   try
+//	   {
+//	   for (int i = 0; i < files.length; ++i) {
+//	      if (files[i].getName().equals(name))
+//	    	  choosedFile = files[i];
+//	   }
+//	   }
+//	   catch(NullPointerException e)
+//	   {
+//		   someMethod("current file can't be find");
+//		   e.printStackTrace();
+//		   
+//		   
+//	   }
+//	   return choosedFile;
    }
    /**	 *	 метод конвертации пикселей в dp 
      * @param px - пиксели для конвертации
@@ -268,7 +293,6 @@ public class FrequentlyUsedMethods {
 				((daoProcess.queryForId(ord.getProcess_status().getProccessStatusId()).getProccessStatusTitle()));
 				if (ord.getLevel() != null)
 				ord.getLevel().setLevelTitle((daoLevel.queryForId(ord.getLevel().getLevelId()).getLevelTitle()));
-				Log.i("order dashboard in updateOrderFields FAQ class", Integer.toString(ord.getProcess_status().getProccessStatusId()));
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -283,23 +307,26 @@ public class FrequentlyUsedMethods {
 	
    /**	 *	 метод добавления временных зон в ListPreference
     * @param   timezonePref - ListPreference в который будут добавляться временные зоны  	 */
-	 public void addTimeZones(ListPreference timezonePref) {
-			final String[] TZ = TimeZone.getAvailableIDs();
-
-			ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
+	 public void addTimeZones(Object timezonePref, ArrayAdapter<String> _adapter) {
+			
+		 	ArrayAdapter<String> adapter = null;
+		 	final String[] TZ = TimeZone.getAvailableIDs();
+		 	if (_adapter==null)
+		 		adapter = new ArrayAdapter<String>(
 					getContext(), android.R.layout.simple_spinner_item);
+		 	else 
+		 		adapter = _adapter;
+		 	
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 			final ArrayList<String> TZ1 = new ArrayList<String>();
 			for (int i = 0; i < TZ.length; i++) {
-				if (!(TZ1.contains(TimeZone.getTimeZone(TZ[i]).getID()))) {
-					if (timezoneValidate(TZ[i]))
-						TZ1.add(TZ[i]);
+				if (timezoneValidate(TZ[i]))
+				{
+						TZ1.add(TZ[i].substring(7) + ":00");
 				}
 			}
 			for (int i = 0; i < TZ1.size(); i++) {
-				
-				
 				adapter.add(TZ1.get(i));
 			}
 			
@@ -310,33 +337,44 @@ public class FrequentlyUsedMethods {
 		    {
 		    	entries[i] = dev;
 	            entryValues[i] = dev;
-	            if (TimeZone.getTimeZone(TZ1.get(i)).getID()
-						.equals(TimeZone.getDefault().getID())) {
-	            	 timezonePref.setSummary((TimeZone.getDefault().getID()));
-				}
 	            i++;
 	            
 		    }
+		    Calendar cal = Calendar.getInstance();
+		    TimeZone tz = TimeZone.getDefault();  
+		    int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
+		    String offset = String.format(checkIntSign(offsetInMillis) +"%1d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
+		    
+		    
+		   if (timezonePref instanceof ListPreference){
+		    ((ListPreference)timezonePref).setEntries(entries);
+		    ((ListPreference)timezonePref).setEntryValues(entryValues);
 		   
-		    timezonePref.setEntries(entries);
-		    timezonePref.setEntryValues(entryValues);
-		    Locale locale = new Locale("en", "IN");
-		    String curr = TimeZone.getTimeZone(TimeZone.getDefault().getID()).getDisplayName(false,TimeZone.SHORT, locale);
-		    String currTimeZone = "";
-		    for (int q = 0; q<TZ1.size();q++)
-		    {
-		    	if (TimeZone.getTimeZone(TZ1.get(q)).getDisplayName(false,TimeZone.SHORT, locale).equals(curr))
-		    	currTimeZone = TZ1.get(q);
-		    }
-		    timezonePref.setSummary(currTimeZone );
+		    ((ListPreference)timezonePref).setSummary(offset );
+		   }
+		   else if (timezonePref instanceof CustomEditPreference)
+		   {
+			   ((CustomEditPreference)timezonePref).setSummary(offset);
+		   }
+		   
 		}
+	 
+	 
+	 public String checkIntSign(int value)
+	 {
+		 if(value  < 0)
+			 return "-";
+		 else 
+			 return "+";
+			 
+	 }
 	 
 	 /**	 *	 метод валидации временных зон, которые соответствуют необходимому формату
 	    * @param   email - строка для  валидации	 */
 	 public boolean timezoneValidate(String email)
 	    {
 	        
-	    	Pattern pattern = Pattern.compile(".+\\/+[A-z]+");
+	    	Pattern pattern = Pattern.compile("^(Etc/GMT)+[+|-]+[0-9]");
 				Matcher matcher = pattern.matcher(email);
 				boolean matchFound = matcher.matches();
 	    	return matchFound;
@@ -366,5 +404,189 @@ public class FrequentlyUsedMethods {
 	 public void someMethod(String message) {
 		    mHandler.post(new ToastRunnable(message));
 		}
+	public void logOut()
+	{
+		DashboardActivityAlt.forPrint.clear();
+		DashboardActivityAlt.page = 1;
+		if (SharedPrefs.getInstance().getSharedPrefs().getBoolean(Constants.NO_MORE_ORDERS, false)==true)
+			SharedPrefs.getInstance().getSharedPrefs().edit().putBoolean(Constants.NO_MORE_ORDERS, false).commit();
+		SharedPrefs.getInstance().getSharedPrefs().edit().putBoolean(Constants.IS_LOGGED, false).commit();
+		//SharedPrefs.getInstance().getSharedPrefs().edit().clear().commit();
+	}
+	public void addOrderFiles(Context context, LinearLayout layout )
+	 {
+		try
+		{
+	    if(!DashboardActivityAlt.listItem.getOrderFiles().isEmpty())
+	    {
+	    	final TextView tv[] = new TextView[DashboardActivityAlt.listItem.getOrderFiles().size()];
+		         for (int i = 0; i< DashboardActivityAlt.listItem.getOrderFiles().size();i++)
+		          {
+		            
+		            	View line = new View(context);
+		                line.setLayoutParams(new LayoutParams(1, LayoutParams.MATCH_PARENT));
+		                line.setBackgroundColor(0xAA345556);
+		                tv[i] = new TextView(context);
+		                tv[i].setId(DashboardActivityAlt.listItem.getOrderFiles().get(i).getFileId());
+		                tv[i].setTag(DashboardActivityAlt.listItem.getOrderFiles().get(i).getFileId());
+		                tv[i].setTextColor(Color.WHITE);
+		                tv[i].setTextSize(12);
+		                tv[i].setCompoundDrawablesWithIntrinsicBounds(
+		                        0, R.drawable.file, 0, 0);
+		                tv[i].setText(DashboardActivityAlt.listItem.getOrderFiles().get(i).getFileName());
+		                tv[i].setOnClickListener(this.fileInfoListenter);
+		                
+		                layout.addView(tv[i], 0);
+		                layout.addView(line, 1);
+		               
 	
+		          }
+		       
+	      }
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	private class DownloadFileTask extends AsyncTask<Files, Integer, String> {
+
+	    private Context context;
+		private Dialog mProgressDialog;
+
+	    public DownloadFileTask(Context context) {
+	    	mProgressDialog = new Dialog(context);
+	    	this.context = context;
+	    }
+	    @Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mProgressDialog.show();
+	    }
+	    @Override
+	    protected String doInBackground(Files... sUrl) {
+	        // take CPU lock to prevent CPU from going off if the user 
+	        // presses the power button during download
+	        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+	             getClass().getName());
+	        wl.acquire();
+
+	        try {
+	            InputStream input = null;
+	            OutputStream output = null;
+	            HttpURLConnection connection = null;
+	            try {
+	                URL url = new URL(sUrl[0].getFileFullPath());
+	                connection = (HttpURLConnection) url.openConnection();
+	                connection.connect();
+
+	                // expect HTTP 200 OK, so we don't mistakenly save error report 
+	                // instead of the file
+	                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
+	                     return "Server returned HTTP " + connection.getResponseCode() 
+	                         + " " + connection.getResponseMessage();
+
+	                // this will be useful to display download percentage
+	                // might be -1: server did not report the length
+	                int fileLength = connection.getContentLength();
+
+	                // download the file
+	                input = connection.getInputStream();
+	                output = new FileOutputStream("/mnt/sdcard/download/" +  sUrl[0].getFileName());
+
+	                byte data[] = new byte[4096];
+	                long total = 0;
+	                int count;
+	                while ((count = input.read(data)) != -1) {
+	                    // allow canceling with back button
+	                    if (isCancelled())
+	                        return null;
+	                    total += count;
+	                    // publishing the progress....
+	                    if (fileLength > 0) // only if total length is known
+	                        publishProgress((int) (total * 100 / fileLength));
+	                    output.write(data, 0, count);
+	                }
+	            } catch (Exception e) {
+	                return e.toString();
+	            } finally {
+	                try {
+	                    if (output != null)
+	                        output.close();
+	                    if (input != null)
+	                        input.close();
+	                } 
+	                catch (IOException ignored) { }
+
+	                if (connection != null)
+	                    connection.disconnect();
+	            }
+	        } finally {
+	            wl.release();
+	        }
+	        return null;
+	    }
+	    @Override
+	    protected void onPostExecute(String result) {
+	        mProgressDialog.dismiss();
+	        if (result != null)
+	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+	        else
+	            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	 public boolean EmailValidate(String email)
+	    {
+	        
+	    	Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
+				Matcher matcher = pattern.matcher(email);
+				boolean matchFound = matcher.matches();
+	    	return matchFound;
+	    }
+	public void createToast(String text_, Activity ctx)
+	{
+		LayoutInflater inflater = ctx.getLayoutInflater();
+				 View layout = inflater.inflate(R.layout.custom_toast,
+		                 (ViewGroup) ctx.findViewById(R.id.toast_layout_root));
+		TextView text = (TextView) layout.findViewById(R.id.text);
+		text.setText(text_);
+		Toast toast = new Toast(ctx.getApplicationContext());
+		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		toast.setDuration(Toast.LENGTH_LONG);
+		toast.setView(layout);
+		toast.show();
+	}
+	
+	public static String GetCountryZipCode(Context context)  
+	{
+	    // Get the country ISO
+	    TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+	    String countryIso = manager.getSimCountryIso().toUpperCase();
+
+	    // Load resources containing the country codes list
+	    String[] countryCodes = context.getResources().getStringArray(R.array.CountryCodes);
+
+	    // Try to find what we need
+	    for(int i=0; i<countryCodes.length; i++)
+	    {
+	        String[] line = countryCodes[i].split(",");
+	        if (line.length != 2)
+				try {
+					throw new Exception("Resource file looks like invalid.");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+	        // We have found something interesting
+	        if (line[1].trim().equals(countryIso.trim()))
+	        return line[0];
+	    }
+	    // Nothing was found
+	    return null;
+	}
 }
