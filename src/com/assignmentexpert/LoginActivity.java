@@ -161,8 +161,8 @@ public class LoginActivity extends FragmentActivity implements ITaskLoaderListen
     	
     	 // for test values
 //    	 
-    	inputEmail.setText("test@mail.com");
-    	inputPassword.setText("dnipro");
+//    	inputEmail.setText("test@mail.com");
+//    	inputPassword.setText("dnipro");
     	
     	
     	

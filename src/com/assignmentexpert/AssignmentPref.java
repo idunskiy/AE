@@ -23,10 +23,10 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface.*;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +43,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -65,6 +66,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import com.asynctasks.LoginAsync;
 import com.customitems.CustomCheckBoxPref;
 import com.customitems.CustomEditPreference;
@@ -78,6 +80,7 @@ import com.datamodel.Level;
 import com.datamodel.NumberOfReferences;
 import com.datamodel.NumberPages;
 import com.datamodel.Subject;
+import com.fragments.DatePickerDialogFragment;
 import com.j256.ormlite.dao.Dao;
 import com.library.Constants;
 import com.library.DatabaseHandler;
@@ -90,7 +93,7 @@ import com.library.singletones.OrderPreferences;
  * похожа на Preference, наследуется от PreferenceActivity.
  */
 @SuppressLint("NewApi")
-public class AssignmentPref extends PreferenceActivity {
+public class AssignmentPref extends PreferenceActivity implements OnDateSetListener  {
 	/** * button for files selecting */
 	private Button btnSelectFiles;
 	/** *sharedPreferences for orders preferences saving */
@@ -735,6 +738,8 @@ public class AssignmentPref extends PreferenceActivity {
 			}
 
 		});
+		
+		
 		fileCheckHead.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			public void onCheckedChanged(CompoundButton buttonView,
@@ -799,7 +804,6 @@ public class AssignmentPref extends PreferenceActivity {
 		subjectPref.setSummary(getResources().getString(R.string.preference_not_selected));
 		categoryPref.setSummary(getResources().getString(R.string.preference_not_selected));
 		deadlineCus.setSummary(getResources().getString(R.string.preference_not_selected));
-
 		prefEditor.putBoolean("orderPrefDismiss", true);
 		mainList.removeFooterView(filesList);
 
@@ -835,6 +839,7 @@ public class AssignmentPref extends PreferenceActivity {
 
 			}
 		});
+		
 		ExcVideo.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
@@ -854,6 +859,7 @@ public class AssignmentPref extends PreferenceActivity {
 				return true;
 			}
 		});
+		
 		commVideo
 				.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 					public boolean onPreferenceChange(Preference preference,
@@ -1188,7 +1194,6 @@ public class AssignmentPref extends PreferenceActivity {
 	public int getFilePosition(View v) {
 		int pos = 0;
 		for (int i = 0; i < adapter.getCount(); i++) {
-			Log.i("fileList item", adapter.getItem(i).getName());
 			if (((CustomTextView) v.findViewById(android.R.id.title)).getText()
 					.equals((adapter.getItem(i).getName())))
 				pos = i;
@@ -1258,27 +1263,34 @@ public class AssignmentPref extends PreferenceActivity {
 			final DatePickerDialog datePicker;
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				    // (picker is a DatePicker- set current time as min time.
-					Toast.makeText(getApplicationContext(), "im higher than HONEYCOMB", Toast.LENGTH_SHORT).show();
-					datePicker = new DatePickerDialog(this, null, mYear, mMonth,
-							mDay);
-					datePicker.setCancelable(true);
-					datePicker.setCanceledOnTouchOutside(true);
-					datePicker.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
-					        new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									Toast.makeText(getApplicationContext(), "im before chackdate" , Toast.LENGTH_SHORT).show();
-									checkChoosedDate(datePicker.getDatePicker().getYear(), datePicker.getDatePicker().getMonth(), datePicker.getDatePicker().getDayOfMonth());
-								}
-					        });
-					datePicker.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", 
-					        new DialogInterface.OnClickListener() {
-					            public void onClick(DialogInterface dialog, int which) {
-					            	
-					            }
-					        });
-				   datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+//					Toast.makeText(getApplicationContext(), "im higher than HONEYCOMB", Toast.LENGTH_SHORT).show();
+//					datePicker = new DatePickerDialog(this, null, mYear, mMonth,
+//							mDay);
+//					datePicker.setCancelable(true);
+//					datePicker.setCanceledOnTouchOutside(true);
+//					datePicker.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
+//					        new DialogInterface.OnClickListener() {
+//
+//								public void onClick(DialogInterface dialog,
+//										int which) {
+//									Toast.makeText(getApplicationContext(), "im before chackdate" , Toast.LENGTH_SHORT).show();
+//									checkChoosedDate(datePicker.getDatePicker().getYear(), datePicker.getDatePicker().getMonth(), datePicker.getDatePicker().getDayOfMonth());
+//								}
+//					        });
+//					datePicker.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", 
+//					        new DialogInterface.OnClickListener() {
+//					            public void onClick(DialogInterface dialog, int which) {
+//					            	datePicker.dismiss();
+//					            }
+//					        });
+//				   datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+					Bundle b = new Bundle();
+					b.putInt(DatePickerDialogFragment.YEAR, mYear);
+					b.putInt(DatePickerDialogFragment.MONTH, mMonth);
+					b.putInt(DatePickerDialogFragment.DATE, mDay);
+					DialogFragment picker = new DatePickerDialogFragment();
+					picker.setArguments(b);
+					picker.show(AssignmentPref.this.getFragmentManager(), "frag_date_picker");
 				}
 				else 
 				{	
@@ -1609,8 +1621,6 @@ public class AssignmentPref extends PreferenceActivity {
 		for (NumberPages dev : LoginAsync.numberPagesList) {
 			entries[i] = dev.getNumberPage();
 			entryValues[i] = dev.getNumberPage();
-			Log.i("subject items",
-					entries[i].toString() + entryValues[i].toString());
 			i++;
 
 		}
@@ -1773,7 +1783,7 @@ public class AssignmentPref extends PreferenceActivity {
 			return false;
 		}
 	};
-
+	
 	/**
 	 * метод изменения заголовка списка файлов при удалении/добавлении файлов из
 	 * списка
@@ -1785,7 +1795,6 @@ public class AssignmentPref extends PreferenceActivity {
 		RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 		relativeParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
 		textHead.setTextSize(17);
 		textHead.setText(Integer.toString(FileManagerActivity
 				.getFinalAttachFiles().size()) + " files attached");
@@ -1797,8 +1806,6 @@ public class AssignmentPref extends PreferenceActivity {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i("AssignmentPref requestCode", Integer.toString(requestCode));
-		Log.i("AssignmentPref resultCode", Integer.toString(resultCode));
 		switch (resultCode) {
 		case Constants.addFilesResult:
 
@@ -1818,12 +1825,9 @@ public class AssignmentPref extends PreferenceActivity {
 		}
 
 		if (requestCode == 3) {
-			Log.d("path result", Integer.toString(resultCode));
 			if (resultCode != RESULT_OK)
 				return;
-			Log.d("path", mOriginalUri.getPath());
 			File imgFile = new File(mOriginalUri.getPath());
-			Log.i("file size", imgFile.getAbsolutePath());
 			if (imgFile.exists()) {
 
 				FileManagerActivity.getFinalAttachFiles().add(imgFile);
@@ -1854,7 +1858,9 @@ public class AssignmentPref extends PreferenceActivity {
 		super.onStop();
 		if (FileManagerActivity.getFinalAttachFiles().isEmpty()) {
 			if (adapter != null)
-				Log.i("adapter size", Integer.toString(adapter.getCount()));
+			{
+				
+			}
 		}
 
 	}
@@ -1892,5 +1898,11 @@ public class AssignmentPref extends PreferenceActivity {
 						if (! deadlineCus.getSummary().equalsIgnoreCase(getResources().getString(R.string.preference_not_selected)))
 							deadlineCus.setSummary(getResources().getString(R.string.preference_not_selected));
 					}
+	}
+
+	public void onDateSet(DatePicker view, int year, int monthOfYear,
+			int dayOfMonth) {
+		// TODO Auto-generated method stub
+		
 	}
 }
